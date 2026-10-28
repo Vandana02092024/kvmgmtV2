@@ -81,52 +81,122 @@ class SalesectionController extends Controller
 	//   }
 
 
-	public function index()
-    {
+	// public function index()
+    // {
 
 
-    	$locationId = Session::get('location_id');
-      DB::connection()->enableQueryLog();
+    // 	$locationId = Session::get('location_id');
+    //   DB::connection()->enableQueryLog();
 
-	     $weekStartSql = 'DATE_SUB(dataDate, INTERVAL MOD(DAYOFWEEK(dataDate), 7) DAY)';
-	     $query = DB::table('salesections')
-	        ->select(['location_id', DB::raw('MAX(id) as id'), DB::raw('MAX(dataDate) as dataDate'), DB::raw('SUM(amount) as amount'), DB::raw($weekStartSql.' as periodStart')])
-        ->where('location_id', '=', $locationId)
-        ->where('nameDep', '=', 'sale')
-	        ->groupBy('location_id', DB::raw($weekStartSql))
-	        ->orderBy('periodStart', 'DESC')
-	        ->orderBy('dataDate', 'DESC');
+	//      $weekStartSql = 'DATE_SUB(dataDate, INTERVAL MOD(DAYOFWEEK(dataDate), 7) DAY)';
+	//      $query = DB::table('salesections')
+	//         ->select(['location_id', DB::raw('MAX(id) as id'), DB::raw('MAX(dataDate) as dataDate'), DB::raw('SUM(amount) as amount'), DB::raw($weekStartSql.' as periodStart')])
+    //     ->where('location_id', '=', $locationId)
+    //     ->where('nameDep', '=', 'sale')
+	//         ->groupBy('location_id', DB::raw($weekStartSql))
+	//         ->orderBy('periodStart', 'DESC')
+	//         ->orderBy('dataDate', 'DESC');
 
-	    // $data = $query->paginate(10);
-		$data = $query->paginate(10);
-		$totalRecords = $data->total();
-	    foreach ($data as $weeklyReport) {
-	        $weekValues = explode('|', $this->weekDataValue($weeklyReport->periodStart));
-	        $weeklyReport->storeNo = isset($weekValues[1]) ? $weekValues[1] : 0;
-	        $weeklyReport->calendarWeek = getWeekByDate($weeklyReport->periodStart);
-	    }
-      $queries = DB::getQueryLog();
-      $last_query = end($queries);
-		//dd($last_query);
+	//     // $data = $query->paginate(10);
+	// 	$data = $query->paginate(10);
+	// 	$totalRecords = $data->total();
+	//     foreach ($data as $weeklyReport) {
+	//         $weekValues = explode('|', $this->weekDataValue($weeklyReport->periodStart));
+	//         $weeklyReport->storeNo = isset($weekValues[1]) ? $weekValues[1] : 0;
+	//         $weeklyReport->calendarWeek = getWeekByDate($weeklyReport->periodStart);
+	//     }
+    //   $queries = DB::getQueryLog();
+    //   $last_query = end($queries);
+	// 	//dd($last_query);
 
-      	// $startDate = DB::table('locations')->select('startdate')->where('id', '=', $locationId)->where('status','=',1)->get();
-    	// 	$sDateStore = strtotime($startDate[0]->startdate);
+    //   	// $startDate = DB::table('locations')->select('startdate')->where('id', '=', $locationId)->where('status','=',1)->get();
+    // 	// 	$sDateStore = strtotime($startDate[0]->startdate);
 
 		
-		$startDate = DB::table('locations')
-			->select('startdate')
-			->where('id', '=', $locationId)
-			->where('status', '=', 1)
-			->first();
+	// 	$startDate = DB::table('locations')
+	// 		->select('startdate')
+	// 		->where('id', '=', $locationId)
+	// 		->where('status', '=', 1)
+	// 		->first();
 
-		if (!$startDate || empty($startDate->startdate)) {
-			$sDateStore = null;
-		} else {
-			$sDateStore = strtotime($startDate->startdate);
+	// 	if (!$startDate || empty($startDate->startdate)) {
+	// 		$sDateStore = null;
+	// 	} else {
+	// 		$sDateStore = strtotime($startDate->startdate);
+	// 	}
+
+
+	// 	return view('salesections.index', compact('data','sDateStore','totalRecords'));
+	// }
+
+	public function index()
+	{
+		$locationId = Session::get('location_id');
+
+		if (empty($locationId)) {
+			return redirect()->back()->with(
+				'message',
+				'Please select a location first.'
+			);
 		}
 
+		// Fetch the location start date only once.
+		$location = DB::table('locations')
+			->select('startdate')
+			->where('id', $locationId)
+			->where('status', 1)
+			->first();
 
-		return view('salesections.index', compact('data','sDateStore','totalRecords'));
+		$sDateStore = (
+			$location && !empty($location->startdate)
+		) ? strtotime($location->startdate) : null;
+
+		// Group sales records by week.
+		$weekStartSql = '
+			DATE_SUB(
+				dataDate,
+				INTERVAL MOD(DAYOFWEEK(dataDate), 7) DAY
+			)
+		';
+
+		$data = DB::table('salesections')
+			->select([
+				'location_id',
+				DB::raw('MAX(id) as id'),
+				DB::raw('MAX(dataDate) as dataDate'),
+				DB::raw('SUM(amount) as amount'),
+				DB::raw($weekStartSql . ' as periodStart')
+			])
+			->where('location_id', $locationId)
+			->where('nameDep', 'sale')
+			->groupBy(
+				'location_id',
+				DB::raw($weekStartSql)
+			)
+			->orderBy('periodStart', 'DESC')
+			->orderBy('dataDate', 'DESC')
+			->get();
+
+		// Prepare the weekly report data.
+		foreach ($data as $weeklyReport) {
+			$weekValues = explode(
+				'|',
+				$this->weekDataValue($weeklyReport->periodStart)
+			);
+
+			$weeklyReport->storeNo = isset($weekValues[1])
+				? $weekValues[1]
+				: 0;
+
+			$weeklyReport->calendarWeek = getWeekByDate(
+				$weeklyReport->periodStart
+			);
+		}
+
+		return view(
+			'salesections.index',
+			compact('data', 'sDateStore')
+		);
 	}
 
 

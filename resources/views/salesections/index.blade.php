@@ -37,7 +37,7 @@
 						<div class="responsive-table">
 							<div class="row kv-sales-toolbar">
 							    <div class="col-sm-4">
-							        <div class="" id="" style="position: absolute; width: fit-content;">
+							        <!-- <div class="" id="" style="position: absolute; width: fit-content;">
 							                <select name="example_length" aria-controls="example" class="form-control input-sm">
 							                	<option selected="" hidden="">{{ empty($count) ? '10' : $count}}</option>
 							                    <option value="10">10</option>
@@ -45,7 +45,7 @@
 							                    <option value="50">50</option>
 							                    <option value="100">100</option>
 							                </select>
-							        </div>
+							        </div> -->
 							    </div>
 							    <div class="col-sm-6">
 							    	<div class="" id="" style="float: right; width: fit-content;">
@@ -122,7 +122,6 @@
 		                   @endforeach
 						        </tbody>
 						    </table>
-						    <?php echo $data->render(); ?>
 						</div>
 					</div>
 				</div>
@@ -135,13 +134,18 @@
 
 
 <script type="text/javascript">
-	$(document).ready(function() {
-	    $('#example').DataTable({
-			order: [],
-			paging: false,
-			columnDefs: [ { orderable: false, targets: [0]}]
+	// $(document).ready(function() {
+	//     $('#example').DataTable({
+	// 		order: [],
+	// 		paging: false,
+	// 		columnDefs: [ { orderable: false, targets: [0]}]
+	// 	});
+	// } );
+	$(document).ready(function () {
+		$('#example').DataTable({
+			"aaSorting": []
 		});
-	} );
+	});
 
 	$(document).ready(function() {
     $('select[name="example_length"]').on('change', function() {
