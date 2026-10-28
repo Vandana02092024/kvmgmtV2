@@ -192,19 +192,20 @@ class LocationController extends Controller
 
      $location = MenuLocation::select(['menu_locations.id','menu_locations.status','menu_locations.menu_id','menu_locations.location_id','menus.name','locations.location'])->join('menus', 'menus.id', '=', 'menu_locations.menu_id')
       ->join('locations', 'locations.id', '=', 'menu_locations.location_id');
-    if($request->location!=''){
+      if($request->location!=''){
         $location->where('menu_locations.location_id',$request->location);
         $data['location'] = $request->location;
       }elseif ($id!='') {
           $location->where('menu_locations.location_id',$id);
-            $data['location'] = $id;
+          $data['location'] = $id;
       }
-        $location->where('locations.status',1);
-        $location->where('menus.status',1);
-    $data['locations']=   $location->get();
-     $data['list'] = Location::where('status',1)->get();
-      return view('locations.assign_location',$data);
+        $location->where('locations.status','1');
+        $location->where('menus.status','1');
+        $data['locations']=   $location->get();
+        $data['list'] = Location::where('status','1')->get();
+        return view('locations.assign_location',$data);
     }
+
 
     public function asign_loaction_status($id){
       $location = MenuLocation::where('id', '=', $id)->first();
