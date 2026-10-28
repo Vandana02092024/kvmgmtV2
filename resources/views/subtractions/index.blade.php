@@ -51,7 +51,7 @@
 			                                        
 			                                        |   
 													
-													{{ link_to_route('subtraction.subtArchive',$sub->status == 1 ?'Archive' :'Unarchive',['category' => $sub->id, 'st' => $sub->status]) }}
+													{{ link_to_route('subtraction.subtArchive', $sub->status == 1 ? 'Archive' : 'Unarchive', ['id' => $sub->id, 'st' => $sub->status]) }}
 													
 													
 													

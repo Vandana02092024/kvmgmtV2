@@ -26,7 +26,7 @@
 			<div class="col-sm-8 col-sm-offset-2">
 				<div class="widget">
 					<div class="">
-						{!! Form::model($product, array('route' => ['product.update', $product->id], 'method' => 'PUT')) !!}
+						{!! Form::model($product, array('route' => ['product.update', 'product' => $product->id], 'method' => 'PUT')) !!}
         				{{ csrf_field() }}
 							<div class="widget-content">
 								<div class="row form-group{{ $errors->has('code') ? ' has-error' : '' }}">

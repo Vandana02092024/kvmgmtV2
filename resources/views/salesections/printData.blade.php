@@ -919,6 +919,60 @@ $dates = getDatesFromRange($sDate, $eDate);
 						   <tr class="thead-Light">
                               <th style="font-size:10px;font-weight:normal;">OVER/(SHORT)</th>
                            </tr>
+							<?php
+								// Tax values
+								$saleTaxvalueSat = $saleTaxvalueSat ?? 0;
+								$saleTaxvalueSun = $saleTaxvalueSun ?? 0;
+								$saleTaxvalueMon = $saleTaxvalueMon ?? 0;
+								$saleTaxvalueTue = $saleTaxvalueTue ?? 0;
+								$saleTaxvalueWed = $saleTaxvalueWed ?? 0;
+								$saleTaxvalueThr = $saleTaxvalueThr ?? 0;
+								$saleTaxvalueFri = $saleTaxvalueFri ?? 0;
+
+								// Employee loan values
+								$employeeLoanvalueSat = $employeeLoanvalueSat ?? 0;
+								$employeeLoanvalueSun = $employeeLoanvalueSun ?? 0;
+								$employeeLoanvalueMon = $employeeLoanvalueMon ?? 0;
+								$employeeLoanvalueTue = $employeeLoanvalueTue ?? 0;
+								$employeeLoanvalueWed = $employeeLoanvalueWed ?? 0;
+								$employeeLoanvalueThr = $employeeLoanvalueThr ?? 0;
+								$employeeLoanvalueFri = $employeeLoanvalueFri ?? 0;
+
+								// Employee advance values
+								$employeeAdvancevalueSat = $employeeAdvancevalueSat ?? 0;
+								$employeeAdvancevalueSun = $employeeAdvancevalueSun ?? 0;
+								$employeeAdvancevalueMon = $employeeAdvancevalueMon ?? 0;
+								$employeeAdvancevalueTue = $employeeAdvancevalueTue ?? 0;
+								$employeeAdvancevalueWed = $employeeAdvancevalueWed ?? 0;
+								$employeeAdvancevalueThr = $employeeAdvancevalueThr ?? 0;
+								$employeeAdvancevalueFri = $employeeAdvancevalueFri ?? 0;
+
+								// Paid out values
+								$paidOutvalueSat = $paidOutvalueSat ?? 0;
+								$paidOutvalueSun = $paidOutvalueSun ?? 0;
+								$paidOutvalueMon = $paidOutvalueMon ?? 0;
+								$paidOutvalueTue = $paidOutvalueTue ?? 0;
+								$paidOutvalueWed = $paidOutvalueWed ?? 0;
+								$paidOutvalueThr = $paidOutvalueThr ?? 0;
+								$paidOutvalueFri = $paidOutvalueFri ?? 0;
+
+								// Distribution values
+								$amountDistValueRowSaturday = $amountDistValueRowSaturday ?? 0;
+								$amountDistValueRowSunday = $amountDistValueRowSunday ?? 0;
+								$amountDistValueRowMonday = $amountDistValueRowMonday ?? 0;
+								$amountDistValueRowTuesday = $amountDistValueRowTuesday ?? 0;
+								$amountDistValueRowWednesday = $amountDistValueRowWednesday ?? 0;
+								$amountDistValueRowThrusday = $amountDistValueRowThrusday ?? 0;
+								$amountDistValueRowFriday = $amountDistValueRowFriday ?? 0;
+
+								$finalDiscountvalueSat = $finalDiscountvalueSat ?? 0;
+								$finalDiscountvalueSun = $finalDiscountvalueSun ?? 0;
+								$finalDiscountvalueMon = $finalDiscountvalueMon ?? 0;
+								$finalDiscountvalueTue = $finalDiscountvalueTue ?? 0;
+								$finalDiscountvalueWed = $finalDiscountvalueWed ?? 0;
+								$finalDiscountvalueThr = $finalDiscountvalueThr ?? 0;
+								$finalDiscountvalueFri = $finalDiscountvalueFri ?? 0;
+							?>	
                            <tr>
                              <th style="font-weight:normal;font-size:10px;">OVER/(SHORT)</th>
                               <td><input type="hidden" name="" class="" placeholder="" ></td>

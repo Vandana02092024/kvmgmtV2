@@ -21,9 +21,9 @@ class SetlocationController extends Controller
             ->leftJoin('locations', 'locations.id', '=', 'user_locations.location')
             ->where('user_locations.user', '=', Auth::user()->id)
 			->where('locations.status', '=', 1)
-            ->lists('locations.location', 'locations.id');
+            ->pluck('locations.location', 'locations.id');
 
-        Session::set('all_locations', $locations);
+        Session::put('all_locations', $locations);
 		return view('setlocations.index', compact('locations'));
     }
 
@@ -46,7 +46,7 @@ class SetlocationController extends Controller
     public function store(Request $request)
     {
         $location = $request->get('location');
-        Session::set('location_id', $location);
+        Session::put('location_id', $location);
 		
 		$getVendor     = $location.".vendor_id";
 		$svCategoryId  = $location.".category_id";
@@ -60,9 +60,9 @@ class SetlocationController extends Controller
 		$locationName = DB::table('locations')
 		->select('location')
 		->where('id', '=', $location)
-		->lists('location');
+		->pluck('location');
 		
-		Session::set('locationName', $locationName[0]);
+		Session::put('locationName', $locationName[0]);
 		$services = DB::table('customer_services')
 					->leftJoin('customer_servicefollows', 'customer_servicefollows.customer_service_id', '=', 'customer_services.id')
 					->where('customer_servicefollows.id', '=', DB::raw("(select max(customer_servicefollows.id) from customer_servicefollows where customer_service_id = `customer_services`.id)"))
@@ -71,9 +71,9 @@ class SetlocationController extends Controller
 					->where('customer_servicefollows.followup_by', '=', Auth::user()->id)
 					->where('customer_servicefollows.created_at', '>=', "'".date('Y-m-d')."'")
 					->select(DB::raw("count(customer_services.id) as total_new_csr"), 'customer_services.id as id')
-					->lists('total_new_csr');
+					->pluck('total_new_csr');
 		
-		Session::set('total_new_csr', $services[0]);
+		Session::put('total_new_csr', $services[0]);
 		
 		$all_new_csr_data = DB::table('customer_services')		            
 					->leftJoin('customer_servicefollows', 'customer_servicefollows.customer_service_id', '=', 'customer_services.id')
@@ -85,7 +85,7 @@ class SetlocationController extends Controller
 					->select('customer_services.customer_name as customer_name', 'customer_services.id as id', 'customer_servicefollows.followup_date', 'customer_servicefollows.followup_time')
 					->get();
 		
-		Session::set('all_new_csr_data', $all_new_csr_data);
+		Session::put('all_new_csr_data', $all_new_csr_data);
 		
 		// return redirect()->route('user.index');
         return \Redirect::to('dashboard');
@@ -94,7 +94,7 @@ class SetlocationController extends Controller
     // public function changeSessionValue(Request $request)
     // {
     //     $location = $request->get('location');
-    //     Session::set('location_id', $location);
+    //     Session::put('location_id', $location);
     //     echo Session::get('location_id');
 
     //     // $location = $request->get('location');

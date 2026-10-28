@@ -17,8 +17,8 @@ class ProductController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->category = Category::lists('category', 'id');
-        $this->seller   = Seller::lists('name', 'id');
+        $this->category = Category::pluck('category', 'id');
+        $this->seller   = Seller::pluck('name', 'id');
         $this->seller->prepend('- Select Vendor -', '');
     }
 
@@ -121,11 +121,52 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+    // public function update(Request $request, Product $product)
+    // {
+    //     $product->update($request->all());
+    //     return redirect()->route('product.index')->with('message','Product has been updated successfully!');
+    // }
+
+    
     public function update(Request $request, Product $product)
     {
-        $product->update($request->all());
-        return redirect()->route('product.index')->with('message','Product has been updated successfully!');
+        $validated = $request->validate([
+            'code'     => 'required|string|max:255',
+            'name'     => 'required|string|max:255',
+            'category' => 'required',
+            'vendor'   => 'nullable',
+            'unit'     => 'required|string|max:255',
+            'price'    => 'nullable|numeric',
+            'rank'     => 'nullable|integer',
+        ]);
+
+        try {
+            // Assign fields explicitly to avoid mass-assignment issues.
+            $product->code = $validated['code'];
+            $product->name = $validated['name'];
+            $product->category = $validated['category'];
+            $product->vendor = $validated['vendor'] ?? null;
+            $product->unit = $validated['unit'];
+            $product->price = $validated['price'] ?? null;
+            $product->rank = $validated['rank'] ?? null;
+
+            if (!$product->save()) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Product could not be updated.');
+            }
+
+            return redirect()->route('product.index')
+                ->with('message', 'Product has been updated successfully!');
+        } catch (\Throwable $e) {
+            report($e);
+
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Product could not be updated. Check the application log.');
+        }
     }
+
 
     /**
      * Remove the specified resource from storage.

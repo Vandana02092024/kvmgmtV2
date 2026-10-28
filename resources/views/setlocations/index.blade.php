@@ -18,6 +18,13 @@
         </div>
         <div class="row" style="margin-top: 40px;">
             <?php // var_dump($locations); ?>
+            @if($locations->isEmpty())
+                <div class="col-md-12 text-center">
+                    <div class="alert alert-warning" role="alert">
+                        No active locations are available for your account. Please contact an administrator.
+                    </div>
+                </div>
+            @endif
             @foreach($locations as $key => $location)
             
             <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 ">
@@ -65,7 +72,7 @@
                                     
                             <div id="showSession">
                                 @php
-                                    echo session()->set('location_id', 0);
+                                    session()->put('location_id', 0);
                                 @endphp
                             </div>
 

@@ -17,7 +17,7 @@ class DiscountController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->locations = Location::lists('location', 'id');
+        $this->locations = Location::pluck('location', 'id');
         $this->roles     = array('Owner' => 'Owner', 'Supervisor' => 'Supervisor', 'Employee' => 'Employee');
     }
 
@@ -114,31 +114,84 @@ class DiscountController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Discount $discount)
-    {
+    // public function update(Request $request, Discount $discount)
+    // {
         
 
-        $discount->update([
-            'name' => $request['name'],
-			'sorting_order' => $request['sorting_order'],
+    //     $discount->update([
+    //         'name' => $request['name'],
+	// 		'sorting_order' => $request['sorting_order'],
+    //     ]);
+
+	// 	$locVal = $request->input('location', []);
+	// 	if (!is_array($locVal)) $locVal = [$locVal];
+	// 	$existingLocations = [];
+	// 	foreach (Discount_location::where('discount', $discount->id)->get(['location']) as $link) {
+	// 		$existingLocations[] = (string) $link->location;
+	// 	}
+	// 	foreach (array_unique($locVal) as $locValue) {
+	// 		if ($locValue !== '' && !in_array((string) $locValue, $existingLocations, true)) {
+	// 			Discount_location::create(['discount' => $discount->id, 'location' => $locValue]);
+	// 		}
+	// 	}
+		
+		
+		
+	// 	return redirect()->route('discount.index')->with('message','Discount has been updated successfully!');
+    // }
+
+    
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'sorting_order' => 'nullable|integer',
+            'location' => 'nullable|array',
+            'location.*' => 'integer|exists:locations,id',
         ]);
 
-		$locVal = $request->input('location', []);
-		if (!is_array($locVal)) $locVal = [$locVal];
-		$existingLocations = [];
-		foreach (Discount_location::where('discount', $discount->id)->get(['location']) as $link) {
-			$existingLocations[] = (string) $link->location;
-		}
-		foreach (array_unique($locVal) as $locValue) {
-			if ($locValue !== '' && !in_array((string) $locValue, $existingLocations, true)) {
-				Discount_location::create(['discount' => $discount->id, 'location' => $locValue]);
-			}
-		}
-		
-		
-		
-		return redirect()->route('discount.index')->with('message','Discount has been updated successfully!');
+        $discount = Discount::findOrFail($id);
+
+        $discount->name = $request->input('name');
+        $discount->sorting_order = $request->input('sorting_order');
+        $discount->save();
+
+        $locVal = $request->input('location', []);
+
+        if (!is_array($locVal)) {
+            $locVal = [$locVal];
+        }
+
+        $locVal = array_unique(array_filter($locVal, function ($value) {
+            return $value !== null && $value !== '';
+        }));
+
+        // Existing locations assigned to this discount
+        $existingLocations = Discount_location::where('discount', $discount->id)
+            ->pluck('location')
+            ->map(fn ($location) => (string) $location)
+            ->toArray();
+
+        // Add only newly selected locations
+        foreach ($locVal as $locValue) {
+            if (!in_array((string) $locValue, $existingLocations, true)) {
+                Discount_location::create([
+                    'discount' => $discount->id,
+                    'location' => $locValue,
+                ]);
+            }
+        }
+
+        // Remove locations that were unselected in the form
+        Discount_location::where('discount', $discount->id)
+            ->whereNotIn('location', $locVal ?: [0])
+            ->delete();
+
+        return redirect()
+            ->route('discount.index')
+            ->with('message', 'Discount has been updated successfully!');
     }
+
 
 	
 	public function discountarchive($id , Request $request)

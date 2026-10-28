@@ -58,7 +58,7 @@
 													
 													|
 													
-													{{ link_to_route('discount.archive',$discount->status == 1 ?'Archive' :'Unarchive',['discount' => $discount->id, 'st' => $discount->status]) }}
+													{{ link_to_route('discount.archive', $discount->status == 1 ? 'Archive' : 'Unarchive', ['id' => $discount->id, 'st' => $discount->status]) }}
 			                                        <!-- |
 			                                        {{ Form::button('',['class'=>'fa fa-close','type'=>'submit','data-toggle'=>"tooltip", 'data-placement'=>"right", 'title'=>"delete"]) }} -->
 

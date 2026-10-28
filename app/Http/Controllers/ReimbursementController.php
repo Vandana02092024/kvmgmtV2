@@ -112,9 +112,9 @@ public function index(Request $request)
     {
         //
 		 $userRole = Auth::user()->role;
-		// $reportIds  = Customer_problem::select('id','customer_name','customer_last_name', DB::raw('CONCAT(customer_last_name,","," ",customer_name,"-",id) AS reportid'))->orderby('reportid')->lists('reportid', 'id');
+		// $reportIds  = Customer_problem::select('id','customer_name','customer_last_name', DB::raw('CONCAT(customer_last_name,","," ",customer_name,"-",id) AS reportid'))->orderby('reportid')->pluck('reportid', 'id');
 		 $reportIds  = Customer_problem::leftJoin('locations', 'locations.id', '=', 'customer_problems.location')
-            ->select('customer_problems.id','customer_problems.customer_name','customer_problems.customer_last_name','customer_problems.created_at','customer_problems.location','locations.location_code', DB::raw('CONCAT(if(customer_problems.customer_last_name!="",if(customer_problems.customer_name!="",CONCAT(customer_problems.customer_last_name," , "),CONCAT(customer_problems.customer_last_name," - ")),""),if(customer_problems.customer_name!="",CONCAT(customer_problems.customer_name," - "),""),CONCAT(DATE(customer_problems.created_at)),CONCAT("-PR-"),CONCAT(locations.location_code),CONCAT("-"),CONCAT(LPAD(customer_problems.id,4,"0"))) AS reportid'))->orderby('reportid')->lists('reportid', 'customer_problems.id');
+            ->select('customer_problems.id','customer_problems.customer_name','customer_problems.customer_last_name','customer_problems.created_at','customer_problems.location','locations.location_code', DB::raw('CONCAT(if(customer_problems.customer_last_name!="",if(customer_problems.customer_name!="",CONCAT(customer_problems.customer_last_name," , "),CONCAT(customer_problems.customer_last_name," - ")),""),if(customer_problems.customer_name!="",CONCAT(customer_problems.customer_name," - "),""),CONCAT(DATE(customer_problems.created_at)),CONCAT("-PR-"),CONCAT(locations.location_code),CONCAT("-"),CONCAT(LPAD(customer_problems.id,4,"0"))) AS reportid'))->orderby('reportid')->pluck('reportid', 'customer_problems.id');
 
 		$reportIds->prepend('- Select Report ID -', '');
 		$location = DB::table('locations')->where('id', '=', Session::get('location_id'))->get();
@@ -330,24 +330,45 @@ public function index(Request $request)
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Reimbursement $reimbursement)
+    // public function edit(Reimbursement $reimbursement)
+	public function edit($id)
     {
-		/* echo "<pre>";
-		print_r( $reimbursement);
-		exit; */
-		$form_Id = $reimbursement['id'];
+		// echo "<pre>";
+		// print_r( $reimbursement);
+		// exit; 
 
-		$queryRole = DB::table('users','reimbursements')
-							->select('users.role','reimbursements.location_id')
-                            ->leftjoin('reimbursements', 'users.id', '=', 'reimbursements.user_id')
-                            ->where('reimbursements.id', '=',$form_Id)
-                            ->get();
+		$reimbursement = Reimbursement::findOrFail($id);
 
-		$usersLocation = DB::table('users','user_locations')
-							->select(DB::raw('group_concat(user_locations.location) as userloc'))
-                            ->leftjoin('user_locations', 'users.id', '=', 'user_locations.user')
-							->where('users.id', '=', Auth::user()->id)
-							->get();
+		$form_Id = $reimbursement->id;
+		// $form_Id = $reimbursement['id'];
+
+		// $queryRole = DB::table('users','reimbursements')
+		// 					->select('users.role','reimbursements.location_id')
+        //                     ->leftjoin('reimbursements', 'users.id', '=', 'reimbursements.user_id')
+        //                     ->where('reimbursements.id', '=',$form_Id)
+        //                     ->get();
+
+		
+		$queryRole = DB::table('users')
+			->select('users.role', 'reimbursements.location_id')
+			->leftJoin('reimbursements', 'users.id', '=', 'reimbursements.user_id')
+			->where('reimbursements.id', '=', $form_Id)
+			->get();
+
+
+		// $usersLocation = DB::table('users','user_locations')
+		// 					->select(DB::raw('group_concat(user_locations.location) as userloc'))
+        //                     ->leftjoin('user_locations', 'users.id', '=', 'user_locations.user')
+		// 					->where('users.id', '=', Auth::user()->id)
+		// 					->get();
+
+		
+		$usersLocation = DB::table('users')
+			->select(DB::raw('GROUP_CONCAT(user_locations.location) as userloc'))
+			->leftJoin('user_locations', 'users.id', '=', 'user_locations.user')
+			->where('users.id', '=', Auth::user()->id)
+			->get();
+
 
 		$userlocArray = explode(",", $usersLocation[0]->userloc);
 
@@ -373,11 +394,11 @@ public function index(Request $request)
 		$userRole = Auth::user()->role;
 		$description = Reimbursement_describe_item::where('reimburse_id','=', $reimbursement->id)->get();
 
-		//$reportIds  = Customer_problem::select('id','customer_name','customer_last_name', DB::raw('CONCAT(customer_last_name,","," ",customer_name,"-",id) AS reportid'))->orderby('reportid')->lists('reportid', 'id');
+		//$reportIds  = Customer_problem::select('id','customer_name','customer_last_name', DB::raw('CONCAT(customer_last_name,","," ",customer_name,"-",id) AS reportid'))->orderby('reportid')->pluck('reportid', 'id');
 
 
 		$reportIds  = Customer_problem::leftJoin('locations', 'locations.id', '=', 'customer_problems.location')
-            ->select('customer_problems.id','customer_problems.customer_name','customer_problems.customer_last_name','customer_problems.created_at','customer_problems.location','locations.location_code', DB::raw('CONCAT(if(customer_problems.customer_last_name!="",if(customer_problems.customer_name!="",CONCAT(customer_problems.customer_last_name," , "),CONCAT(customer_problems.customer_last_name," - ")),""),if(customer_problems.customer_name!="",CONCAT(customer_problems.customer_name," - "),""),CONCAT(DATE(customer_problems.created_at)),CONCAT("-PR-"),CONCAT(locations.location_code),CONCAT("-"),CONCAT(LPAD(customer_problems.id,4,"0"))) AS reportid'))->orderby('reportid')->lists('reportid', 'customer_problems.id');
+            ->select('customer_problems.id','customer_problems.customer_name','customer_problems.customer_last_name','customer_problems.created_at','customer_problems.location','locations.location_code', DB::raw('CONCAT(if(customer_problems.customer_last_name!="",if(customer_problems.customer_name!="",CONCAT(customer_problems.customer_last_name," , "),CONCAT(customer_problems.customer_last_name," - ")),""),if(customer_problems.customer_name!="",CONCAT(customer_problems.customer_name," - "),""),CONCAT(DATE(customer_problems.created_at)),CONCAT("-PR-"),CONCAT(locations.location_code),CONCAT("-"),CONCAT(LPAD(customer_problems.id,4,"0"))) AS reportid'))->orderby('reportid')->pluck('reportid', 'customer_problems.id');
 
         $reportIds->prepend('- Select Report ID -', '');
 
@@ -670,7 +691,7 @@ public function index(Request $request)
 			->get();
 		echo $data = $row[0]->customer_name."|".$row[0]->customer_last_name."|".$row[0]->address."|".$row[0]->city."|".$row[0]->state."|".$row[0]->zip."|".$row[0]->cell_phone;
     }
-		public function rembursementPdf($id)
+	public function rembursementPdf($id)
     {
         $reimbursements = \DB::table('reimbursements')->where('id','=', $id)->get();
 	    $userRole = Auth::user()->role;
@@ -680,216 +701,216 @@ public function index(Request $request)
 			$reportIds  = Customer_problem::leftJoin('locations', 'locations.id', '=', 'customer_problems.location')
 			->select('customer_problems.id','customer_problems.customer_name','customer_problems.customer_last_name','customer_problems.created_at','customer_problems.location','locations.location_code', DB::raw('CONCAT(if(customer_problems.customer_last_name!="",if(customer_problems.customer_name!="",CONCAT(customer_problems.customer_last_name," , "),CONCAT(customer_problems.customer_last_name," - ")),""),if(customer_problems.customer_name!="",CONCAT(customer_problems.customer_name," - "),""),CONCAT(DATE(customer_problems.created_at)),CONCAT("-PR-"),CONCAT(locations.location_code),CONCAT("-"),CONCAT(LPAD(customer_problems.id,4,"0"))) AS reportid'))
 			->where('customer_problems.id', '=', $reimbursements[0]->report_id)
-			->orderby('reportid')->lists('reportid');
+			->orderby('reportid')->pluck('reportid');
 		}
 
 		$html = '<body style="font-family: calibri; font-size: 10px;">
 		<table style="width: 100%;" border="0" cellpadding="10">
+			<thead>
+				<tr>
+					<th colspan="6" align="right" style="padding:10px;font-size:20px;"><b>'.$reimbursements[0]->status.'</b></th>
+				</tr>
+			</thead>
+		</table>
+		<table style="width: 100%;" border="1" cellpadding="10">
+			<thead>
+
+				<tr>
+					<th colspan="3" style="padding:10px;">'.(($reimbursements[0]->zip_type == 0)?"NEW CLAIM FORM":"USE EXISTING PROBLEM REPORT").'</th>
+					<th colspan="3" style="padding:10px;">'.(($reimbursements[0]->zip_type == 1)?$reportIds[0]:'').'</th>
+				</tr>
+			</thead>
+		</table>
+
+
+		<table style="width: 100%; font-size:8px;" border="1" cellpadding="2">
+			<tbody>
+				<tr>
+					<th>Todays Date</th>
+					<td>'.$reimbursements[0]->today_date.'</td>
+					<th>Claim Check #</th>
+					<td>'.$reimbursements[0]->claim_check.'</td>
+					<th>Do you have your original Claim check?</th>
+					<td>'.(($reimbursements[0]->original_claim_check == 1)?"Yes":"No").' <br>'.(($reimbursements[0]->original_claim_check == 1) ? "check No. (".$reimbursements[0]->claim_detail.")":'').'</td>
+				</tr>
+				<tr>
+					<th>Claim Check Date</th>
+					<td>'.$reimbursements[0]->claim_check_date.'</td>
+					<th>Special Claim Check # (if any)</th>
+					<td>'.$reimbursements[0]->special_claim_check.'</td>
+					<th>Compensation</th>';
+				if($reimbursements[0]->compensation == 0)
+				$html .= '<td>Check</td>';
+				else if($reimbursements[0]->compensation == 1)
+				$html .= '<td>Store Credit</td>';
+				else if($reimbursements[0]->compensation == 2)
+				$html .= '<td>Split</td>';
+				$html .= '</tr>
+				<tr>
+					<td colspan="3">
+						<h4 style="font-size: 12px;">'.$reimbursements[0]->first_name.' '.$reimbursements[0]->last_name.'</h4>
+						<p>'.$reimbursements[0]->address.',<br>'.$reimbursements[0]->city.'<br>'.$reimbursements[0]->state.' - '.$reimbursements[0]->zip_code.'</p>
+					</td>
+					<td colspan="3">
+						<p><b>Email Address:</b> '.$reimbursements[0]->email_address.' </p>
+						<p><b>Phone No:</b> '.$reimbursements[0]->telephone_number.'</p>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<h4>Item Description</h4>
+		<table style="width: 100%; font-size:8px;" border="1" cellpadding="2">
+			<thead>
+				<tr>
+					<th>ITEM DESCRIPTION</th>
+					<th>MATERIAL</th>
+					<th>COLOR</th>
+					<th>DATE PURCHASED</th>
+					<th>PURCHASE LOCATION</th>
+					<th>AMOUNT</th>
+				</tr>
+			</thead>
+			<tbody>';
+				foreach($description as $key => $value) {
+				$html .= '	<tr>
+						<td>'. $value->item_desc.'</td>
+						<td>'. $value->material.'</td>
+						<td>'. $value->color.'</td>
+						<td>'. $value->date_purchase.'</td>
+						<td>'. $value->purchase_location.'</td>
+						<td>'. $value->amount_paid.'</td>
+					</tr>';
+					}
+				$html .= '	<tr>
+				<td colspan="4"></td>
+					<th>Total</th>
+					<th>$'.$reimbursements[0]->total_desc.'</th>
+				</tr>
+			</tbody>
+		</table>
+			<h4 style="margin: 10px 0; font-size: 13px;">PROOF OF PURCHASE (one of the following): </h4>
+			<ol style="padding: 0; margin: 0;">
+				<li style="margin:0; padding:0">Original or duplicate receipt from store,</li>
+				<li style="margin:0; padding:0">Itemized credit card receipt</li>
+				<li style="margin:0; padding:0">Monthly statement from store where purchased</li>
+			</ol>
+			<p style="padding:0; margin:0;">After allowing for depreciation from age and wear, I would be willing to accept <b>$'.$reimbursements[0]->proof_purchase.'</b>
+		as full settlement of this claim. I acknowledge that this listed amount is an offer made by me to be considered by ZIPS. Please note that once the claim is resolved, the item(s), for which you received compensation will remain in our possession.
+
+		Customer is responsible to ensure this form is filled out completely and legibly. Store Credit will be added to Customer account or check is mailed to the home address listed above within ten (10) business days of final resolution. Copies of this document are not provided.</p>
+		<table style="width: 100%; font-size:8px;" border="1" cellpadding="2">
 		<thead>
 			<tr>
-				<th colspan="6" align="right" style="padding:10px;font-size:20px;"><b>'.$reimbursements[0]->status.'</b></th>
+				<th colspan="6">
+					<h4 style="margin: 10px 0; font-size: 12px;">FOR OFFICE USE ONLY:</h4>
+				</th>
 			</tr>
 		</thead>
-	</table>
-	<table style="width: 100%;" border="1" cellpadding="10">
-		<thead>
-
-			<tr>
-				<th colspan="3" style="padding:10px;">'.(($reimbursements[0]->zip_type == 0)?"NEW CLAIM FORM":"USE EXISTING PROBLEM REPORT").'</th>
-				<th colspan="3" style="padding:10px;">'.(($reimbursements[0]->zip_type == 1)?$reportIds[0]:'').'</th>
-			</tr>
-		</thead>
-	</table>
-
-
-	<table style="width: 100%; font-size:8px;" border="1" cellpadding="2">
 		<tbody>
 			<tr>
-				<th>Todays Date</th>
-				<td>'.$reimbursements[0]->today_date.'</td>
-				<th>Claim Check #</th>
-				<td>'.$reimbursements[0]->claim_check.'</td>
-				<th>Do you have your original Claim check?</th>
-				<td>'.(($reimbursements[0]->original_claim_check == 1)?"Yes":"No").' <br>'.(($reimbursements[0]->original_claim_check == 1) ? "check No. (".$reimbursements[0]->claim_detail.")":'').'</td>
+				<th>Store #</th>
+				<td>'.$reimbursements[0]->store.'</td>
+				<th>Store Owner/Manager:</th>
+				<td>'.$reimbursements[0]->store_owner_manager.'</td>
+				<th>Receipts Attached:</th>
+				<td>'.(($reimbursements[0]->receipts_attached == 1)?"Yes":"No").'</td>
 			</tr>
 			<tr>
-				<th>Claim Check Date</th>
-				<td>'.$reimbursements[0]->claim_check_date.'</td>
-				<th>Special Claim Check # (if any)</th>
-				<td>'.$reimbursements[0]->special_claim_check.'</td>
-				<th>Compensation</th>';
-			if($reimbursements[0]->compensation == 0)
-			$html .= '<td>Check</td>';
-		    else if($reimbursements[0]->compensation == 1)
-			$html .= '<td>Store Credit</td>';
-		    else if($reimbursements[0]->compensation == 2)
-			$html .= '<td>Split</td>';
-			$html .= '</tr>
-			<tr>
-				<td colspan="3">
-					<h4 style="font-size: 12px;">'.$reimbursements[0]->first_name.' '.$reimbursements[0]->last_name.'</h4>
-					<p>'.$reimbursements[0]->address.',<br>'.$reimbursements[0]->city.'<br>'.$reimbursements[0]->state.' - '.$reimbursements[0]->zip_code.'</p>
-				</td>
-				<td colspan="3">
-					<p><b>Email Address:</b> '.$reimbursements[0]->email_address.' </p>
-					<p><b>Phone No:</b> '.$reimbursements[0]->telephone_number.'</p>
-				</td>
-			</tr>
-		</tbody>
-	</table>
-	<h4>Item Description</h4>
-	<table style="width: 100%; font-size:8px;" border="1" cellpadding="2">
-		<thead>
-			<tr>
-				<th>ITEM DESCRIPTION</th>
-				<th>MATERIAL</th>
-				<th>COLOR</th>
-				<th>DATE PURCHASED</th>
-				<th>PURCHASE LOCATION</th>
-				<th>AMOUNT</th>
-			</tr>
-		</thead>
-		<tbody>';
-			foreach($description as $key => $value) {
-			$html .= '	<tr>
-					<td>'. $value->item_desc.'</td>
-					<td>'. $value->material.'</td>
-					<td>'. $value->color.'</td>
-					<td>'. $value->date_purchase.'</td>
-					<td>'. $value->purchase_location.'</td>
-					<td>'. $value->amount_paid.'</td>
-				</tr>';
+				<th>Claim Type:</th>';
+				if($reimbursements[0]->claim_type == 1)
+				$html .= '<td>Missing Item</td>';
+				else if($reimbursements[0]->claim_type == 2)
+				$html .= '<td>Missing Order</td>';
+				else if($reimbursements[0]->claim_type == 3)
+				$html .= '<td>Damaged Order</td>';
+
+				if($reimbursements[0]->claim_type == 3)
+				{
+					$html .= '<th>Comments/Damage Description</th>
+						<td>'.$reimbursements[0]->damaged_desc.'</td>
+						<th>Item Returned to Customer</th>
+						<td>'.(($reimbursements[0]->item_return == 1)?"Yes":"No").'</td>';
+				} else {
+					$html .= '<th colspan="2">Item Returned to Customer</th>
+						<td colspan="2">'.(($reimbursements[0]->item_return == 1)?"Yes":"No").'</td>';
 				}
-			$html .= '	<tr>
-			<td colspan="4"></td>
-				<th>Total</th>
-				<th>$'.$reimbursements[0]->total_desc.'</th>
-			</tr>
-		</tbody>
-	</table>
-	<h4 style="margin: 10px 0; font-size: 13px;">PROOF OF PURCHASE (one of the following): </h4>
-	<ol style="padding: 0; margin: 0;">
-		<li style="margin:0; padding:0">Original or duplicate receipt from store,</li>
-		<li style="margin:0; padding:0">Itemized credit card receipt</li>
-		<li style="margin:0; padding:0">Monthly statement from store where purchased</li>
-	</ol>
-	<p style="padding:0; margin:0;">After allowing for depreciation from age and wear, I would be willing to accept <b>$'.$reimbursements[0]->proof_purchase.'</b>
- as full settlement of this claim. I acknowledge that this listed amount is an offer made by me to be considered by ZIPS. Please note that once the claim is resolved, the item(s), for which you received compensation will remain in our possession.
 
-Customer is responsible to ensure this form is filled out completely and legibly. Store Credit will be added to Customer account or check is mailed to the home address listed above within ten (10) business days of final resolution. Copies of this document are not provided.</p>
-<table style="width: 100%; font-size:8px;" border="1" cellpadding="2">
-	<thead>
-		<tr>
-			<th colspan="6">
-				<h4 style="margin: 10px 0; font-size: 12px;">FOR OFFICE USE ONLY:</h4>
-			</th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr>
-			<th>Store #</th>
-			<td>'.$reimbursements[0]->store.'</td>
-			<th>Store Owner/Manager:</th>
-			<td>'.$reimbursements[0]->store_owner_manager.'</td>
-			<th>Receipts Attached:</th>
-			<td>'.(($reimbursements[0]->receipts_attached == 1)?"Yes":"No").'</td>
-		</tr>
-		<tr>
-			<th>Claim Type:</th>';
-			if($reimbursements[0]->claim_type == 1)
-			$html .= '<td>Missing Item</td>';
-		    else if($reimbursements[0]->claim_type == 2)
-			$html .= '<td>Missing Order</td>';
-		    else if($reimbursements[0]->claim_type == 3)
-			$html .= '<td>Damaged Order</td>';
-
-			if($reimbursements[0]->claim_type == 3)
-			{
-				$html .= '<th>Comments/Damage Description</th>
-					<td>'.$reimbursements[0]->damaged_desc.'</td>
-					<th>Item Returned to Customer</th>
-					<td>'.(($reimbursements[0]->item_return == 1)?"Yes":"No").'</td>';
-			} else {
-				$html .= '<th colspan="2">Item Returned to Customer</th>
-					<td colspan="2">'.(($reimbursements[0]->item_return == 1)?"Yes":"No").'</td>';
-			}
-
-			$html .= '
-				</tr>
-		<tr>
-			<th>Resolution</th>';
-
-			if($reimbursements[0]->resolution == "check")
-			$html .= '<td>Check</td>';
-		    else if($reimbursements[0]->resolution == "storeCredit")
-			$html .= '<td>Store Credit</td>';
-		    else if($reimbursements[0]->resolution == "checkstorecredit")
-			$html .= '<td>Check and Store Credit</td>';
-			else if($reimbursements[0]->resolution == "cash")
-			$html .= '<td>Cash</td>';
-			else
-			$html .= '<td>Select</td>';
-
-			if($reimbursements[0]->resolution == "cash" || $reimbursements[0]->resolution == "checkstorecredit") {
-			$html .= '
-				<th colspan="4">'.(($reimbursements[0]->resolution_check_pickup_mail == 1)?"Pick Up":"Mail").'</th>
-				<td colspan="4"></td>';
-			} else {
 				$html .= '
-				<th colspan="4"></th>
-				<td colspan="4"></td>';
-			}
-			$html .= '</tr>';
-
-			if($reimbursements[0]->resolution == "check") {
-				$html .= '<tr>
-					<th>Check Amount:</th>
-					<td>'.$reimbursements[0]->check_amount.'</td>
-					<th>Check Date:</th>
-					<td>'.$reimbursements[0]->credit_amount.'</td>
-					<th>Check#:</th>
-					<td>'.$reimbursements[0]->resolution_check.'</td>
-				</tr>';
-			} else if($reimbursements[0]->resolution == "storeCredit") {
-			$html .= '<tr>
-						<th>Credit Amount:</th>
-						<td>'.$reimbursements[0]->resolution_store_credit_amount.'</td>
-						<th>Store Credit Added Date:</th>
-						<td>'.$reimbursements[0]->resolution_store_credit_added.'</td>
-						<th>Store Credit Number:</th>
-						<td>'.$reimbursements[0]->resolution_store_credit_check_date.'</td>
-					</tr>';
-			} else if($reimbursements[0]->resolution == "checkstorecredit") {
-			$html .= '<tr>
-					<th>Check Amount:</th>
-					<td>'.$reimbursements[0]->resolution_check_store_credit_added_amount.'</td>
-					<th>Check Date:</th>
-					<td>'.$reimbursements[0]->resolution_check_store_credit_added.'</td>
-					<th>Check#:</th>
-					<td>'.$reimbursements[0]->resolution_check_store_credit_check.'</td>
-				</tr>
-					<tr>
-						<th>Credit Amount:</th>
-						<td>'.$reimbursements[0]->resolution_check_store_credit_check_credit_amount.'</td>
-						<th>Store Credit Added Date:</th>
-						<td>'.$reimbursements[0]->resolution_check_store_credit_check_date.'</td>
-						<th>Store Credit Number:</th>
-						<td>'.$reimbursements[0]->resolution_check_store_credit_check_credit_number.'</td>
 					</tr>
-					';
-			}
-			 else if($reimbursements[0]->resolution == "cash") {
-			$html .= '<tr>
-					<th>Check Amount:</th>
-					<td>'.$reimbursements[0]->resolution_cash_paid_amount.'</td>
-					<th>Check Date:</th>
-					<td>'.$reimbursements[0]->resolution_cash_paid.'</td>
-					<th>Check#:</th>
-					<td>'.$reimbursements[0]->resolution_cash_paid_date.'</td>
-				</tr>';
-			}
-		 $html .= '</tbody>
-	</table></body>';
+			<tr>
+				<th>Resolution</th>';
+
+				if($reimbursements[0]->resolution == "check")
+				$html .= '<td>Check</td>';
+				else if($reimbursements[0]->resolution == "storeCredit")
+				$html .= '<td>Store Credit</td>';
+				else if($reimbursements[0]->resolution == "checkstorecredit")
+				$html .= '<td>Check and Store Credit</td>';
+				else if($reimbursements[0]->resolution == "cash")
+				$html .= '<td>Cash</td>';
+				else
+				$html .= '<td>Select</td>';
+
+				if($reimbursements[0]->resolution == "cash" || $reimbursements[0]->resolution == "checkstorecredit") {
+				$html .= '
+					<th colspan="4">'.(($reimbursements[0]->resolution_check_pickup_mail == 1)?"Pick Up":"Mail").'</th>
+					<td colspan="4"></td>';
+				} else {
+					$html .= '
+					<th colspan="4"></th>
+					<td colspan="4"></td>';
+				}
+				$html .= '</tr>';
+
+				if($reimbursements[0]->resolution == "check") {
+					$html .= '<tr>
+						<th>Check Amount:</th>
+						<td>'.$reimbursements[0]->check_amount.'</td>
+						<th>Check Date:</th>
+						<td>'.$reimbursements[0]->credit_amount.'</td>
+						<th>Check#:</th>
+						<td>'.$reimbursements[0]->resolution_check.'</td>
+					</tr>';
+				} else if($reimbursements[0]->resolution == "storeCredit") {
+				$html .= '<tr>
+							<th>Credit Amount:</th>
+							<td>'.$reimbursements[0]->resolution_store_credit_amount.'</td>
+							<th>Store Credit Added Date:</th>
+							<td>'.$reimbursements[0]->resolution_store_credit_added.'</td>
+							<th>Store Credit Number:</th>
+							<td>'.$reimbursements[0]->resolution_store_credit_check_date.'</td>
+						</tr>';
+				} else if($reimbursements[0]->resolution == "checkstorecredit") {
+				$html .= '<tr>
+						<th>Check Amount:</th>
+						<td>'.$reimbursements[0]->resolution_check_store_credit_added_amount.'</td>
+						<th>Check Date:</th>
+						<td>'.$reimbursements[0]->resolution_check_store_credit_added.'</td>
+						<th>Check#:</th>
+						<td>'.$reimbursements[0]->resolution_check_store_credit_check.'</td>
+					</tr>
+						<tr>
+							<th>Credit Amount:</th>
+							<td>'.$reimbursements[0]->resolution_check_store_credit_check_credit_amount.'</td>
+							<th>Store Credit Added Date:</th>
+							<td>'.$reimbursements[0]->resolution_check_store_credit_check_date.'</td>
+							<th>Store Credit Number:</th>
+							<td>'.$reimbursements[0]->resolution_check_store_credit_check_credit_number.'</td>
+						</tr>
+						';
+				}
+				else if($reimbursements[0]->resolution == "cash") {
+				$html .= '<tr>
+						<th>Check Amount:</th>
+						<td>'.$reimbursements[0]->resolution_cash_paid_amount.'</td>
+						<th>Check Date:</th>
+						<td>'.$reimbursements[0]->resolution_cash_paid.'</td>
+						<th>Check#:</th>
+						<td>'.$reimbursements[0]->resolution_cash_paid_date.'</td>
+					</tr>';
+				}
+			$html .= '</tbody>
+		</table></body>';
 
 		PDF::SetTitle('Reimbursement');
 

@@ -18,7 +18,7 @@ class EmployeeController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->locations = Location::lists('location', 'id');
+        $this->locations = Location::pluck('location', 'id');
         $this->roles     = array('Owner' => 'Owner', 'Supervisor' => 'Supervisor', 'Employee' => 'Employee');
     }
 

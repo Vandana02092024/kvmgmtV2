@@ -32,7 +32,7 @@ class VendorController extends Controller
      */
     public function create()
     {
-        return view('vendors.create',compact('roles','locations'));
+        return view('vendors.create');
     }
 
     /**
@@ -44,7 +44,7 @@ class VendorController extends Controller
     public function store(VendorRequest $request)
     {
         Vendor::create($request->all());
-        return redirect()->route('vendors.index')->with('message','Vendor has been added successfully!');
+        return redirect()->route('vendor.index')->with('message','Vendor has been added successfully!');
     }
 
     /**

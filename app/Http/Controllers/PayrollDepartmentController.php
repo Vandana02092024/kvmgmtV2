@@ -17,7 +17,7 @@ class PayrollDepartmentController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->locations = Location::lists('location', 'id');
+        $this->locations = Location::pluck('location', 'id');
         $this->roles     = array('Owner' => 'Owner', 'Supervisor' => 'Supervisor', 'Employee' => 'Employee');
     }
 
@@ -33,7 +33,7 @@ class PayrollDepartmentController extends Controller
         $locations = $this->locations;
         $locationSelections = [];
         foreach ($payrolldepartments as $department) {
-            $locationSelections[$department->id] = PayrollDepartment_location::where('payrolldep_id', '=', $department->id)->lists('location')->toArray();
+            $locationSelections[$department->id] = PayrollDepartment_location::where('payrolldep_id', '=', $department->id)->pluck('location')->toArray();
         }
         $openAddModal = false;
         $openEditId = null;
@@ -103,12 +103,53 @@ class PayrollDepartmentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(PayrollDepartment $payrolldepartment)
-    {       
-        $data = $this->index()->getData();
-        $data['openEditId'] = $payrolldepartment->id;
-        return view('payrolldepartments.index', (array) $data);
+    // public function edit(PayrollDepartment $payrolldepartment)
+    // {       
+    //     $data = $this->index()->getData();
+    //     $data['openEditId'] = $payrolldepartment->id;
+    //     return view('payrolldepartments.index', (array) $data);
+    // }
+
+    
+   
+    public function edit($id)
+    {
+        // Get all departments for the listing.
+        $payrolldepartments = \DB::table('payroll_departments')
+            ->select('payroll_departments.*')
+            ->orderBy('sorting_order', 'asc')
+            ->get();
+
+        // Get available locations.
+        $locations = $this->locations;
+
+        // Get selected locations for each department.
+        $locationSelections = [];
+
+        foreach ($payrolldepartments as $department) {
+            $locationSelections[$department->id] =
+                PayrollDepartment_location::where(
+                    'payrolldep_id',
+                    $department->id
+                )->pluck('location')->toArray();
+        }
+
+        // Find the department being edited.
+        $payrolldepartment = PayrollDepartment::findOrFail($id);
+
+        // Tell the shared modal partial which modal to open.
+        $openAddModal = false;
+        $openEditId = $payrolldepartment->id;
+
+        return view('payrolldepartments.index', compact(
+            'payrolldepartments',
+            'locations',
+            'locationSelections',
+            'openAddModal',
+            'openEditId'
+        ));
     }
+
 
     /**
      * Update the specified resource in storage.
@@ -117,29 +158,71 @@ class PayrollDepartmentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, PayrollDepartment $payrolldepartment)
-    {
+    // public function update(Request $request, PayrollDepartment $payrolldepartment)
+    // {
         
 
+    //     $payrolldepartment->update([
+    //         'name' => $request['name'],
+	// 		'sorting_order' => $request['sorting_order']
+    //     ]);
+
+	// 	$locVal = (array) $request->input('location', []);
+	// 	if (count($locVal)) {
+	// 	    PayrollDepartment_location::where('payrolldep_id', '=', $payrolldepartment->id)->whereNotIn('location', $locVal)->delete();
+	// 	} else {
+	// 	    PayrollDepartment_location::where('payrolldep_id', '=', $payrolldepartment->id)->delete();
+	// 	}
+	// 	foreach ($locVal as $locValue) {
+	// 	    PayrollDepartment_location::firstOrCreate(['payrolldep_id' => $payrolldepartment->id, 'location' => $locValue]);
+	// 	}
+		
+		
+		
+	// 	return redirect()->route('payrolldepartment.index')->with('message','Department has been updated successfully!');
+    // }
+
+    
+    public function update(Request $request, $id)
+    {
+        // Find the department using the ID from the URL.
+        $payrolldepartment = PayrollDepartment::findOrFail($id);
+
+        // Update department details.
         $payrolldepartment->update([
-            'name' => $request['name'],
-			'sorting_order' => $request['sorting_order']
+            'name' => $request->input('name'),
+            'sorting_order' => $request->input('sorting_order'),
         ]);
 
-		$locVal = (array) $request->input('location', []);
-		if (count($locVal)) {
-		    PayrollDepartment_location::where('payrolldep_id', '=', $payrolldepartment->id)->whereNotIn('location', $locVal)->delete();
-		} else {
-		    PayrollDepartment_location::where('payrolldep_id', '=', $payrolldepartment->id)->delete();
-		}
-		foreach ($locVal as $locValue) {
-		    PayrollDepartment_location::firstOrCreate(['payrolldep_id' => $payrolldepartment->id, 'location' => $locValue]);
-		}
-		
-		
-		
-		return redirect()->route('payrolldepartment.index')->with('message','Department has been updated successfully!');
+        // Get selected locations.
+        $locVal = (array) $request->input('location', []);
+
+        // Remove existing locations that are no longer selected.
+        if (!empty($locVal)) {
+            PayrollDepartment_location::where(
+                'payrolldep_id',
+                $payrolldepartment->id
+            )->whereNotIn('location', $locVal)->delete();
+        } else {
+            PayrollDepartment_location::where(
+                'payrolldep_id',
+                $payrolldepartment->id
+            )->delete();
+        }
+
+        // Add selected locations if they do not already exist.
+        foreach ($locVal as $locValue) {
+            PayrollDepartment_location::firstOrCreate([
+                'payrolldep_id' => $payrolldepartment->id,
+                'location' => $locValue,
+            ]);
+        }
+
+        return redirect()
+            ->route('payrolldepartment.index')
+            ->with('message', 'Department has been updated successfully!');
     }
+
 
 	
 	public function payrolldepartmentarchive($id , Request $request)

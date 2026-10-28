@@ -22,7 +22,7 @@
 	            </div>
 	        @endif
 
-			{!! Form::model($seller, array('route' => ['seller.update', $seller->id], 'method' => 'PUT', 'class' => 'kv-vendor-form')) !!}
+			{!! Form::model($seller, array('route' => ['seller.update', 'seller' => $seller->id], 'method' => 'PUT', 'class' => 'kv-vendor-form')) !!}
         	{{ csrf_field() }}
 			<div class="col-sm-5">
 				<div class="widget kv-vendor-details">

@@ -51,7 +51,7 @@
 			                                        
 			                                        |   
 													
-													{{ link_to_route('department.depArchive',$dep->status == 1 ?'Archive' :'Unarchive',['dep' => $dep->id, 'st' => $dep->status]) }}
+													{{ link_to_route('department.depArchive', $dep->status == 1 ? 'Archive' : 'Unarchive', ['id' => $dep->id, 'st' => $dep->status]) }}
 													
 													
 													

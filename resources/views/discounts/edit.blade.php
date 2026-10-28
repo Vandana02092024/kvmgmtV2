@@ -24,7 +24,7 @@
             <div class="col-sm-8 col-sm-offset-2">
                 <div class="widget">
                     <div class="">
-                        {!! Form::model($discount, array('route' => ['discount.update', $discount->id], 'method' => 'PUT')) !!}
+                        {!! Form::model($discount, array('route' => ['discount.update', 'discount' => $discount->id], 'method' => 'PUT')) !!}
                         {{ csrf_field() }}
 
 

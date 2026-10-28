@@ -19,7 +19,7 @@ class UserController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->locations = Location::lists('location', 'id');
+        $this->locations = Location::pluck('location', 'id');
         $this->roles     = array('Owner' => 'Owner', 'Supervisor' => 'Supervisor', 'Employee' => 'Employee');
     }
 
@@ -130,15 +130,49 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(User $user)
+    // public function edit(User $user)
+    // {
+	// 	$roles     = $this->roles;
+    //     $locations = $this->locations;
+	// 	$module_data = explode(',',$user['module_access']);
+    //     $selLocations = User_location::where('user', '=', $user->id)->pluck('location', 'id')->toArray();
+	// 	$selEmailLocations = User_email_location::where('user', '=', $user->id)->pluck('location', 'id')->toArray();		
+    //     return view('users.edit',compact(['user','roles','locations','selLocations','selEmailLocations','module_data']));
+    // }
+
+    
+    
+    public function edit($id)
     {
-		$roles     = $this->roles;
+        $user = User::findOrFail($id);
+
+        $roles = $this->roles;
         $locations = $this->locations;
-		$module_data = explode(',',$user['module_access']);
-        $selLocations = User_location::where('user', '=', $user->id)->lists('location', 'id')->toArray();
-		$selEmailLocations = User_email_location::where('user', '=', $user->id)->lists('location', 'id')->toArray();		
-        return view('users.edit',compact(['user','roles','locations','selLocations','selEmailLocations','module_data']));
+
+        $module_data = array_filter(
+            explode(',', (string) $user->module_access),
+            'strlen'
+        );
+
+        $selLocations = User_location::where('user', $user->id)
+            ->pluck('location', 'id')
+            ->toArray();
+
+        $selEmailLocations = User_email_location::where('user', $user->id)
+            ->pluck('location', 'id')
+            ->toArray();
+
+        return view('users.edit', compact(
+            'user',
+            'roles',
+            'locations',
+            'selLocations',
+            'selEmailLocations',
+            'module_data'
+        ));
     }
+
+
 
     /**
      * Update the specified resource in storage.
@@ -147,8 +181,10 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    // public function update(Request $request, User $user)
+    public function update(Request $request, $id)
     {
+        $user = User::findOrFail($id);
         if($request['npassword'] != ''){
             $pass = bcrypt($request['npassword']);
         }else{

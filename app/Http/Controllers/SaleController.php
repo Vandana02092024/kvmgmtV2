@@ -18,7 +18,7 @@ class SaleController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->locations = Location::lists('location', 'id');
+        $this->locations = Location::pluck('location', 'id');
         $this->roles     = array('Owner' => 'Owner', 'Supervisor' => 'Supervisor', 'Employee' => 'Employee');
     }
 
@@ -115,30 +115,74 @@ class SaleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Sale $sale)
-    {
+    // public function update(Request $request, Sale $sale)
+    // {
         
 
-        $sale->update([
-            'name' => $request['name'],
-			'sorting_order' => $request['sorting_order'],
+    //     $sale->update([
+    //         'name' => $request['name'],
+	// 		'sorting_order' => $request['sorting_order'],
+    //     ]);
+
+	// 	$locVal = $request->input('location', []);
+	// 	if (!is_array($locVal)) $locVal = [$locVal];
+	// 	$existingLocations = [];
+	// 	foreach (Sale_location::where('sale', $sale->id)->get(['location']) as $link) {
+	// 		$existingLocations[] = (string) $link->location;
+	// 	}
+	// 	foreach (array_unique($locVal) as $locValue) {
+	// 		if ($locValue !== '' && !in_array((string) $locValue, $existingLocations, true)) {
+	// 			Sale_location::create(['sale' => $sale->id, 'location' => $locValue]);
+	// 		}
+	// 	}
+		
+		
+		
+	// 	return redirect()->route('sale.index')->with('message','Sale has been updated successfully!');
+    // }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'sorting_order' => 'nullable|integer',
+            'location' => 'nullable|array',
+            'location.*' => 'integer|exists:locations,id',
         ]);
 
-		$locVal = $request->input('location', []);
-		if (!is_array($locVal)) $locVal = [$locVal];
-		$existingLocations = [];
-		foreach (Sale_location::where('sale', $sale->id)->get(['location']) as $link) {
-			$existingLocations[] = (string) $link->location;
-		}
-		foreach (array_unique($locVal) as $locValue) {
-			if ($locValue !== '' && !in_array((string) $locValue, $existingLocations, true)) {
-				Sale_location::create(['sale' => $sale->id, 'location' => $locValue]);
-			}
-		}
-		
-		
-		
-		return redirect()->route('sale.index')->with('message','Sale has been updated successfully!');
+        $sale = Sale::findOrFail($id);
+
+        $sale->name = $request->input('name');
+        $sale->sorting_order = $request->input('sorting_order');
+        $sale->save();
+
+        $locVal = $request->input('location', []);
+
+        if (!is_array($locVal)) {
+            $locVal = [$locVal];
+        }
+
+        $locVal = array_values(array_unique(array_filter($locVal, function ($value) {
+            return $value !== null && $value !== '';
+        })));
+
+        foreach ($locVal as $locValue) {
+            $saleLocation = new Sale_location();
+            $saleLocation->sale = $sale->id;
+            $saleLocation->location = $locValue;
+            $saleLocation->save();
+        }
+
+        $query = Sale_location::where('sale', $sale->id);
+
+        if (!empty($locVal)) {
+            $query->whereNotIn('location', $locVal);
+        }
+
+        $query->delete();
+
+        return redirect()->route('sale.index')
+            ->with('message', 'Sale has been updated successfully!');
     }
 
 	

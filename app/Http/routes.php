@@ -19,7 +19,17 @@
 
 // Route::get('/home', 'HomeController@index');
 
-Route::auth();
+use App\Http\Controllers\UserController;
+
+Route::get('login', 'Auth\\AuthController@showLoginForm')->name('login');
+Route::post('login', 'Auth\\AuthController@login');
+Route::post('logout', 'Auth\\AuthController@logout')->name('logout');
+Route::get('register', 'Auth\\AuthController@showRegistrationForm')->name('register');
+Route::post('register', 'Auth\\AuthController@register');
+Route::get('password/reset', 'Auth\\PasswordController@showLinkRequestForm')->name('password.request');
+Route::post('password/email', 'Auth\\PasswordController@sendResetLinkEmail')->name('password.email');
+Route::get('password/reset/{token}', 'Auth\\PasswordController@showResetForm')->name('password.reset');
+Route::post('password/reset', 'Auth\\PasswordController@reset')->name('password.update');
 Route::get('/', function () {
 	return view('auth.login');
 });
@@ -76,8 +86,14 @@ Route::post('uploads/daily-entry-pdf', 'DocumentUploadController@dailyEntryPdf')
 Route::post('uploads/labor-report-excel', 'DocumentUploadController@laborReportExcel');
 Route::get('setlocation', 'SetlocationController@index')->name('setlocation');
 Route::resource('setlocation', 'SetlocationController');
-Route::resource('user', 'UserController');
+// Route::resource('user', 'UserController');
+
+Route::resource('user', UserController::class);
 Route::resource('vendor', 'VendorController');
+Route::resource('department', 'DepartmentController');
+Route::resource('employee', 'EmployeeController');
+Route::resource('payment', 'PaymentController');
+Route::resource('subtraction', 'SubtractionController');
 Route::resource('seller', 'SellerController');
 Route::resource('product', 'ProductController');
 Route::resource('category', 'CategoryController');
@@ -122,6 +138,10 @@ Route::post('update-product-price', ['as' => 'update-product-price', 'uses' => '
 
 Route::get('archive/{id}', ['as' => 'location.archive', 'uses' => 'LocationController@archive']);
 Route::get('userarchive/{id}', ['as' => 'user.archive', 'uses' => 'UserController@userarchive']);
+Route::get('departmentarchive/{id}', ['as' => 'department.depArchive', 'uses' => 'DepartmentController@depArchive']);
+Route::get('employeearchive/{id}', ['as' => 'employee.empArchive', 'uses' => 'EmployeeController@empArchive']);
+Route::get('paymentarchive/{id}', ['as' => 'payment.payArchive', 'uses' => 'PaymentController@payArchive']);
+Route::get('subtractionarchive/{id}', ['as' => 'subtraction.subtArchive', 'uses' => 'SubtractionController@subtArchive']);
 
 Route::any('asign_loaction/{id?}', ['as' => 'location.asign_loaction', 'uses' => 'LocationController@asign_loaction']);
 Route::post('asign_loaction_save', ['as' => 'location.asign_loaction_save', 'uses' => 'LocationController@asign_loaction_save']);
@@ -212,7 +232,7 @@ Route::post('updateEmp', ['as' => 'updateEmp', 'uses' => 'LaboursectionControlle
 Route::get('labor_report/{id}', ['as' => 'labor_report', 'uses' => 'LaboursectionController@labor_report']);
 
 
-Route::post('removeSelectedDepartment', ['as' => 'removeSelectedDepartment', 'uses' => 'LaboursectionController@removeSelectedDepartment']);
+Route::post('removeSelectedDepartment', ['as' => 'removeSelectedDepartment.submit', 'uses' => 'LaboursectionController@removeSelectedDepartment']);
 
 Route::post('checkDataFrCode', ['as' => 'checkDataFrCode', 'uses' => 'OrderController@checkDataFrCode']);
 

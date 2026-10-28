@@ -156,7 +156,16 @@
                     <span><strong>{{ Auth::user()->name }}</strong><small><i class="fa fa-shield"></i> {{ Auth::user()->role }}</small></span>
                     <i class="fa fa-chevron-down kv-caret"></i>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="kvUserMenu"><li><a href="{{ url('/logout') }}"><i class="fa fa-sign-out"></i> Logout</a></li></ul>
+                <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="kvUserMenu">
+                    <li>
+                        <form action="{{ route('logout') }}" method="POST" style="margin:0;">
+                            @csrf
+                            <button type="submit" style="background:none;border:0;color:#17263b;display:block;padding:3px 20px;text-align:left;width:100%;">
+                                <i class="fa fa-sign-out"></i> Logout
+                            </button>
+                        </form>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>

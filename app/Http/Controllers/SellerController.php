@@ -23,21 +23,44 @@ class SellerController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {	
-		$days = $this->days;
-        // $sellers = seller::all();
+    // public function index()
+    // {	
+	// 	$days = $this->days;
+    //     // $sellers = seller::all();
 		
-		$location = Session::get('location_id');
-		 $sellers = \DB::table("sellers")
-		  ->select("sellers.*",
-				  \DB::raw("(SELECT delivery_day FROM seller_delivery_days
-						  WHERE location_id = $location and seller_id = sellers.id
-						) as seller_delivery_days"))
-		->get();
+	// 	$location = Session::get('location_id');
+	// 	 $sellers = \DB::table("sellers")
+	// 	  ->select("sellers.*",
+	// 			  \DB::raw("(SELECT delivery_day FROM seller_delivery_days
+	// 					  WHERE location_id = $location and seller_id = sellers.id
+	// 					) as seller_delivery_days"))
+	// 	->get();
 		  
-		return view('sellers.index', compact('sellers','days'));
+	// 	return view('sellers.index', compact('sellers','days'));
+    // }
+
+    
+    public function index()
+    {
+        $days = $this->days;
+
+        $location = Session::get('location_id');
+
+       $sellers = \DB::table('sellers')
+        ->leftJoin('seller_delivery_days', function ($join) use ($location) {
+            $join->on('seller_delivery_days.seller_id', '=', 'sellers.id')
+                ->where('seller_delivery_days.location_id', '=', $location);
+        })
+        ->select(
+            'sellers.*',
+            \DB::raw('GROUP_CONCAT(DISTINCT seller_delivery_days.delivery_day ORDER BY seller_delivery_days.delivery_day SEPARATOR ",") as seller_delivery_days')
+        )
+        ->groupBy('sellers.id')
+        ->get();
+
+        return view('sellers.index', compact('sellers', 'days'));
     }
+
 
     /**
      * Show the form for creating a new resource.

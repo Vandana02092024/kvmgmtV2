@@ -27,7 +27,7 @@
 			<div class="col-sm-8">
 				<div class="widget">
 					<div class="widget-content">
-						{!! Form::model($subtraction, array('route' => ['subtraction.update', $subtraction->id], 'method' => 'PUT')) !!}
+						{!! Form::model($subtraction, array('route' => ['subtraction.update', 'subtraction' => $subtraction->id], 'method' => 'PUT')) !!}
         				{{ csrf_field() }}
 							<div class="widget-content">
 

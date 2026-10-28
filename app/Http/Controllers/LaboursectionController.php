@@ -37,8 +37,8 @@ class LaboursectionController extends Controller
 	public function __construct()
 	{
 		$this->middleware('auth');
-		$this->locations 	= Location::lists('location', 'id');
-		$this->departments 	= PayrollDepartment::lists('name', 'id');
+		$this->locations 	= Location::pluck('location', 'id');
+		$this->departments 	= PayrollDepartment::pluck('name', 'id');
 		$this->roles 		= array('Owner' => 'Owner', 'Supervisor' => 'Supervisor', 'Employee' => 'Employee');
 	}
 
@@ -112,12 +112,31 @@ class LaboursectionController extends Controller
 	// CREATE RECORDS //
 		public function create()
 		{
+			// $locationId = Session::get('location_id');
+
+			// $queryData  = DB::table('locations')->select('startdate', 'rate')->where('status', '=', 1)->where('id', '=', $locationId)->first();
+
+			// $sDateStore = $queryData->startdate;
+			// $default_rate = $queryData->rate;
 			$locationId = Session::get('location_id');
 
-			$queryData  = DB::table('locations')->select('startdate', 'rate')->where('status', '=', 1)->where('id', '=', $locationId)->first();
+			$queryData = DB::table('locations')
+				->select('startdate', 'rate')
+				->where('id', '=', $locationId)
+				->first();
+
+			if (!$queryData) {
+				return redirect('/laboursection')
+					->with('error', 'Selected location was not found. Please select a valid location.');
+			}
+
+			if (empty($queryData->startdate)) {
+				return redirect('/laboursection')
+					->with('error', 'Start date is missing for the selected location.');
+			}
 
 			$sDateStore = $queryData->startdate;
-			$default_rate = $queryData->rate;
+			$default_rate = $queryData->rate ?? 0;
 			$currDate 	= $todayDate = date('Y-m-d');
 
 			if(Session::get('checkDateType') == 1)
@@ -292,8 +311,8 @@ class LaboursectionController extends Controller
 
 					if(is_null($laborHeader))
 					{
-						Session::set('checkDateType', 1);
-						Session::set('checkDateTime', $stdate);
+						Session::put('checkDateType', 1);
+						Session::put('checkDateTime', $stdate);
 						return redirect()->action('LaboursectionController@create');
 					}else{
 						return redirect()->action(
@@ -333,7 +352,7 @@ class LaboursectionController extends Controller
 							if (($key = array_search($add['payrollemp_id'], $hideEmp)) !== false) {
 								unset($hideEmp[$key]);
 								// echo "<pre>"; print_r($hideEmp); exit();
-								Session::set('hideEmp', $hideEmp);
+								Session::put('hideEmp', $hideEmp);
 							}
 						}
 					}
@@ -420,7 +439,7 @@ class LaboursectionController extends Controller
 			}else
 				$hideEmp = array($request['emp']);
 
-			Session::set('hideEmp', $hideEmp);
+			Session::put('hideEmp', $hideEmp);
 
 			return redirect()->route('laboursection.create');
 
@@ -571,10 +590,10 @@ class LaboursectionController extends Controller
 			$headerid  		= $request->headerid;
 
 			$empData 		= PayrollEmployee::where('id', '=', $emp_id)->get()->first();
-			$departments 	= PayrollDepartment::leftJoin('payroll_department_locations', 'payroll_department_locations.payrolldep_id', '=', 'payroll_departments.id')->where('payroll_department_locations.location', '=', $locationId)->lists('payroll_departments.name', 'payroll_departments.id'); // $this->departments;
-			$selDepartments = PayrollEmployee_department::where('payrollemp_id', '=', $empData->id)->lists('payrollcat_depid', 'id')->toArray();
+			$departments 	= PayrollDepartment::leftJoin('payroll_department_locations', 'payroll_department_locations.payrolldep_id', '=', 'payroll_departments.id')->where('payroll_department_locations.location', '=', $locationId)->pluck('payroll_departments.name', 'payroll_departments.id'); // $this->departments;
+			$selDepartments = PayrollEmployee_department::where('payrollemp_id', '=', $empData->id)->pluck('payrollcat_depid', 'id')->toArray();
 			$locations 		= $this->locations;
-			$sellocation 	= PayrollEmployee_location::where('payrollemp_id', '=', $empData->id)->lists('payrollcat_depid', 'id')->toArray();
+			$sellocation 	= PayrollEmployee_location::where('payrollemp_id', '=', $empData->id)->pluck('payrollcat_depid', 'id')->toArray();
 			$view 	 		= view("laboursections.edit-employee-box", compact('empData','departments','selDepartments','locations','sellocation', 'headerid'))->render();
 
 			return response()->json(['html' => $view]);
@@ -738,19 +757,50 @@ class LaboursectionController extends Controller
     	return view('laboursections.history', compact('track_emp'));
     }
 
-    public function labor_report($weeknum)
-    {
-    	$locationId = Session::get('location_id');
-    	$queryData  = DB::table('locations')->select('startdate')->where('status', '=', 1)->where('id', '=', $locationId)->first();
+    // public function labor_report($weeknum)
+    // {
+    // 	$locationId = Session::get('location_id');
+    // 	$queryData  = DB::table('locations')->select('startdate')->where('status', '=', 1)->where('id', '=', $locationId)->first();
+	// 	$sDateStore = $queryData->startdate;
+
+	// 	$stdate = $this->add_weeks($sDateStore, $weeknum);
+
+    // 	Session::put('checkDateType', 1);
+
+	// 	Session::put('checkDateTime', $stdate);
+	// 	return redirect()->action('LaboursectionController@create');
+    // }
+
+	
+	public function labor_report($weeknum)
+	{
+		$locationId = Session::get('location_id');
+
+		$queryData = DB::table('locations')
+			->select('startdate')
+			->where('id', $locationId)
+			->where('status', '=', '1')
+			->first();
+
+		if (!$queryData || empty($queryData->startdate)) {
+			return response(
+				'Labor Report cannot open: valid location start date not found.',
+				422
+			);
+		}
+
 		$sDateStore = $queryData->startdate;
 
-		$stdate = $this->add_weeks($sDateStore, $weeknum);
+		$stdate = $this->add_weeks($sDateStore, (int) $weeknum);
 
-    	Session::set('checkDateType', 1);
+		Session::put('checkDateType', 1);
+		Session::put('checkDateTime', $stdate);
 
-		Session::set('checkDateTime', $stdate);
-		return redirect()->action('LaboursectionController@create');
-    }
+		return redirect()->action([
+			\App\Http\Controllers\LaboursectionController::class,
+			'create'
+		]);
+	}
 
 	function getWeekRangeNew($week, $startDate) {
 	

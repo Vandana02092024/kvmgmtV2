@@ -21,7 +21,7 @@ class Customer_serviceController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->users = User::where('status', '=', 1)->lists('name', 'id');   
+        $this->users = User::where('status', '=', 1)->pluck('name', 'id');   
         $this->users->prepend('- Select User -', '');
     }
 
@@ -53,7 +53,7 @@ class Customer_serviceController extends Controller
 							//->where('customer_servicefollows.followup_by', '=', Auth::user()->id)
 							->get();
         }
-		$locationCode = DB::table('locations')->select('location_code')->where('id', '=', Session::get('location_id'))->lists('location_code');
+		$locationCode = DB::table('locations')->select('location_code')->where('id', '=', Session::get('location_id'))->pluck('location_code');
 		
         return view('customer_services.index', compact('services','locationCode'));
     }
@@ -65,11 +65,11 @@ class Customer_serviceController extends Controller
      */
     public function create()
     {
-        // $reportIds = Customer_service::select(DB::row('CONCAT(`RPT_`," ",`id`) as reportid'),'id')->lists('reportid', 'id');
-        //$reportIds  = Customer_problem::select('id', DB::raw('CONCAT("RPT_", id) AS reportid'))->orderby('id')->lists('reportid', 'id');
+        // $reportIds = Customer_service::select(DB::row('CONCAT(`RPT_`," ",`id`) as reportid'),'id')->pluck('reportid', 'id');
+        //$reportIds  = Customer_problem::select('id', DB::raw('CONCAT("RPT_", id) AS reportid'))->orderby('id')->pluck('reportid', 'id');
 		
 		$reportIds  = Customer_problem::leftJoin('locations', 'locations.id', '=', 'customer_problems.location')
-            ->select('customer_problems.id','customer_problems.customer_name','customer_problems.customer_last_name','customer_problems.created_at','customer_problems.location','locations.location_code', DB::raw('CONCAT(if(customer_problems.customer_last_name!="",if(customer_problems.customer_name!="",CONCAT(customer_problems.customer_last_name," , "),CONCAT(customer_problems.customer_last_name," - ")),""),if(customer_problems.customer_name!="",CONCAT(customer_problems.customer_name," - "),""),CONCAT(DATE(customer_problems.created_at)),CONCAT("-PR-"),CONCAT(locations.location_code),CONCAT("-"),CONCAT(LPAD(customer_problems.id,4,"0"))) AS reportid'))->orderby('reportid')->lists('reportid', 'customer_problems.id');
+            ->select('customer_problems.id','customer_problems.customer_name','customer_problems.customer_last_name','customer_problems.created_at','customer_problems.location','locations.location_code', DB::raw('CONCAT(if(customer_problems.customer_last_name!="",if(customer_problems.customer_name!="",CONCAT(customer_problems.customer_last_name," , "),CONCAT(customer_problems.customer_last_name," - ")),""),if(customer_problems.customer_name!="",CONCAT(customer_problems.customer_name," - "),""),CONCAT(DATE(customer_problems.created_at)),CONCAT("-PR-"),CONCAT(locations.location_code),CONCAT("-"),CONCAT(LPAD(customer_problems.id,4,"0"))) AS reportid'))->orderby('reportid')->pluck('reportid', 'customer_problems.id');
 			
 		$reportIds->prepend('- Select Report ID -', '');
 		
@@ -78,7 +78,7 @@ class Customer_serviceController extends Controller
             ->leftJoin('user_locations', 'users.id', '=', 'user_locations.user')
             ->where('users.status', '=', 1)
 			->where('user_locations.location', '=', Session::get('location_id'))
-			->lists('users.name', 'users.id');
+			->pluck('users.name', 'users.id');
 		
 		return view('customer_services.create', compact('reportIds', 'users'));
     }
@@ -176,15 +176,15 @@ class Customer_serviceController extends Controller
 		print_r($service->id);
 		exit;  */
 	
-       // $reportIds  = Customer_problem::select('id', DB::raw('CONCAT("RPT_", id) AS reportid'))->orderby('id')->lists('reportid', 'id');
+       // $reportIds  = Customer_problem::select('id', DB::raw('CONCAT("RPT_", id) AS reportid'))->orderby('id')->pluck('reportid', 'id');
 	   
-	   // $reportIds  = Customer_problem::select('id','customer_name','customer_last_name', DB::raw('CONCAT(customer_last_name,","," ",customer_name,"-",id) AS reportid'))->orderby('reportid')->lists('reportid', 'id');
+	   // $reportIds  = Customer_problem::select('id','customer_name','customer_last_name', DB::raw('CONCAT(customer_last_name,","," ",customer_name,"-",id) AS reportid'))->orderby('reportid')->pluck('reportid', 'id');
 	   
 	   
        // $reportIds->prepend('- Select Report ID -', '');
 
 		$reportIds  = Customer_problem::leftJoin('locations', 'locations.id', '=', 'customer_problems.location')
-            ->select('customer_problems.id','customer_problems.customer_name','customer_problems.customer_last_name','customer_problems.created_at','customer_problems.location','locations.location_code', DB::raw('CONCAT(if(customer_problems.customer_last_name!="",if(customer_problems.customer_name!="",CONCAT(customer_problems.customer_last_name," , "),CONCAT(customer_problems.customer_last_name," - ")),""),if(customer_problems.customer_name!="",CONCAT(customer_problems.customer_name," - "),""),CONCAT(DATE(customer_problems.created_at)),CONCAT("-PR-"),CONCAT(locations.location_code),CONCAT("-"),CONCAT(LPAD(customer_problems.id,4,"0"))) AS reportid'))->orderby('reportid')->lists('reportid', 'customer_problems.id');
+            ->select('customer_problems.id','customer_problems.customer_name','customer_problems.customer_last_name','customer_problems.created_at','customer_problems.location','locations.location_code', DB::raw('CONCAT(if(customer_problems.customer_last_name!="",if(customer_problems.customer_name!="",CONCAT(customer_problems.customer_last_name," , "),CONCAT(customer_problems.customer_last_name," - ")),""),if(customer_problems.customer_name!="",CONCAT(customer_problems.customer_name," - "),""),CONCAT(DATE(customer_problems.created_at)),CONCAT("-PR-"),CONCAT(locations.location_code),CONCAT("-"),CONCAT(LPAD(customer_problems.id,4,"0"))) AS reportid'))->orderby('reportid')->pluck('reportid', 'customer_problems.id');
 			
 			/* echo "<pre>";
 			print_r($reportIds);
@@ -227,7 +227,7 @@ class Customer_serviceController extends Controller
             ->leftJoin('user_locations', 'users.id', '=', 'user_locations.user')
             ->where('users.status', '=', 1)
 			->where('user_locations.location', '=', Session::get('location_id'))
-			->lists('users.name', 'users.id');
+			->pluck('users.name', 'users.id');
 			
         return view('customer_services.edit', compact('service', 'users', 'created_by', 'reportIds','servicefollow','viewData','history'));
     }
@@ -303,9 +303,9 @@ class Customer_serviceController extends Controller
 					->where('customer_servicefollows.followup_by', '=', Auth::user()->id)
 					->where('customer_servicefollows.created_at', '>=', "'".date('Y-m-d')."'")
 					->select(DB::raw("count(customer_services.id) as total_new_csr"), 'customer_services.id as id')
-					->lists('total_new_csr');
+					->pluck('total_new_csr');
 		
-		Session::set('total_new_csr', $services[0]);
+		Session::put('total_new_csr', $services[0]);
 		
 		/* $all_new_csr_data = DB::table('customer_services')		            
 					->leftJoin('customer_servicefollows', 'customer_servicefollows.customer_service_id', '=', 'customer_services.id')
@@ -317,7 +317,7 @@ class Customer_serviceController extends Controller
 					->select('customer_services.customer_name as customer_name', 'customer_services.id as id', 'customer_servicefollows.followup_date', 'customer_servicefollows.followup_time')
 					->get();
 		
-		Session::set('all_new_csr_data', $all_new_csr_data); */
+		Session::put('all_new_csr_data', $all_new_csr_data); */
 		
 		$all_new_csr_data = DB::table('customer_services')		            
 					->leftJoin('customer_servicefollows', 'customer_servicefollows.customer_service_id', '=', 'customer_services.id')
@@ -331,7 +331,7 @@ class Customer_serviceController extends Controller
 					->get();
 		
 		
-		Session::set('all_new_csr_data', $all_new_csr_data);
+		Session::put('all_new_csr_data', $all_new_csr_data);
 		
 		
         return redirect()->route('service.index')->with('message','CSR has been updated successfully!');

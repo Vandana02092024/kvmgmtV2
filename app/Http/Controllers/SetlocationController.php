@@ -20,13 +20,13 @@ class SetlocationController extends Controller
     {
 		if(Auth::user()->status == 0) {
 
-			 $locations = DB::table('user_locations')
-            ->leftJoin('locations', 'locations.id', '=', 'user_locations.location')
-            ->where('user_locations.user', '=', Auth::user()->id)
-			->where('locations.status', '=', 1)
-            ->lists('locations.location', 'locations.id');
+		$locations = DB::table('user_locations')
+			->join('locations', 'locations.id', '=', 'user_locations.location')
+			->where('user_locations.user', '=', Auth::user()->id)
+			->where('locations.status', '=', '1')
+			->pluck('locations.location', 'locations.id');
 
-			 Session::set('all_locations', $locations);
+			 Session::put('all_locations', $locations);
 
 			Auth::logout();
 			return \Redirect::to('/');
@@ -34,21 +34,20 @@ class SetlocationController extends Controller
         $locations = DB::table('user_locations')
             ->leftJoin('locations', 'locations.id', '=', 'user_locations.location')
             ->where('user_locations.user', '=', Auth::user()->id)
-			->where('locations.status', '=', 1)
-            ->lists('locations.location', 'locations.id');
+			->where('locations.status', '=', '1')
+            ->pluck('locations.location', 'locations.id');
 
-        Session::set('all_locations', $locations);
+        Session::put('all_locations', $locations);
 
-		if (!empty($locations)) {
+        if ($locations->isNotEmpty()) {
 			$location = Session::get('location_id');
 
-			if (!isset($locations[$location])) {
+			if (!$locations->has($location)) {
 				$location = Auth::user()->location;
 			}
 
-			if (!isset($locations[$location])) {
-				reset($locations);
-				$location = key($locations);
+			if (!$locations->has($location)) {
+				$location = $locations->keys()->first();
 			}
 
 			return $this->activateLocation($location);
@@ -76,12 +75,11 @@ class SetlocationController extends Controller
     public function store(Request $request)
     {
         $location = $request->get('location');
-		$allowed = DB::table('user_locations')
-			->join('locations', 'locations.id', '=', 'user_locations.location')
+		$allowedLocations = DB::table('locations')
+			->join('user_locations', 'user_locations.location', '=', 'locations.id')
 			->where('user_locations.user', Auth::user()->id)
-			->where('locations.status', 1)
-			->where('locations.id', $location)
-			->exists();
+			->where('locations.status', '1');
+		$allowed = $allowedLocations->where('locations.id', $location)->exists();
 		if (!$allowed) {
 			return \Redirect::back()->withErrors(['location' => 'Select a location assigned to your account.']);
 		}
@@ -100,7 +98,7 @@ class SetlocationController extends Controller
 	 */
 	private function activateLocation($location)
 	{
-        Session::set('location_id', $location);
+        Session::put('location_id', $location);
 
 		$getVendor     = $location.".vendor_id";
 		$svCategoryId  = $location.".category_id";
@@ -111,16 +109,20 @@ class SetlocationController extends Controller
 		//Session::forget($getVendor);
 		//Session::forget($svCategoryId);
 
-		$locationName = DB::table('locations')
-		->select('locations.*')
-		->where('id', '=', $location)
-		->get();
+		$locationDetails = DB::table('locations')
+			->where('id', '=', $location)
+			->first();
 
+		if (!$locationDetails) {
+			Session::forget('location_id');
+			return \Redirect::route('setlocation.index')->withErrors([
+				'location' => 'The selected location is no longer available.',
+			]);
+		}
 
-
-		Session::set('locationName', $locationName[0]->location);
-		Session::set('locationCode', $locationName[0]->location_code);
-		Session::set('entityName', $locationName[0]->entity_name);
+		Session::put('locationName', $locationDetails->location);
+		Session::put('locationCode', $locationDetails->location_code);
+		Session::put('entityName', $locationDetails->entity_name);
 
 		$services = DB::table('customer_services')
 					->leftJoin('customer_servicefollows', 'customer_servicefollows.customer_service_id', '=', 'customer_services.id')
@@ -130,9 +132,9 @@ class SetlocationController extends Controller
 					->where('customer_servicefollows.followup_by', '=', Auth::user()->id)
 					->where('customer_servicefollows.created_at', '>=', "'".date('Y-m-d')."'")
 					->select(DB::raw("count(customer_services.id) as total_new_csr"), 'customer_services.id as id')
-					->lists('total_new_csr');
+					->pluck('total_new_csr');
 
-		Session::set('total_new_csr', $services[0]);
+		Session::put('total_new_csr', $services[0]);
 
 		$all_new_csr_data = DB::table('customer_services')
 					->leftJoin('customer_servicefollows', 'customer_servicefollows.customer_service_id', '=', 'customer_services.id')
@@ -145,7 +147,7 @@ class SetlocationController extends Controller
 					->select('customer_services.customer_name as customer_name', 'customer_services.id as id', 'customer_servicefollows.followup_date', 'customer_servicefollows.followup_time','customer_servicefollows.location','locations.location as loc_name')
 					->get();
 
-		Session::set('all_new_csr_data', $all_new_csr_data);
+		Session::put('all_new_csr_data', $all_new_csr_data);
 
 		// return redirect()->route('user.index');
         return \Redirect::to('dashboard');
@@ -154,7 +156,7 @@ class SetlocationController extends Controller
     // public function changeSessionValue(Request $request)
     // {
     //     $location = $request->get('location');
-    //     Session::set('location_id', $location);
+    //     Session::put('location_id', $location);
     //     echo Session::get('location_id');
 
     //     // $location = $request->get('location');

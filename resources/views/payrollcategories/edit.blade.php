@@ -25,7 +25,7 @@
             <div class="col-sm-8 col-sm-offset-2">
                 <div class="widget">
                     <div class="">
-                        {!! Form::model($payrollcategory, array('route' => ['payrollcategory.update', $payrollcategory->id], 'method' => 'PUT')) !!}
+                        {!! Form::model($payrollcategory, array('route' => ['payrollcategory.update', 'payrollcategory' => $payrollcategory->id], 'method' => 'PUT')) !!}
                         {{ csrf_field() }}
 
 

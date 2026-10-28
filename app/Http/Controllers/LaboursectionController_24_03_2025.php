@@ -37,8 +37,8 @@ class LaboursectionController extends Controller
 	public function __construct()
 	{
 		$this->middleware('auth');
-		$this->locations 	= Location::lists('location', 'id');
-		$this->departments 	= PayrollDepartment::lists('name', 'id');
+		$this->locations 	= Location::pluck('location', 'id');
+		$this->departments 	= PayrollDepartment::pluck('name', 'id');
 		$this->roles 		= array('Owner' => 'Owner', 'Supervisor' => 'Supervisor', 'Employee' => 'Employee');
 	}
 
@@ -300,8 +300,8 @@ $res = ['msg'=>'recore insered'];
 
 					if(is_null($laborHeader))
 					{
-						Session::set('checkDateType', 1);
-						Session::set('checkDateTime', $stdate);
+						Session::put('checkDateType', 1);
+						Session::put('checkDateTime', $stdate);
 						return redirect()->action('LaboursectionController@create');
 					}else{
 						return redirect()->action(
@@ -341,7 +341,7 @@ $res = ['msg'=>'recore insered'];
 							if (($key = array_search($add['payrollemp_id'], $hideEmp)) !== false) {
 								unset($hideEmp[$key]);
 								// echo "<pre>"; print_r($hideEmp); exit();
-								Session::set('hideEmp', $hideEmp);
+								Session::put('hideEmp', $hideEmp);
 							}
 						}
 					}
@@ -428,7 +428,7 @@ $res = ['msg'=>'recore insered'];
 			}else
 				$hideEmp = array($request['emp']);
 
-			Session::set('hideEmp', $hideEmp);
+			Session::put('hideEmp', $hideEmp);
 
 			return redirect()->route('laboursection.create');
 
@@ -590,10 +590,10 @@ $res = ['msg'=>'recore insered'];
 			$headerid  		= $request->headerid;
 
 			$empData 		= PayrollEmployee::where('id', '=', $emp_id)->get()->first();
-			$departments 	= PayrollDepartment::leftJoin('payroll_department_locations', 'payroll_department_locations.payrolldep_id', '=', 'payroll_departments.id')->where('payroll_department_locations.location', '=', $locationId)->lists('payroll_departments.name', 'payroll_departments.id'); // $this->departments;
-			$selDepartments = PayrollEmployee_department::where('payrollemp_id', '=', $empData->id)->lists('payrollcat_depid', 'id')->toArray();
+			$departments 	= PayrollDepartment::leftJoin('payroll_department_locations', 'payroll_department_locations.payrolldep_id', '=', 'payroll_departments.id')->where('payroll_department_locations.location', '=', $locationId)->pluck('payroll_departments.name', 'payroll_departments.id'); // $this->departments;
+			$selDepartments = PayrollEmployee_department::where('payrollemp_id', '=', $empData->id)->pluck('payrollcat_depid', 'id')->toArray();
 			$locations 		= $this->locations;
-			$sellocation 	= PayrollEmployee_location::where('payrollemp_id', '=', $empData->id)->lists('payrollcat_depid', 'id')->toArray();
+			$sellocation 	= PayrollEmployee_location::where('payrollemp_id', '=', $empData->id)->pluck('payrollcat_depid', 'id')->toArray();
 			$view 	 		= view("laboursections.edit-employee-box", compact('empData','departments','selDepartments','locations','sellocation', 'headerid'))->render();
 
 			return response()->json(['html' => $view]);
@@ -765,9 +765,9 @@ $res = ['msg'=>'recore insered'];
 
 		$stdate = $this->add_weeks($sDateStore, $weeknum);
 
-    	Session::set('checkDateType', 1);
+    	Session::put('checkDateType', 1);
 
-		Session::set('checkDateTime', $stdate);
+		Session::put('checkDateTime', $stdate);
 		return redirect()->action('LaboursectionController@create');
     }
 }

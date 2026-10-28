@@ -32,7 +32,56 @@ class SalesectionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    // public function index()
+    // {
+
+
+    // 	$locationId = Session::get('location_id');
+    //   DB::connection()->enableQueryLog();
+
+	//      $weekStartSql = 'DATE_SUB(dataDate, INTERVAL MOD(DAYOFWEEK(dataDate), 7) DAY)';
+	//      $query = DB::table('salesections')
+	//         ->select(['location_id', DB::raw('MAX(id) as id'), DB::raw('MAX(dataDate) as dataDate'), DB::raw('SUM(amount) as amount'), DB::raw($weekStartSql.' as periodStart')])
+    //     ->where('location_id', '=', $locationId)
+    //     ->where('nameDep', '=', 'sale')
+	//         ->groupBy('location_id', DB::raw($weekStartSql))
+	//         ->orderBy('periodStart', 'DESC')
+	//         ->orderBy('dataDate', 'DESC');
+
+	//     // $data = $query->paginate(10);
+	// 	$data = $query->get();
+	// 	$totalRecords = $data->count();
+	//     foreach ($data as $weeklyReport) {
+	//         $weekValues = explode('|', $this->weekDataValue($weeklyReport->periodStart));
+	//         $weeklyReport->storeNo = isset($weekValues[1]) ? $weekValues[1] : 0;
+	//         $weeklyReport->calendarWeek = getWeekByDate($weeklyReport->periodStart);
+	//     }
+    //   $queries = DB::getQueryLog();
+    //   $last_query = end($queries);
+	// 	//dd($last_query);
+
+    //   	// $startDate = DB::table('locations')->select('startdate')->where('id', '=', $locationId)->where('status','=',1)->get();
+    // 	// 	$sDateStore = strtotime($startDate[0]->startdate);
+
+		
+	// 	$startDate = DB::table('locations')
+	// 		->select('startdate')
+	// 		->where('id', '=', $locationId)
+	// 		->where('status', '=', 1)
+	// 		->first();
+
+	// 	if (!$startDate || empty($startDate->startdate)) {
+	// 		$sDateStore = null;
+	// 	} else {
+	// 		$sDateStore = strtotime($startDate->startdate);
+	// 	}
+
+
+	// 	return view('salesections.index', compact('data','sDateStore','totalRecords'));
+	//   }
+
+
+	public function index()
     {
 
 
@@ -48,7 +97,9 @@ class SalesectionController extends Controller
 	        ->orderBy('periodStart', 'DESC')
 	        ->orderBy('dataDate', 'DESC');
 
-	    $data = $query->paginate(10);
+	    // $data = $query->paginate(10);
+		$data = $query->paginate(10);
+		$totalRecords = $data->total();
 	    foreach ($data as $weeklyReport) {
 	        $weekValues = explode('|', $this->weekDataValue($weeklyReport->periodStart));
 	        $weeklyReport->storeNo = isset($weekValues[1]) ? $weekValues[1] : 0;
@@ -56,15 +107,31 @@ class SalesectionController extends Controller
 	    }
       $queries = DB::getQueryLog();
       $last_query = end($queries);
-//dd($last_query);
+		//dd($last_query);
 
-      	$startDate = DB::table('locations')->select('startdate')->where('id', '=', $locationId)->where('status','=',1)->get();
-    		$sDateStore = strtotime($startDate[0]->startdate);
+      	// $startDate = DB::table('locations')->select('startdate')->where('id', '=', $locationId)->where('status','=',1)->get();
+    	// 	$sDateStore = strtotime($startDate[0]->startdate);
 
-    		return view('salesections.index', compact('data','sDateStore'));
-	  }
+		
+		$startDate = DB::table('locations')
+			->select('startdate')
+			->where('id', '=', $locationId)
+			->where('status', '=', 1)
+			->first();
 
-	  public function filterdata(Request $request , $count = null)
+		if (!$startDate || empty($startDate->startdate)) {
+			$sDateStore = null;
+		} else {
+			$sDateStore = strtotime($startDate->startdate);
+		}
+
+
+		return view('salesections.index', compact('data','sDateStore','totalRecords'));
+	}
+
+
+
+	public function filterdata(Request $request , $count = null)
     {
 
     	$search = $request->query('search');
@@ -102,42 +169,380 @@ class SalesectionController extends Controller
     		$sDateStore = strtotime($startDate[0]->startdate);
 
     		return view('salesections.index', compact('data','sDateStore','count','from_date','to_date'));
-	  }
+	}
 
 	/**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
+    // public function create()
+    // {
 
+	// 	// $locationId = Session::get('location_id');
+	// 	// $startDate  = DB::table('locations')->select('startdate','entity_name')->where('id', '=', $locationId)->where('status','=',1)->get();
+
+	// 	// $startDatestore = date('m-d-Y',strtotime($startDate[0]->startdate));
+	// 	// $dateInTwoWeeks = strtotime('+2 weeks');
+	// 	// $wday = date('w', strtotime($dateInTwoWeeks));
+
+	// 	// if($wday < 6)
+	// 	// 	$dateInTwoWeeks = date('m-d-Y', strtotime('next Friday', $dateInTwoWeeks));
+	// 	// else if($wday > 6)
+	// 	// 	$dateInTwoWeeks = date('m-d-Y', strtotime('last Friday', $dateInTwoWeeks));
+	// 	// else
+	// 	// 	$dateInTwoWeeks = date('m-d-Y', strtotime($dateInTwoWeeks));
+
+	// 	// $entity = $startDate[0]->entity_name;
+
+		
+	// 	// $locationId = Session::get('location_id');
+
+	// 	$startDate = DB::table('locations')
+	// 		->select('startdate', 'entity_name')
+	// 		->where('id', $locationId)
+	// 		->where('status', 1)
+	// 		->first();
+
+	// 	// $startDate = DB::table('locations')
+	// 	// 	->select('startdate', 'entity_name')
+	// 	// 	->where('id', '=', $locationId)
+	// 	// 	->where('status', '=', 1)
+	// 	// 	->first();
+
+	// 	// if (!$startDate || empty($startDate->startdate)) {
+	// 	// 	return redirect()->route('salesection.index')
+	// 	// 		->with('error', 'The selected location is missing or has no start date configured.');
+	// 	// }
+
+	// 	// $startDatestore = date('m-d-Y', strtotime($startDate->startdate));
+
+	// 	$startDate = DB::table('locations')
+	// 		->select('startdate', 'entity_name')
+	// 		->where('id', $locationId)
+	// 		->where('status', 1)
+	// 		->first();
+
+	// 	if (!$startDate || empty($startDate->startdate)) {
+	// 		return redirect('/salesection')
+	// 			->with('message', 'Selected location is missing or its start date is not configured.');
+	// 	}
+
+	// 	$startDatestore = date('m-d-Y', strtotime($startDate->startdate));
+	// 	$entity = $startDate->entity_name;
+
+	// 	$dateInTwoWeeks = strtotime('+2 weeks');
+	// 	$wday = date('w', $dateInTwoWeeks);
+
+	// 	if ($wday < 6) {
+	// 		$dateInTwoWeeks = date('m-d-Y', strtotime('next Friday', $dateInTwoWeeks));
+	// 	} elseif ($wday > 6) {
+	// 		$dateInTwoWeeks = date('m-d-Y', strtotime('last Friday', $dateInTwoWeeks));
+	// 	} else {
+	// 		$dateInTwoWeeks = date('m-d-Y', $dateInTwoWeeks);
+	// 	}
+
+	// 	$entity = $startDate->entity_name;
+
+
+	// 	$saleData = DB::table('sales')->join('sale_locations', 'sales.id', '=', 'sale_locations.sale')->select('sales.id','sales.name','sales.status','sale_locations.sale','sale_locations.location','sale_locations.calWeekNo','sale_locations.storeWeekNo','sale_locations.saleStatus')->where('sales.status', '=', 1)->where('sale_locations.location', '=', $locationId)->orderBy('sorting_order','asc')->get();
+
+	// 	$discountData = DB::table('discounts')->join('discount_locations', 'discounts.id', '=', 'discount_locations.discount')->select('discounts.id','discounts.name','discounts.status','discount_locations.discount','discount_locations.location','discount_locations.calWeekNo','discount_locations.storeWeekNo','discount_locations.disStatus')->where('discounts.status', '=', 1)->where('discount_locations.location', '=', $locationId)->orderBy('sorting_order','asc')->get();
+
+	// 	$adjustmentData = DB::table('adjustments')->join('adjustment_locations', 'adjustments.id', '=', 'adjustment_locations.adjustment')->select('adjustments.id','adjustments.name','adjustments.status','adjustment_locations.adjustment','adjustment_locations.location','adjustment_locations.calWeekNo','adjustment_locations.storeWeekNo','adjustment_locations.adjStatus')->where('adjustments.status', '=', 1)->where('adjustment_locations.location', '=', $locationId)->orderBy('sorting_order','asc')->get();
+
+	// 	$receiptData = DB::table('receipts')->join('receipt_locations', 'receipts.id', '=', 'receipt_locations.receipt')->select('receipts.id','receipts.name','receipts.status','receipt_locations.receipt','receipt_locations.location','receipt_locations.calWeekNo','receipt_locations.storeWeekNo','receipt_locations.recStatus')->where('receipts.status', '=', 1)->where('receipt_locations.location', '=', $locationId)->orderBy('sorting_order','asc')->get();
+	// 	$editWkNo = 0;
+
+	// 	if(Session::has('checkType')) {
+
+	// 	} else {
+	// 		Session::forget('fetchData');
+	// 		Session::forget('disData');
+	// 		Session::forget('adjustData');
+	// 		Session::forget('recData');
+	// 		Session::forget('saleSum');
+	// 		Session::forget('disSum');
+	// 		Session::forget('adjSum');
+	// 		Session::forget('recSum');
+	// 	}
+	// 	if(Session::has('fetchData')) {
+	// 		$weekData = Session::get('fetchData');
+	// 		$disData = Session::get('disData');
+	// 		$adjustData = Session::get('adjustData');
+	// 		$recData = Session::get('recData');
+	// 		$saleSum = Session::get('saleSum');
+	// 		$disSum = Session::get('disSum');
+	// 		$adjSum = Session::get('adjSum');
+	// 		$recSum = Session::get('recSum');
+
+	// 		$sDate = Session::get('sDate');
+	// 		$eDate = Session::get('eDate');
+    //   if(!empty($weekData)){
+    //     	$editWkNo = $weekData[0]->weekNo;
+    //   }
+
+
+	// 		Session::forget('checkType');
+	// 	} else{
+
+	// 		$sDate = date('Y-m-d',strtotime('last Saturday'));
+	// 		$eDate = date('Y-m-d',strtotime('Friday'));
+	// 		$weekData = DB::table('salesections')->join('sales', 'salesections.nameId', '=', 'sales.id')->select('salesections.*','sales.name')->whereBetween('salesections.dataDate',[$sDate,$eDate])->where('salesections.location_id', '=', $locationId)->where('salesections.nameDep', '=', 'sale')->orderBy('sorting_order','asc')->get();
+
+	// 		$disData = DB::table('salesections')->join('discounts', 'salesections.nameId', '=', 'discounts.id')->select('salesections.*','discounts.name')->whereBetween('salesections.dataDate', [$sDate,$eDate])->where('salesections.location_id', '=', $locationId)->where('salesections.nameDep', '=', 'dis')->orderBy('sorting_order','asc')->get();
+
+	// 		$adjustData = DB::table('salesections')->join('adjustments', 'salesections.nameId', '=', 'adjustments.id')->select('salesections.*','adjustments.name')->whereBetween('salesections.dataDate', [$sDate,$eDate])->where('salesections.location_id', '=', $locationId)->where('salesections.nameDep', '=', 'adj')->orderBy('sorting_order','asc')->get();
+
+	// 		$recData = DB::table('salesections')->join('receipts', 'salesections.nameId', '=', 'receipts.id')->select('salesections.*','receipts.name')->whereBetween('salesections.dataDate', [$sDate,$eDate])->where('salesections.location_id', '=', $locationId)->where('salesections.nameDep', '=', 'rec')->orderBy('sorting_order','asc')->get();
+
+	// 		$saleSum = DB::select("select `sales`.`name`, `sales`.`status`, IFNULL(sum(salesections.unit),0) as unit, IFNULL(sum(salesections.amount),0) as amount from `sales` left join `salesections` on `salesections`.`nameId` = `sales`.`id` and (`salesections`.`dataDate` between '".$sDate."' and '".$eDate."' and `salesections`.`location_id` = '".$locationId."' and `salesections`.`nameDep` = 'sale') where sales.status = '1' group by `sales`.`name` order by `sales`.`sorting_order` asc");
+
+	// 		$disSum = DB::select("select `discounts`.`name`, IFNULL(sum(salesections.unit),0) as unit, IFNULL(sum(salesections.amount),0) as amount from `discounts` left join `salesections` on `salesections`.`nameId` = `discounts`.`id` and (`salesections`.`dataDate` between '".$sDate."' and '".$eDate."' and `salesections`.`location_id` = '".$locationId."' and `salesections`.`nameDep` = 'dis') where discounts.status = '1'  group by `discounts`.`name` order by `sorting_order` asc");
+
+	// 		$adjSum = DB::select("select `adjustments`.`name`, IFNULL(sum(salesections.unit),0) as unit, IFNULL(sum(salesections.amount),0) as amount from `adjustments` left join `salesections` on `salesections`.`nameId` = `adjustments`.`id` and (`salesections`.`dataDate` between '".$sDate."' and '".$eDate."' and `salesections`.`location_id` = '".$locationId."' and `salesections`.`nameDep` = 'adj') where adjustments.status = '1'  group by `adjustments`.`name` order by `sorting_order` asc");
+
+	// 		$recSum = DB::select("select `receipts`.`name`, IFNULL(sum(salesections.unit),0) as unit, IFNULL(sum(salesections.amount),0) as amount from `receipts` left join `salesections` on `salesections`.`nameId` = `receipts`.`id` and (`salesections`.`dataDate` between '".$sDate."' and '".$eDate."' and `salesections`.`location_id` = '".$locationId."' and `salesections`.`nameDep` = 'rec') where receipts.status = '1'  group by `receipts`.`name` order by `sorting_order` asc");
+
+	// 	}
+
+	// 	$queryMatch = $this->weekDataValue($sDate);
+	// 	$queryMatchData = explode('|',$queryMatch);
+	// 	$calendarWeekMatch = $queryMatchData[0];
+	// 	$storeWeekMatch = $queryMatchData[1];
+
+
+	// 	return view('salesections.create',compact('saleData','discountData','adjustmentData','receiptData','startDatestore','weekData','disData','adjustData','recData','sDate','eDate','saleSum','disSum','adjSum','recSum','calendarWeekMatch','storeWeekMatch','dateInTwoWeeks','entity','editWkNo'));
+	// }
+
+	
+	public function create()
+	{
+		// Get the selected location from the session
 		$locationId = Session::get('location_id');
-		$startDate  = DB::table('locations')->select('startdate','entity_name')->where('id', '=', $locationId)->where('status','=',1)->get();
 
-		$startDatestore = date('m-d-Y',strtotime($startDate[0]->startdate));
+		// Fetch location details
+		$startDate = DB::table('locations')
+			->select('startdate', 'entity_name')
+			->where('id', $locationId)
+			->first();
+
+		// Validate location and start date
+		if (!$startDate || empty($startDate->startdate)) {
+			return redirect('/salesection')
+				->with(
+					'message',
+					'Location not found or start date is not configured.'
+				);
+		}
+
+		$startDatestore = date(
+			'm-d-Y',
+			strtotime($startDate->startdate)
+		);
+
+		$entity = $startDate->entity_name;
+
+		// Calculate date two weeks from now
 		$dateInTwoWeeks = strtotime('+2 weeks');
-		$wday = date('w', strtotime($dateInTwoWeeks));
+		$wday = date('w', $dateInTwoWeeks);
 
-		if($wday < 6)
-			$dateInTwoWeeks = date('m-d-Y', strtotime('next Friday', $dateInTwoWeeks));
-		else if($wday > 6)
-			$dateInTwoWeeks = date('m-d-Y', strtotime('last Friday', $dateInTwoWeeks));
-		else
-			$dateInTwoWeeks = date('m-d-Y', strtotime($dateInTwoWeeks));
+		if ($wday < 6) {
+			$dateInTwoWeeks = date(
+				'm-d-Y',
+				strtotime('next Friday', $dateInTwoWeeks)
+			);
+		} elseif ($wday > 6) {
+			$dateInTwoWeeks = date(
+				'm-d-Y',
+				strtotime('last Friday', $dateInTwoWeeks)
+			);
+		} else {
+			$dateInTwoWeeks = date(
+				'm-d-Y',
+				$dateInTwoWeeks
+			);
+		}
 
-		$entity = $startDate[0]->entity_name;
+		// Fetch active sales for the selected location
+		// $saleData = DB::table('sales')
+		// 	->join(
+		// 		'sale_locations',
+		// 		'sales.id',
+		// 		'=',
+		// 		'sale_locations.sale'
+		// 	)
+		// 	->select(
+		// 		'sales.id',
+		// 		'sales.name',
+		// 		'sales.status',
+		// 		'sale_locations.sale',
+		// 		'sale_locations.location',
+		// 		'sale_locations.calWeekNo',
+		// 		'sale_locations.storeWeekNo',
+		// 		'sale_locations.saleStatus'
+		// 	)
+		// 	->where('sales.status', '=', 1)
+		// 	->where('sale_locations.location', '=', $locationId)
+		// 	->orderBy('sorting_order', 'asc')
+		// 	->get();
 
-		$saleData = DB::table('sales')->join('sale_locations', 'sales.id', '=', 'sale_locations.sale')->select('sales.id','sales.name','sales.status','sale_locations.sale','sale_locations.location','sale_locations.calWeekNo','sale_locations.storeWeekNo','sale_locations.saleStatus')->where('sales.status', '=', 1)->where('sale_locations.location', '=', $locationId)->orderBy('sorting_order','asc')->get();
+		$saleData = DB::table('sales')
+			->join('sale_locations', 'sales.id', '=', 'sale_locations.sale')
+			->select(
+				'sales.id',
+				'sales.name',
+				'sales.status',
+				'sale_locations.sale',
+				'sale_locations.location',
+				'sale_locations.calWeekNo',
+				'sale_locations.storeWeekNo',
+				'sale_locations.saleStatus'
+			)
+			->where('sales.status', '=', '1')
+			->where('sale_locations.location', '=', $locationId)
+			->orderBy('sales.sorting_order', 'asc')
+			->get();
 
-		$discountData = DB::table('discounts')->join('discount_locations', 'discounts.id', '=', 'discount_locations.discount')->select('discounts.id','discounts.name','discounts.status','discount_locations.discount','discount_locations.location','discount_locations.calWeekNo','discount_locations.storeWeekNo','discount_locations.disStatus')->where('discounts.status', '=', 1)->where('discount_locations.location', '=', $locationId)->orderBy('sorting_order','asc')->get();
+		$discountData = DB::table('discounts')
+			->join(
+				'discount_locations',
+				'discounts.id',
+				'=',
+				'discount_locations.discount'
+			)
+			->select(
+				'discounts.id',
+				'discounts.name',
+				'discounts.status',
+				'discount_locations.discount',
+				'discount_locations.location',
+				'discount_locations.calWeekNo',
+				'discount_locations.storeWeekNo',
+				'discount_locations.disStatus'
+			)
+			->where('discounts.status', '=', '1')
+			->where('discount_locations.location', '=', $locationId)
+			->orderBy('discounts.sorting_order', 'asc')
+			->get();
 
-		$adjustmentData = DB::table('adjustments')->join('adjustment_locations', 'adjustments.id', '=', 'adjustment_locations.adjustment')->select('adjustments.id','adjustments.name','adjustments.status','adjustment_locations.adjustment','adjustment_locations.location','adjustment_locations.calWeekNo','adjustment_locations.storeWeekNo','adjustment_locations.adjStatus')->where('adjustments.status', '=', 1)->where('adjustment_locations.location', '=', $locationId)->orderBy('sorting_order','asc')->get();
+		$adjustmentData = DB::table('adjustments')
+				->join(
+					'adjustment_locations',
+					'adjustments.id',
+					'=',
+					'adjustment_locations.adjustment'
+				)
+				->select(
+					'adjustments.id',
+					'adjustments.name',
+					'adjustments.status',
+					'adjustment_locations.adjustment',
+					'adjustment_locations.location',
+					'adjustment_locations.calWeekNo',
+					'adjustment_locations.storeWeekNo',
+					'adjustment_locations.adjStatus'
+				)
+				->where('adjustments.status', '=', '1')
+				->where('adjustment_locations.location', '=', $locationId)
+				->orderBy('adjustments.sorting_order', 'asc')
+				->get();
 
-		$receiptData = DB::table('receipts')->join('receipt_locations', 'receipts.id', '=', 'receipt_locations.receipt')->select('receipts.id','receipts.name','receipts.status','receipt_locations.receipt','receipt_locations.location','receipt_locations.calWeekNo','receipt_locations.storeWeekNo','receipt_locations.recStatus')->where('receipts.status', '=', 1)->where('receipt_locations.location', '=', $locationId)->orderBy('sorting_order','asc')->get();
+		$receiptData = DB::table('receipts')
+			->join(
+				'receipt_locations',
+				'receipts.id',
+				'=',
+				'receipt_locations.receipt'
+			)
+			->select(
+				'receipts.id',
+				'receipts.name',
+				'receipts.status',
+				'receipt_locations.receipt',
+				'receipt_locations.location',
+				'receipt_locations.calWeekNo',
+				'receipt_locations.storeWeekNo',
+				'receipt_locations.recStatus'
+			)
+			->where('receipts.status', '=', '1')
+			->where('receipt_locations.location', '=', $locationId)
+			->orderBy('receipts.sorting_order', 'asc')
+			->get();
+
+		// Fetch active discounts for the selected location
+		// $discountData = DB::table('discounts')
+		// 	->join(
+		// 		'discount_locations',
+		// 		'discounts.id',
+		// 		'=',
+		// 		'discount_locations.discount'
+		// 	)
+		// 	->select(
+		// 		'discounts.id',
+		// 		'discounts.name',
+		// 		'discounts.status',
+		// 		'discount_locations.discount',
+		// 		'discount_locations.location',
+		// 		'discount_locations.calWeekNo',
+		// 		'discount_locations.storeWeekNo',
+		// 		'discount_locations.disStatus'
+		// 	)
+		// 	->where('discounts.status', '=', 1)
+		// 	->where('discount_locations.location', '=', $locationId)
+		// 	->orderBy('sorting_order', 'asc')
+		// 	->get();
+
+		// // Fetch active adjustments for the selected location
+		// $adjustmentData = DB::table('adjustments')
+		// 	->join(
+		// 		'adjustment_locations',
+		// 		'adjustments.id',
+		// 		'=',
+		// 		'adjustment_locations.adjustment'
+		// 	)
+		// 	->select(
+		// 		'adjustments.id',
+		// 		'adjustments.name',
+		// 		'adjustments.status',
+		// 		'adjustment_locations.adjustment',
+		// 		'adjustment_locations.location',
+		// 		'adjustment_locations.calWeekNo',
+		// 		'adjustment_locations.storeWeekNo',
+		// 		'adjustment_locations.adjStatus'
+		// 	)
+		// 	->where('adjustments.status', '=', 1)
+		// 	->where('adjustment_locations.location', '=', $locationId)
+		// 	->orderBy('sorting_order', 'asc')
+		// 	->get();
+
+		// // Fetch active receipts for the selected location
+		// $receiptData = DB::table('receipts')
+		// 	->join(
+		// 		'receipt_locations',
+		// 		'receipts.id',
+		// 		'=',
+		// 		'receipt_locations.receipt'
+		// 	)
+		// 	->select(
+		// 		'receipts.id',
+		// 		'receipts.name',
+		// 		'receipts.status',
+		// 		'receipt_locations.receipt',
+		// 		'receipt_locations.location',
+		// 		'receipt_locations.calWeekNo',
+		// 		'receipt_locations.storeWeekNo',
+		// 		'receipt_locations.recStatus'
+		// 	)
+		// 	->where('receipts.status', '=', 1)
+		// 	->where('receipt_locations.location', '=', $locationId)
+		// 	->orderBy('sorting_order', 'asc')
+		// 	->get();
+
 		$editWkNo = 0;
 
-		if(Session::has('checkType')) {
+		// Clear old session data when no checkType is present
+		if (Session::has('checkType')) {
 
 		} else {
 			Session::forget('fetchData');
@@ -149,11 +554,15 @@ class SalesectionController extends Controller
 			Session::forget('adjSum');
 			Session::forget('recSum');
 		}
-		if(Session::has('fetchData')) {
+
+		// Restore data from session if available
+		if (Session::has('fetchData')) {
+
 			$weekData = Session::get('fetchData');
 			$disData = Session::get('disData');
 			$adjustData = Session::get('adjustData');
 			$recData = Session::get('recData');
+
 			$saleSum = Session::get('saleSum');
 			$disSum = Session::get('disSum');
 			$adjSum = Session::get('adjSum');
@@ -161,76 +570,221 @@ class SalesectionController extends Controller
 
 			$sDate = Session::get('sDate');
 			$eDate = Session::get('eDate');
-      if(!empty($weekData)){
-        	$editWkNo = $weekData[0]->weekNo;
-      }
+
+			// if (!empty($weekData)) {
+			// 	$editWkNo = $weekData[0]->weekNo;
+			// }
+
+							
+				if ($weekData->isNotEmpty()) {
+					$editWkNo = $weekData->first()->weekNo;
+				}
 
 
 			Session::forget('checkType');
-		} else{
 
-			$sDate = date('Y-m-d',strtotime('last Saturday'));
-			$eDate = date('Y-m-d',strtotime('Friday'));
-			$weekData = DB::table('salesections')->join('sales', 'salesections.nameId', '=', 'sales.id')->select('salesections.*','sales.name')->whereBetween('salesections.dataDate',[$sDate,$eDate])->where('salesections.location_id', '=', $locationId)->where('salesections.nameDep', '=', 'sale')->orderBy('sorting_order','asc')->get();
+		} else {
 
-			$disData = DB::table('salesections')->join('discounts', 'salesections.nameId', '=', 'discounts.id')->select('salesections.*','discounts.name')->whereBetween('salesections.dataDate', [$sDate,$eDate])->where('salesections.location_id', '=', $locationId)->where('salesections.nameDep', '=', 'dis')->orderBy('sorting_order','asc')->get();
+			// Default reporting week: Saturday to Friday
+			$sDate = date('Y-m-d', strtotime('last Saturday'));
+			$eDate = date('Y-m-d', strtotime('Friday'));
 
-			$adjustData = DB::table('salesections')->join('adjustments', 'salesections.nameId', '=', 'adjustments.id')->select('salesections.*','adjustments.name')->whereBetween('salesections.dataDate', [$sDate,$eDate])->where('salesections.location_id', '=', $locationId)->where('salesections.nameDep', '=', 'adj')->orderBy('sorting_order','asc')->get();
+			// Fetch weekly sales rows
+			$weekData = DB::table('salesections')
+				->join(
+					'sales',
+					'salesections.nameId',
+					'=',
+					'sales.id'
+				)
+				->select('salesections.*', 'sales.name')
+				->whereBetween('salesections.dataDate', [$sDate, $eDate])
+				->where('salesections.location_id', '=', $locationId)
+				->where('salesections.nameDep', '=', 'sale')
+				->orderBy('sorting_order', 'asc')
+				->get();
 
-			$recData = DB::table('salesections')->join('receipts', 'salesections.nameId', '=', 'receipts.id')->select('salesections.*','receipts.name')->whereBetween('salesections.dataDate', [$sDate,$eDate])->where('salesections.location_id', '=', $locationId)->where('salesections.nameDep', '=', 'rec')->orderBy('sorting_order','asc')->get();
+			// Fetch weekly discount rows
+			$disData = DB::table('salesections')
+				->join(
+					'discounts',
+					'salesections.nameId',
+					'=',
+					'discounts.id'
+				)
+				->select('salesections.*', 'discounts.name')
+				->whereBetween('salesections.dataDate', [$sDate, $eDate])
+				->where('salesections.location_id', '=', $locationId)
+				->where('salesections.nameDep', '=', 'dis')
+				->orderBy('sorting_order', 'asc')
+				->get();
 
-			$saleSum = DB::select("select `sales`.`name`, `sales`.`status`, IFNULL(sum(salesections.unit),0) as unit, IFNULL(sum(salesections.amount),0) as amount from `sales` left join `salesections` on `salesections`.`nameId` = `sales`.`id` and (`salesections`.`dataDate` between '".$sDate."' and '".$eDate."' and `salesections`.`location_id` = '".$locationId."' and `salesections`.`nameDep` = 'sale') where sales.status = '1' group by `sales`.`name` order by `sales`.`sorting_order` asc");
+			// Fetch weekly adjustment rows
+			$adjustData = DB::table('salesections')
+				->join(
+					'adjustments',
+					'salesections.nameId',
+					'=',
+					'adjustments.id'
+				)
+				->select('salesections.*', 'adjustments.name')
+				->whereBetween('salesections.dataDate', [$sDate, $eDate])
+				->where('salesections.location_id', '=', $locationId)
+				->where('salesections.nameDep', '=', 'adj')
+				->orderBy('sorting_order', 'asc')
+				->get();
 
-			$disSum = DB::select("select `discounts`.`name`, IFNULL(sum(salesections.unit),0) as unit, IFNULL(sum(salesections.amount),0) as amount from `discounts` left join `salesections` on `salesections`.`nameId` = `discounts`.`id` and (`salesections`.`dataDate` between '".$sDate."' and '".$eDate."' and `salesections`.`location_id` = '".$locationId."' and `salesections`.`nameDep` = 'dis') where discounts.status = '1'  group by `discounts`.`name` order by `sorting_order` asc");
+			// Fetch weekly receipt rows
+			$recData = DB::table('salesections')
+				->join(
+					'receipts',
+					'salesections.nameId',
+					'=',
+					'receipts.id'
+				)
+				->select('salesections.*', 'receipts.name')
+				->whereBetween('salesections.dataDate', [$sDate, $eDate])
+				->where('salesections.location_id', '=', $locationId)
+				->where('salesections.nameDep', '=', 'rec')
+				->orderBy('sorting_order', 'asc')
+				->get();
 
-			$adjSum = DB::select("select `adjustments`.`name`, IFNULL(sum(salesections.unit),0) as unit, IFNULL(sum(salesections.amount),0) as amount from `adjustments` left join `salesections` on `salesections`.`nameId` = `adjustments`.`id` and (`salesections`.`dataDate` between '".$sDate."' and '".$eDate."' and `salesections`.`location_id` = '".$locationId."' and `salesections`.`nameDep` = 'adj') where adjustments.status = '1'  group by `adjustments`.`name` order by `sorting_order` asc");
+			// Sales totals
+			$saleSum = DB::select(
+				"SELECT sales.name, sales.status,
+					IFNULL(SUM(salesections.unit), 0) AS unit,
+					IFNULL(SUM(salesections.amount), 0) AS amount
+				FROM sales
+				LEFT JOIN salesections
+					ON salesections.nameId = sales.id
+					AND salesections.dataDate BETWEEN ? AND ?
+					AND salesections.location_id = ?
+					AND salesections.nameDep = 'sale'
+				WHERE sales.status = '1'
+				GROUP BY sales.name
+				ORDER BY sales.sorting_order ASC",
+				[$sDate, $eDate, $locationId]
+			);
 
-			$recSum = DB::select("select `receipts`.`name`, IFNULL(sum(salesections.unit),0) as unit, IFNULL(sum(salesections.amount),0) as amount from `receipts` left join `salesections` on `salesections`.`nameId` = `receipts`.`id` and (`salesections`.`dataDate` between '".$sDate."' and '".$eDate."' and `salesections`.`location_id` = '".$locationId."' and `salesections`.`nameDep` = 'rec') where receipts.status = '1'  group by `receipts`.`name` order by `sorting_order` asc");
+			// Discount totals
+			$disSum = DB::select(
+				"SELECT discounts.name,
+					IFNULL(SUM(salesections.unit), 0) AS unit,
+					IFNULL(SUM(salesections.amount), 0) AS amount
+				FROM discounts
+				LEFT JOIN salesections
+					ON salesections.nameId = discounts.id
+					AND salesections.dataDate BETWEEN ? AND ?
+					AND salesections.location_id = ?
+					AND salesections.nameDep = 'dis'
+				WHERE discounts.status = '1'
+				GROUP BY discounts.name
+				ORDER BY discounts.sorting_order ASC",
+				[$sDate, $eDate, $locationId]
+			);
 
+			// Adjustment totals
+			$adjSum = DB::select(
+				"SELECT adjustments.name,
+					IFNULL(SUM(salesections.unit), 0) AS unit,
+					IFNULL(SUM(salesections.amount), 0) AS amount
+				FROM adjustments
+				LEFT JOIN salesections
+					ON salesections.nameId = adjustments.id
+					AND salesections.dataDate BETWEEN ? AND ?
+					AND salesections.location_id = ?
+					AND salesections.nameDep = 'adj'
+				WHERE adjustments.status = '1'
+				GROUP BY adjustments.name
+				ORDER BY adjustments.sorting_order ASC",
+				[$sDate, $eDate, $locationId]
+			);
+
+			// Receipt totals
+			$recSum = DB::select(
+				"SELECT receipts.name,
+					IFNULL(SUM(salesections.unit), 0) AS unit,
+					IFNULL(SUM(salesections.amount), 0) AS amount
+				FROM receipts
+				LEFT JOIN salesections
+					ON salesections.nameId = receipts.id
+					AND salesections.dataDate BETWEEN ? AND ?
+					AND salesections.location_id = ?
+					AND salesections.nameDep = 'rec'
+				WHERE receipts.status = '1'
+				GROUP BY receipts.name
+				ORDER BY receipts.sorting_order ASC",
+				[$sDate, $eDate, $locationId]
+			);
 		}
 
+		// Get calendar and store week numbers
 		$queryMatch = $this->weekDataValue($sDate);
-		$queryMatchData = explode('|',$queryMatch);
+		$queryMatchData = explode('|', $queryMatch);
+
 		$calendarWeekMatch = $queryMatchData[0];
 		$storeWeekMatch = $queryMatchData[1];
 
-	// echo "<pre>"; print_r($salesection); exit();
-
-
-		return view('salesections.create',compact('saleData','discountData','adjustmentData','receiptData','startDatestore','weekData','disData','adjustData','recData','sDate','eDate','saleSum','disSum','adjSum','recSum','calendarWeekMatch','storeWeekMatch','dateInTwoWeeks','entity','editWkNo'));
+		// Return the create report view
+		return view(
+			'salesections.create',
+			compact(
+				'saleData',
+				'discountData',
+				'adjustmentData',
+				'receiptData',
+				'startDatestore',
+				'weekData',
+				'disData',
+				'adjustData',
+				'recData',
+				'sDate',
+				'eDate',
+				'saleSum',
+				'disSum',
+				'adjSum',
+				'recSum',
+				'calendarWeekMatch',
+				'storeWeekMatch',
+				'dateInTwoWeeks',
+				'entity',
+				'editWkNo'
+			)
+		);
 	}
 
-function getDuplicate(){
-    $result = DB::select("SELECT * FROM `salesections` where location_id =9 and nameDep != 'sale' and dataDate BETWEEN '2023-10-14' and '2023-10-20' ORDER BY `salesections`.`dataDate` DESC");
 
-  $duplicateObjects = $this->findDuplicateObjects($result);
-  foreach ($duplicateObjects as $value) {
-    	DB::table('salesections')
-          ->where('id', $value->id)
-          ->delete();
-  }
+	function getDuplicate(){
+		$result = DB::select("SELECT * FROM `salesections` where location_id =9 and nameDep != 'sale' and dataDate BETWEEN '2023-10-14' and '2023-10-20' ORDER BY `salesections`.`dataDate` DESC");
 
-
-}
+	$duplicateObjects = $this->findDuplicateObjects($result);
+	foreach ($duplicateObjects as $value) {
+			DB::table('salesections')
+			->where('id', $value->id)
+			->delete();
+	}
 
 
-function findDuplicateObjects($array) {
-    $keys = [];
-    $duplicates = [];
+	}
 
-    foreach ($array as $object) {
-        $key = $object->nameId . '|' . $object->nameDep . '|' . $object->dataDate . '|' . $object->dataDay;
 
-        // If the key is already encountered, it's a duplicate
-        if (isset($keys[$key])) {
-            $duplicates[] = $object;
-        } else {
-            $keys[$key] = true;
-        }
-    }
+	function findDuplicateObjects($array) {
+		$keys = [];
+		$duplicates = [];
 
-    return $duplicates;
-}
+		foreach ($array as $object) {
+			$key = $object->nameId . '|' . $object->nameDep . '|' . $object->dataDate . '|' . $object->dataDay;
+
+			// If the key is already encountered, it's a duplicate
+			if (isset($keys[$key])) {
+				$duplicates[] = $object;
+			} else {
+				$keys[$key] = true;
+			}
+		}
+
+		return $duplicates;
+	}
     /**
      * Store a newly created resource in storage.
      *
@@ -279,17 +833,17 @@ function findDuplicateObjects($array) {
 		$recSum = DB::select("select `receipts`.`name`, IFNULL(sum(salesections.unit),0) as unit, IFNULL(sum(salesections.amount),0) as amount from `receipts` left join `salesections` on `salesections`.`nameId` = `receipts`.`id` and (`salesections`.`dataDate` between '".$sDate."' and '".$eDate."' and `salesections`.`location_id` = '".$locationId."' and `salesections`.`nameDep` = 'rec') where receipts.status = '1' group by `receipts`.`name` order by `sorting_order` asc");
 
 
-		Session::set('fetchData', $fetchData);
-		Session::set('disData', $disData);
-		Session::set('adjustData', $adjustData);
-		Session::set('recData', $recData);
-		Session::set('saleSum', $saleSum);
-		Session::set('disSum', $disSum);
-		Session::set('adjSum', $adjSum);
-		Session::set('recSum', $recSum);
-		Session::set('sDate', $sDate);
-		Session::set('eDate', $eDate);
-		Session::set('checkType', 1);
+		Session::put('fetchData', $fetchData);
+		Session::put('disData', $disData);
+		Session::put('adjustData', $adjustData);
+		Session::put('recData', $recData);
+		Session::put('saleSum', $saleSum);
+		Session::put('disSum', $disSum);
+		Session::put('adjSum', $adjSum);
+		Session::put('recSum', $recSum);
+		Session::put('sDate', $sDate);
+		Session::put('eDate', $eDate);
+		Session::put('checkType', 1);
 
 		return redirect()->route('salesection.create');
 
@@ -341,14 +895,30 @@ function findDuplicateObjects($array) {
 			->where('nameDep', 'sale')
 			->whereBetween('dataDate', [$selectedPeriod['start_date'], $selectedPeriod['end_date']])
 			->orderBy('dataDate', 'desc')->get();
-		$startDate 		= DB::table('locations')->select('startdate','entity_name')->where('id', '=', $locationId)->where('status','=',1)->get();
+		// $startDate 		= DB::table('locations')->select('startdate','entity_name')->where('id', '=', $locationId)->where('status','=',1)->get();
 
-		$entity 		= $startDate[0]->entity_name;
-		$sDateStore 	= strtotime($startDate[0]->startdate);
+		// $entity 		= $startDate[0]->entity_name;
+		// $sDateStore 	= strtotime($startDate[0]->startdate);
 
 
 
-		$startDatestore = date('m-d-Y',strtotime($startDate[0]->startdate));
+		// $startDatestore = date('m-d-Y',strtotime($startDate[0]->startdate));
+
+		
+		$startDate = DB::table('locations')
+			->select('startdate', 'entity_name')
+			->where('id', $locationId)
+			->first();
+
+		if (!$startDate || empty($startDate->startdate)) {
+			return redirect('/salesection')
+				->with('message', 'Location not found or start date is not configured.');
+		}
+
+		$entity = $startDate->entity_name;
+		$sDateStore = strtotime($startDate->startdate);
+		$startDatestore = date('m-d-Y', $sDateStore);
+
 		$dateInTwoWeeks = strtotime('+2 weeks');
 		$wday = date('w', strtotime($dateInTwoWeeks));
 
@@ -359,17 +929,98 @@ function findDuplicateObjects($array) {
 		else
 			$dateInTwoWeeks = date('m-d-Y', strtotime($dateInTwoWeeks));
 
-		$saleData = DB::table('sales')->join('sale_locations', 'sales.id', '=', 'sale_locations.sale')->select('sales.id','sales.name','sales.status','sale_locations.sale','sale_locations.location','sale_locations.calWeekNo','sale_locations.storeWeekNo','sale_locations.saleStatus')->where('sales.status', '=', 1)->where('sale_locations.location', '=', $locationId)->orderBy('sorting_order','asc')->get();
+		// $saleData = DB::table('sales')->join('sale_locations', 'sales.id', '=', 'sale_locations.sale')->select('sales.id','sales.name','sales.status','sale_locations.sale','sale_locations.location','sale_locations.calWeekNo','sale_locations.storeWeekNo','sale_locations.saleStatus')->where('sales.status', '=', 1)->where('sale_locations.location', '=', $locationId)->orderBy('sorting_order','asc')->get();
 
 
 
-		$discountData = DB::table('discounts')->join('discount_locations', 'discounts.id', '=', 'discount_locations.discount')->select('discounts.id','discounts.name','discounts.status','discount_locations.discount','discount_locations.location','discount_locations.calWeekNo','discount_locations.storeWeekNo','discount_locations.disStatus')->where('discounts.status', '=', 1)->where('discount_locations.location', '=', $locationId)->orderBy('sorting_order','asc')->get();
+		// $discountData = DB::table('discounts')->join('discount_locations', 'discounts.id', '=', 'discount_locations.discount')->select('discounts.id','discounts.name','discounts.status','discount_locations.discount','discount_locations.location','discount_locations.calWeekNo','discount_locations.storeWeekNo','discount_locations.disStatus')->where('discounts.status', '=', 1)->where('discount_locations.location', '=', $locationId)->orderBy('sorting_order','asc')->get();
 
-		$adjustmentData = DB::table('adjustments')->join('adjustment_locations', 'adjustments.id', '=', 'adjustment_locations.adjustment')->select('adjustments.id','adjustments.name','adjustments.status','adjustment_locations.adjustment','adjustment_locations.location','adjustment_locations.calWeekNo','adjustment_locations.storeWeekNo','adjustment_locations.adjStatus')->where('adjustments.status', '=', 1)->where('adjustment_locations.location', '=', $locationId)->orderBy('sorting_order','asc')->get();
+		// $adjustmentData = DB::table('adjustments')->join('adjustment_locations', 'adjustments.id', '=', 'adjustment_locations.adjustment')->select('adjustments.id','adjustments.name','adjustments.status','adjustment_locations.adjustment','adjustment_locations.location','adjustment_locations.calWeekNo','adjustment_locations.storeWeekNo','adjustment_locations.adjStatus')->where('adjustments.status', '=', 1)->where('adjustment_locations.location', '=', $locationId)->orderBy('sorting_order','asc')->get();
 
-		$receiptData = DB::table('receipts')->join('receipt_locations', 'receipts.id', '=', 'receipt_locations.receipt')->select('receipts.id','receipts.name','receipts.status','receipt_locations.receipt','receipt_locations.location','receipt_locations.calWeekNo','receipt_locations.storeWeekNo','receipt_locations.recStatus')->where('receipts.status', '=', 1)->where('receipt_locations.location', '=', $locationId)->orderBy('sorting_order','asc')->get();
+		// $receiptData = DB::table('receipts')->join('receipt_locations', 'receipts.id', '=', 'receipt_locations.receipt')->select('receipts.id','receipts.name','receipts.status','receipt_locations.receipt','receipt_locations.location','receipt_locations.calWeekNo','receipt_locations.storeWeekNo','receipt_locations.recStatus')->where('receipts.status', '=', 1)->where('receipt_locations.location', '=', $locationId)->orderBy('sorting_order','asc')->get();
 
+		$saleData = DB::table('sales')
+			->join('sale_locations', 'sales.id', '=', 'sale_locations.sale')
+			->select(
+				'sales.id',
+				'sales.name',
+				'sales.status',
+				'sale_locations.sale',
+				'sale_locations.location',
+				'sale_locations.calWeekNo',
+				'sale_locations.storeWeekNo',
+				'sale_locations.saleStatus'
+			)
+			->where('sales.status', '=', '1')
+			->where('sale_locations.location', '=', $locationId)
+			->orderBy('sales.sorting_order', 'asc')
+			->get();
 
+		$discountData = DB::table('discounts')
+			->join(
+				'discount_locations',
+				'discounts.id',
+				'=',
+				'discount_locations.discount'
+			)
+			->select(
+				'discounts.id',
+				'discounts.name',
+				'discounts.status',
+				'discount_locations.discount',
+				'discount_locations.location',
+				'discount_locations.calWeekNo',
+				'discount_locations.storeWeekNo',
+				'discount_locations.disStatus'
+			)
+			->where('discounts.status', '=', '1')
+			->where('discount_locations.location', '=', $locationId)
+			->orderBy('discounts.sorting_order', 'asc')
+			->get();
+
+		$adjustmentData = DB::table('adjustments')
+				->join(
+					'adjustment_locations',
+					'adjustments.id',
+					'=',
+					'adjustment_locations.adjustment'
+				)
+				->select(
+					'adjustments.id',
+					'adjustments.name',
+					'adjustments.status',
+					'adjustment_locations.adjustment',
+					'adjustment_locations.location',
+					'adjustment_locations.calWeekNo',
+					'adjustment_locations.storeWeekNo',
+					'adjustment_locations.adjStatus'
+				)
+				->where('adjustments.status', '=', '1')
+				->where('adjustment_locations.location', '=', $locationId)
+				->orderBy('adjustments.sorting_order', 'asc')
+				->get();
+
+		$receiptData = DB::table('receipts')
+			->join(
+				'receipt_locations',
+				'receipts.id',
+				'=',
+				'receipt_locations.receipt'
+			)
+			->select(
+				'receipts.id',
+				'receipts.name',
+				'receipts.status',
+				'receipt_locations.receipt',
+				'receipt_locations.location',
+				'receipt_locations.calWeekNo',
+				'receipt_locations.storeWeekNo',
+				'receipt_locations.recStatus'
+			)
+			->where('receipts.status', '=', '1')
+			->where('receipt_locations.location', '=', $locationId)
+			->orderBy('receipts.sorting_order', 'asc')
+			->get();
 
 		if(Session::has('checkType')) {
 
@@ -455,7 +1106,7 @@ function findDuplicateObjects($array) {
      //DB::enableQueryLog();
 
 			$saleSum = DB::select("select `sales`.`name`, IFNULL(sum(salesections.unit),0) as unit, IFNULL(sum(salesections.amount),0) as amount from `sales` left join `salesections` on `salesections`.`nameId` = `sales`.`id` and (`salesections`.`dataDate` between '".$sDate."' and '".$eDate."' and `salesections`.`location_id` = '".$locationId."' and `salesections`.`nameDep` = 'sale')  where sales.status = '1' group by `sales`.`name` order by `sales`.`sorting_order` asc");
-    //  dd(DB::getQueryLog());
+		//  dd(DB::getQueryLog());
 
 			$disSum = DB::select("select `discounts`.`name`, IFNULL(sum(salesections.unit),0) as unit, IFNULL(sum(salesections.amount),0) as amount from `discounts` left join `salesections` on `salesections`.`nameId` = `discounts`.`id` and (`salesections`.`dataDate` between '".$sDate."' and '".$eDate."' and `salesections`.`location_id` = '".$locationId."' and `salesections`.`nameDep` = 'dis') where discounts.status = '1'  group by `discounts`.`name` order by `sorting_order` asc");
 
@@ -463,9 +1114,9 @@ function findDuplicateObjects($array) {
 
 			$recSum = DB::select("select `receipts`.`name`, IFNULL(sum(salesections.unit),0) as unit, IFNULL(sum(salesections.amount),0) as amount from `receipts` left join `salesections` on `salesections`.`nameId` = `receipts`.`id` and (`salesections`.`dataDate` between '".$sDate."' and '".$eDate."' and `salesections`.`location_id` = '".$locationId."' and `salesections`.`nameDep` = 'rec') where receipts.status = '1'  group by `receipts`.`name` order by `sorting_order` asc");
 
-  	}
+		}
 
-    $payrollCategory   = DB::table('payroll_categories')->Join('payroll_category_locations', 'payroll_categories.id', '=', 'payroll_category_locations.payrollcat_id')->where('payroll_categories.status', '=', '1')->where('payroll_category_locations.location', '=', $locationId)->select('payroll_categories.*')->orderBy('sorting_order','asc')->get();
+		$payrollCategory   = DB::table('payroll_categories')->Join('payroll_category_locations', 'payroll_categories.id', '=', 'payroll_category_locations.payrollcat_id')->where('payroll_categories.status', '=', '1')->where('payroll_category_locations.location', '=', $locationId)->select('payroll_categories.*')->orderBy('sorting_order','asc')->get();
 
 		$queryMatch 		= $this->weekDataValue($sDate);
 		$queryMatchData 	= explode('|',$queryMatch);
@@ -475,7 +1126,7 @@ function findDuplicateObjects($array) {
 
 
 		$editWkNo = getWeekByDate($salesection[0]->dataDate) ;
- //echo "<pre>"; print_r($editWkNo); exit();
+		//echo "<pre>"; print_r($editWkNo); exit();
 		 return view('salesections.create',compact('payrollCategory','saleData','discountData','adjustmentData','receiptData','startDatestore','weekData','disData','adjustData','recData','sDate','eDate','saleSum','disSum','adjSum','recSum','calendarWeekMatch','storeWeekMatch','entity','dateInTwoWeeks','editWkNo','id'));
 
     }
@@ -939,9 +1590,23 @@ function findDuplicateObjects($array) {
 			$weeks = ceil($days/7);
 		/* end */
 		/* store week no */
+		// $locationId = Session::get('location_id');
+		// $queryData = DB::table('locations')->select('startdate')->where('status', '=', 1)->where('id', '=', $locationId)->get();
+		// $sDateStore =  strtotime($queryData[0]->startdate);
+
 		$locationId = Session::get('location_id');
-		$queryData = DB::table('locations')->select('startdate')->where('status', '=', 1)->where('id', '=', $locationId)->get();
-		$sDateStore =  strtotime($queryData[0]->startdate);
+
+		$queryData = DB::table('locations')
+			->select('startdate')
+			->where('id', $locationId)
+			->where('status', 1)
+			->first();
+
+		if (!$queryData || empty($queryData->startdate)) {
+			return $weeks . '|0';
+		}
+
+		$sDateStore = strtotime($queryData->startdate);
 
 		$dayWeek =  date('w', $sDateStore);
 		$lastSatFormat =  date("Y-m-d", $sDateStore);
@@ -969,9 +1634,25 @@ function findDuplicateObjects($array) {
 	public function printData($id){
 
 		$locationId = Session::get('location_id');
-		$startDate = DB::table('locations')->select('startdate')->where('id', '=', $locationId)->where('status','=',1)->get();
-		$sDateStore = strtotime($startDate[0]->startdate);
-		$startDatestore = date('m-d-Y',strtotime($startDate[0]->startdate));
+		// $startDate = DB::table('locations')->select('startdate')->where('id', '=', $locationId)->where('status','=',1)->get();
+		// $sDateStore = strtotime($startDate[0]->startdate);
+		// $startDatestore = date('m-d-Y',strtotime($startDate[0]->startdate));
+
+		$startDate = DB::table('locations')
+			->select('startdate')
+			->where('id', $locationId)
+			->where('status', '1')
+			->first();
+
+		if (!$startDate || empty($startDate->startdate)) {
+			return redirect('/salesection')->with(
+				'message',
+				'Location not found or start date is not configured.'
+			);
+		}
+
+		$sDateStore = strtotime($startDate->startdate);
+		$startDatestore = date('m-d-Y', $sDateStore);
 
 		$saleData = DB::table('sales')->join('sale_locations', 'sales.id', '=', 'sale_locations.sale')->select('sales.id','sales.name','sales.status','sale_locations.sale','sale_locations.location','sale_locations.calWeekNo','sale_locations.storeWeekNo','sale_locations.saleStatus')->where('sales.status', '=', 1)->where('sale_locations.location', '=', $locationId)->orderBy('sorting_order','asc')->get();
 

@@ -5,17 +5,18 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": ">=5.5.9",
-        "laravel/framework": "5.2.*",
-        "laravelcollective/html": "^5.2",
-        "elibyy/tcpdf-laravel": "5.2.0"
+        "php": "8.5.12",
+        "laravel/framework": "^12.0",
+        "laravel/ui": "^4.6",
+        "fajarsulaksono/laravel-collective-html": "^8.0",
+        "elibyy/tcpdf-laravel": "^13.0"
     },
     "require-dev": {
-        "fzaninotto/faker": "~1.4",
-        "mockery/mockery": "0.9.*",
-        "phpunit/phpunit": "~4.0",
-        "symfony/css-selector": "2.8.*|3.0.*",
-        "symfony/dom-crawler": "2.8.*|3.0.*"
+        "fakerphp/faker": "^1.23",
+        "mockery/mockery": "^1.6",
+        "phpunit/phpunit": "^11.5",
+        "symfony/css-selector": "^7.0",
+        "symfony/dom-crawler": "^7.0"
     },
     "autoload": {
         "classmap": [
@@ -34,19 +35,9 @@
         ]
     },
     "scripts": {
-        "post-root-package-install": [
-            "php -r \"copy('.env.example', '.env');\""
-        ],
-        "post-create-project-cmd": [
-            "php artisan key:generate"
-        ],
-        "post-install-cmd": [
-            "Illuminate\\Foundation\\ComposerScripts::postInstall",
-            "php artisan optimize"
-        ],
-        "post-update-cmd": [
-            "Illuminate\\Foundation\\ComposerScripts::postUpdate",
-            "php artisan optimize"
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi"
         ]
     },
     "config": {

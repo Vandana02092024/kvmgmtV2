@@ -18,7 +18,7 @@ class AdjustmentController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->locations = Location::lists('location', 'id');
+        $this->locations = Location::pluck('location', 'id');
         $this->roles     = array('Owner' => 'Owner', 'Supervisor' => 'Supervisor', 'Employee' => 'Employee');
     }
 
@@ -115,31 +115,98 @@ class AdjustmentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Adjustment $adjustment)
-    {
+    // public function update(Request $request, Adjustment $adjustment)
+    // {
         
 
-        $adjustment->update([
-            'name' => $request['name'],
-			'sorting_order' => $request['sorting_order'],
+    //     $adjustment->update([
+    //         'name' => $request['name'],
+	// 		'sorting_order' => $request['sorting_order'],
+    //     ]);
+
+	// 	$locVal = $request->input('location', []);
+	// 	if (!is_array($locVal)) $locVal = [$locVal];
+	// 	$existingLocations = [];
+	// 	foreach (Adjustment_location::where('adjustment', $adjustment->id)->get(['location']) as $link) {
+	// 		$existingLocations[] = (string) $link->location;
+	// 	}
+	// 	foreach (array_unique($locVal) as $locValue) {
+	// 		if ($locValue !== '' && !in_array((string) $locValue, $existingLocations, true)) {
+	// 			Adjustment_location::create(['adjustment' => $adjustment->id, 'location' => $locValue]);
+	// 		}
+	// 	}
+		
+		
+		
+	// 	return redirect()->route('adjustment.index')->with('message','Adjustment has been updated successfully!');
+    // }
+
+    
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'sorting_order' => 'nullable|integer',
+            'location' => 'nullable',
+            'location.*' => 'integer|exists:locations,id',
         ]);
 
-		$locVal = $request->input('location', []);
-		if (!is_array($locVal)) $locVal = [$locVal];
-		$existingLocations = [];
-		foreach (Adjustment_location::where('adjustment', $adjustment->id)->get(['location']) as $link) {
-			$existingLocations[] = (string) $link->location;
-		}
-		foreach (array_unique($locVal) as $locValue) {
-			if ($locValue !== '' && !in_array((string) $locValue, $existingLocations, true)) {
-				Adjustment_location::create(['adjustment' => $adjustment->id, 'location' => $locValue]);
-			}
-		}
-		
-		
-		
-		return redirect()->route('adjustment.index')->with('message','Adjustment has been updated successfully!');
+        $adjustment = Adjustment::findOrFail($id);
+
+        $adjustment->name = $request->input('name');
+        $adjustment->sorting_order = $request->input('sorting_order');
+        $adjustment->save();
+
+        $locVal = $request->input('location', []);
+
+        if (!is_array($locVal)) {
+            $locVal = [$locVal];
+        }
+
+        // Remove empty values and duplicate location IDs.
+        $locVal = array_values(array_unique(array_filter($locVal, function ($value) {
+            return $value !== null && $value !== '';
+        })));
+
+        // Get existing locations for this adjustment.
+        $existingLocations = Adjustment_location::where(
+            'adjustment',
+            $adjustment->id
+        )->pluck('location')
+        ->map(fn ($location) => (string) $location)
+        ->toArray();
+
+        // Add only newly selected locations.
+        foreach ($locVal as $locValue) {
+            if (!in_array((string) $locValue, $existingLocations, true)) {
+                Adjustment_location::create([
+                    'adjustment' => $adjustment->id,
+                    'location' => $locValue,
+                ]);
+            }
+        }
+
+        // Remove locations that have been unselected.
+        $locationQuery = Adjustment_location::where(
+            'adjustment',
+            $adjustment->id
+        );
+
+        if (!empty($locVal)) {
+            $locationQuery->whereNotIn('location', $locVal);
+        }
+
+        if (empty($locVal)) {
+            $locationQuery->delete();
+        } else {
+            $locationQuery->delete();
+        }
+
+        return redirect()
+            ->route('adjustment.index')
+            ->with('message', 'Adjustment has been updated successfully!');
     }
+
 
 	
 	public function adjustmentarchive($id , Request $request)

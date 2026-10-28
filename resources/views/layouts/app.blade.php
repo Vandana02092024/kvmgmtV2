@@ -63,7 +63,14 @@
                             </a>
 
                             <ul class="dropdown-menu" role="menu">
-                                <li><a href="{{ url('/logout') }}"><i class="fa fa-btn fa-sign-out"></i>Logout</a></li>
+                                <li>
+                                    <form action="{{ route('logout') }}" method="POST" style="margin:0;">
+                                        @csrf
+                                        <button type="submit" class="btn btn-link" style="padding:3px 20px;">
+                                            <i class="fa fa-btn fa-sign-out"></i>Logout
+                                        </button>
+                                    </form>
+                                </li>
                             </ul>
                         </li>
                     @endif

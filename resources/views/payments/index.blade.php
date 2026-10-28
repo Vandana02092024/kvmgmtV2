@@ -51,7 +51,7 @@
 			                                        
 			                                        |   
 													
-													{{ link_to_route('payment.payArchive',$payment->status == 1 ?'Archive' :'Unarchive',['payment' => $payment->id, 'st' => $payment->status]) }}
+													{{ link_to_route('payment.payArchive', $payment->status == 1 ? 'Archive' : 'Unarchive', ['id' => $payment->id, 'st' => $payment->status]) }}
 													
 													
 													

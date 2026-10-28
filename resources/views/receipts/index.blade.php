@@ -58,7 +58,7 @@
 													
 													|
 													
-													{{ link_to_route('receipt.archive',$receipt->status == 1 ?'Archive' :'Unarchive',['receipt' => $receipt->id, 'st' => $receipt->status]) }}
+													{{ link_to_route('receipt.archive', $receipt->status == 1 ? 'Archive' : 'Unarchive', ['id' => $receipt->id, 'st' => $receipt->status]) }}
 			                                        <!-- |
 			                                        {{ Form::button('',['class'=>'fa fa-close','type'=>'submit','data-toggle'=>"tooltip", 'data-placement'=>"right", 'title'=>"delete"]) }} -->
 

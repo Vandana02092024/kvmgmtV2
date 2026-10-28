@@ -93,11 +93,49 @@ class LocationController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Location $location)
-    {
-        $location->update($request->all());
-        return redirect()->route('location.index')->with('message','Location has been updated successfully!');
-    }
+    // public function update(Request $request, Location $location)
+    // {
+    //     $location->update($request->all());
+    //     return redirect()->route('location.index')->with('message','Location has been updated successfully!');
+    // }
+
+      public function update(Request $request, Location $location)
+      {
+          $validated = $request->validate([
+              'location_code' => 'required|string|max:255',
+              'location'      => 'required|string|max:255',
+              'startdate'     => 'nullable|date',
+              'rank'          => 'nullable',
+              'rate'          => 'nullable',
+              'entity_name'   => 'nullable|string|max:255',
+          ]);
+
+          // Prevent changing the start date after sales data exists.
+          $salesReportCount = DB::table('salesections')
+              ->where('location_id', $location->id)
+              ->where('nameDep', 'sale')
+              ->count();
+
+          if ($salesReportCount > 0) {
+              unset($validated['startdate']);
+          }
+
+          try {
+              $location->fill($validated);
+              $location->save();
+
+              return redirect()
+                  ->route('location.index')
+                  ->with('message', 'Location has been updated successfully!');
+          } catch (\Exception $e) {
+              report($e);
+
+              return redirect()
+                  ->route('location.index')
+                  ->withInput()
+                  ->with('error', 'Location could not be updated. Please check the application log.');
+          }
+      }
 
     public function archive($id , Request $request)
     {

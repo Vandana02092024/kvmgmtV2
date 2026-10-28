@@ -86,7 +86,7 @@ textarea.form-control.animated {
 
 					<div class="widget-content no-padding">
 
-						{!! Form::model($service, array('route' => ['service.update', $service->id], 'method' => 'PUT')) !!}
+						{!! Form::model($service, array('route' => ['service.update', 'service' => $service->id], 'method' => 'PUT')) !!}
 						{{ csrf_field() }}
 
 							<div class="main-detail csr_container">

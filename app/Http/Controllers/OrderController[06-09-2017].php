@@ -30,9 +30,9 @@ class OrderController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->category = Category::where('status', '=', 1)->lists('category', 'id');
-        $this->seller = Seller::where('status', '=', 1)->lists('name', 'id');
-        $this->users = User::lists('name', 'id');
+        $this->category = Category::where('status', '=', 1)->pluck('category', 'id');
+        $this->seller = Seller::where('status', '=', 1)->pluck('name', 'id');
+        $this->users = User::pluck('name', 'id');
         $this->days = array(1 => 'Sunday', 2 => 'Monday', 3 => 'Tuesday', 4 => 'Wednesday', 5 => 'Thursday', 6 => 'Friday', 7 => 'Saturday');
     }
 
@@ -115,7 +115,7 @@ class OrderController extends Controller
             ->where('products.vendor', '=', $vendor)
 			->groupby('categories.category')
 			->orderBy('categories.rank')
-			->lists('categories.category','categories.id');
+			->pluck('categories.category','categories.id');
 			
 			
         }  else
@@ -152,7 +152,7 @@ class OrderController extends Controller
 			->select('categories.category')
 			->orderBy('categories.rank')
 			->groupBy('categories.category')
-			->lists('categories.category','categories.category'); */
+			->pluck('categories.category','categories.category'); */
 		
         return view('orders.create',compact('category','categories','catgorySel','products','seller','vendorSel','cart'));
     }
@@ -409,7 +409,7 @@ class OrderController extends Controller
     // function changeVendor(Request $request)
     // {
     //     $vendor = $request->get('vendor');
-    //     Session::set('vendor_id', $vendor);
+    //     Session::put('vendor_id', $vendor);
     //     return redirect()->route('order.create');
     // }
 	
@@ -422,14 +422,14 @@ class OrderController extends Controller
         Session::forget($svCartId);
 
         $vendor = $request->get('vendor');
-        Session::set('vendor_id', $vendor);
+        Session::put('vendor_id', $vendor);
 		
 		$category = $request->get('category');
-        Session::set('category_id', $category);
+        Session::put('category_id', $category);
 
-		Session::set('checkType', 1);
+		Session::put('checkType', 1);
         // $order_id = $this->generate_order_id();
-        // Session::set('order_id', $order_id);
+        // Session::put('order_id', $order_id);
 
 		 $cart = $this->total_cart_items();
 
@@ -438,7 +438,7 @@ class OrderController extends Controller
         // die();
 
         if($cart['cart_count'] > 0){
-            Session::set($svCartId, $cart['id']);
+            Session::put($svCartId, $cart['id']);
         }
 
         return redirect()->route('order.create', compact('cart'));
@@ -491,7 +491,7 @@ class OrderController extends Controller
 						'price'         => $price,
 					]);
 
-					Session::set($svCartId, $cart->id);
+					Session::put($svCartId, $cart->id);
 					$ttlcart['cart_count'] = 1;
 			} else {
 				 
@@ -535,7 +535,7 @@ class OrderController extends Controller
 			
             
         }else{
-            // Session::set('cart.'.$vendor, '');
+            // Session::put('cart.'.$vendor, '');
             // Session::push('cart.'.$vendor, $cart);
             // $order_id = $this->generate_order_id();
             // $cart_id = Session::get('cart_id');
@@ -561,7 +561,7 @@ class OrderController extends Controller
                 'price'         => $price,
             ]);
 
-            Session::set($svCartId, $cart->id);
+            Session::put($svCartId, $cart->id);
 			$ttlcart['cart_count'] = 1;
         }
 
@@ -617,7 +617,7 @@ class OrderController extends Controller
     //         $existing_cart[$key]['qty'] = $qty;
     //         $existing_cart[$key]['price'] = ($qty * $existing_cart[$key]['actprice']);
 
-    //         Session::set('cart.'.$vendor, $existing_cart);
+    //         Session::put('cart.'.$vendor, $existing_cart);
 
     //         $ttlqty    = array_sum(array_column($existing_cart, 'qty'));
     //         $ttlprice  = array_sum(array_column($existing_cart, 'price'));
@@ -956,7 +956,7 @@ class OrderController extends Controller
             // $existing_cart[$key]['qty'] = $qty;
             // $existing_cart[$key]['price'] = ($qty * $existing_cart[$key]['actprice']);
 
-            // Session::set('cart.'.$vendor, $existing_cart);
+            // Session::put('cart.'.$vendor, $existing_cart);
 
             // $ttlqty    = array_sum(array_column($existing_cart, 'qty'));
             // $ttlprice  = array_sum(array_column($existing_cart, 'price'));

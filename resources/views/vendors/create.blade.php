@@ -34,7 +34,7 @@
 			<div class="col-sm-8">
 				<div class="widget">
 					<div class="widget-content">
-						<form class="widget ng-pristine ng-valid" method="POST" action="{{ url('/vendors') }}">
+						<form class="widget ng-pristine ng-valid" method="POST" action="{{ route('vendor.store') }}">
         				{{ csrf_field() }}
 							<div class="widget-content">
 								<div class="row form-group{{ $errors->has('name') ? ' has-error' : '' }}">

@@ -59,7 +59,7 @@
 			                                        
 			                                        |   
 													
-													{{ link_to_route('category.catArchive',$category->status == 1 ?'Archive' :'Unarchive',['category' => $category->id, 'st' => $category->status]) }}
+													{{ link_to_route('category.catArchive', $category->status == 1 ? 'Archive' : 'Unarchive', ['id' => $category->id, 'st' => $category->status]) }}
 													
 													
 													
@@ -88,26 +88,6 @@
 							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 							<h4 class="modal-title" id="addCategoryTitle">Add Category</h4>
 						</div>
-						<!-- <div class="modal-body">
-							<div class="form-group{{ $errors->has('category') ? ' has-error' : '' }}">
-								<label for="new-category-name">CATEGORY</label>
-
-								<input type="text"
-									id="new-category-name"
-									name="category"
-									class="form-control"
-									value="{{ old('category') }}"
-									required>
-
-								@if ($errors->has('category'))
-									<span class="help-block">{{ $errors->first('category') }}</span>
-								@endif
-							</div>
-							<div class="form-group">
-								<label for="new-category-rank">RANK</label>
-								<input id="new-category-rank" type="number" name="rank" class="form-control" value="{{ old('rank') }}">
-							</div>
-						</div> -->
 						<div class="modal-body">
 							<div class="row">
 								<div class="col-md-6">
@@ -151,7 +131,7 @@
 			<div class="modal fade kv-category-modal" id="editCategoryModal{{ $category->id }}" tabindex="-1" role="dialog" aria-labelledby="editCategoryTitle{{ $category->id }}">
 				<div class="modal-dialog" role="document">
 					<div class="modal-content">
-						<form method="POST" action="{{ url('/category/' . $category->id) }}">
+						<!-- <form method="POST" action="{{ url('/category/' . $category->id) }}">
 							{{ csrf_field() }}
 							{{ method_field('PUT') }}
 							<div class="modal-header">
@@ -187,6 +167,49 @@
 							<div class="modal-footer">
 								<button type="button" class="btn kv-category-cancel" data-dismiss="modal">Cancel</button>
 								<button type="submit" class="btn kv-category-submit">Save Changes</button>
+							</div>
+						</form> -->
+
+						<form method="POST" action="{{ url('/category/' . $category->id) }}">
+							@csrf
+							@method('PUT')
+
+							<div class="modal-body">
+								<div class="row">
+									<div class="col-md-6">
+										<div class="form-group">
+											<label for="category-name-{{ $category->id }}">CATEGORY</label>
+											<input
+												type="text"
+												id="category-name-{{ $category->id }}"
+												name="category"
+												class="form-control"
+												value="{{ $category->category }}"
+												required>
+										</div>
+									</div>
+
+									<div class="col-md-6">
+										<div class="form-group">
+											<label for="category-rank-{{ $category->id }}">RANK</label>
+											<input
+												type="number"
+												id="category-rank-{{ $category->id }}"
+												name="rank"
+												class="form-control"
+												value="{{ $category->rank }}">
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="modal-footer">
+								<button type="button" class="btn kv-category-cancel" data-dismiss="modal">
+									Cancel
+								</button>
+								<button type="submit" class="btn kv-category-submit">
+									Save Changes
+								</button>
 							</div>
 						</form>
 					</div>

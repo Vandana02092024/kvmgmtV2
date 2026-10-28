@@ -21,7 +21,7 @@ class Customer_serviceController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->users = User::where('role', '!=', 'Owner')->lists('name', 'id');   
+        $this->users = User::where('role', '!=', 'Owner')->pluck('name', 'id');   
         $this->users->prepend('- Select User -', '');
     }
 
@@ -53,8 +53,8 @@ class Customer_serviceController extends Controller
      */
     public function create()
     {
-        // $reportIds = Customer_service::select(DB::row('CONCAT(`RPT_`," ",`id`) as reportid'),'id')->lists('reportid', 'id');
-        $reportIds  = Customer_problem::select('id', DB::raw('CONCAT("RPT_", id) AS reportid'))->orderby('id')->lists('reportid', 'id');
+        // $reportIds = Customer_service::select(DB::row('CONCAT(`RPT_`," ",`id`) as reportid'),'id')->pluck('reportid', 'id');
+        $reportIds  = Customer_problem::select('id', DB::raw('CONCAT("RPT_", id) AS reportid'))->orderby('id')->pluck('reportid', 'id');
         $reportIds->prepend('- Select Report ID -', '');
         $users      = $this->users;
         
@@ -140,7 +140,7 @@ class Customer_serviceController extends Controller
     {
 
 
-        $reportIds  = Customer_problem::select('id', DB::raw('CONCAT("RPT_", id) AS reportid'))->orderby('id')->lists('reportid', 'id');
+        $reportIds  = Customer_problem::select('id', DB::raw('CONCAT("RPT_", id) AS reportid'))->orderby('id')->pluck('reportid', 'id');
         $reportIds->prepend('- Select Report ID -', '');
 
 

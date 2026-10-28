@@ -86,8 +86,10 @@ $(function() {
 					<h3 class="heading">
 						<span class="kv-hero-title"><i class="fa fa-file-text-o"></i><span>Edit Claim Form</span></span>
 						<span class="kv-claim-header-actions">
-							<a class="v-btn v-btn-secondary" target="_blank" href="{{action('ReimbursementController@rembursementPdf', $reimbursement->id)}}"><i class="fa fa-file-pdf-o"></i> PDF</a>
-							<!-- <a class="v-btn v-btn-primary kv-claim-back" href="{{ url('/reimbursement') }}"><i class="fa fa-arrow-left"></i> Back to Claims</a> -->
+							<a class="v-btn v-btn-secondary" target="_blank"
+								href="{{ url('/rembursementPdf/' . $reimbursement->id) }}">
+									<i class="fa fa-file-pdf-o"></i> PDF
+							</a>
 							<a class="v-btn v-btn-primary" href="{{ url('/reimbursement') }}"><i class="fa fa-arrow-left " style="margin-right: 5px"> </i>BACK</a>
 						</span>
 					</h3>
@@ -106,9 +108,11 @@ $(function() {
 				<div class="widget form-layout kv-claim-form">
 
 					<div class="widget-content no-padding">
-
-						
-						{!! Form::model($reimbursement, array('route' => ['reimbursement.update', $reimbursement->id], 'method' => 'PUT','id' => 'myform')) !!}
+						{!! Form::model($reimbursement, [
+							'url' => url('/reimbursement/' . $reimbursement->id),
+							'method' => 'PUT',
+							'id' => 'myform'
+						]) !!}
 						{{ csrf_field() }}
 						{!! Form::hidden('id', $reimbursement->id, ['class' => 'form-control']) !!}
 						{!! Form::hidden('userRole', $userRole, ['class' => 'form-control ownerCheck']) !!}

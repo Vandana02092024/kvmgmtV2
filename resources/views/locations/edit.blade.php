@@ -26,7 +26,7 @@
 			<div class="col-sm-8 col-sm-offset-2">
 				<div class="widget">
 					<div class="widget-content">
-						{!! Form::model($location, array('route' => ['location.update', $location->id], 'method' => 'PUT')) !!}
+						{!! Form::model($location, array('route' => ['location.update', 'location' => $location->id], 'method' => 'PUT')) !!}
         				{{ csrf_field() }}
 							<div class="widget-content">
 

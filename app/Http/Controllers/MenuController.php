@@ -103,7 +103,7 @@ class MenuController extends Controller
       $locationIds = DB::table('user_locations')
         ->join('locations', 'locations.id', '=', 'user_locations.location')
         ->where('user_locations.user', \Auth::user()->id)
-        ->where('locations.status', 1)->lists('locations.id');
+        ->where('locations.status', '1')->pluck('locations.id')->all();
       if (empty($locationIds) && $locationId) $locationIds = [$locationId];
       $requestedLocation = request()->query('location_scope');
       $dashboardIsCompany = !$requestedLocation || !in_array($requestedLocation, $locationIds);
@@ -115,7 +115,7 @@ class MenuController extends Controller
 
       $data['menus']=  MenuLocation::select(['menus.id','menus.name','menus.icon','menus.route'])->distinct()->join('menus', 'menus.id', '=', 'menu_locations.menu_id')
         ->join('locations', 'locations.id', '=', 'menu_locations.location_id')->whereIn('menu_locations.location_id',$locationIds)
-          ->where('locations.status',1)
+          ->where('locations.status','1')
           ->where('menus.status',1)
         ->where('menu_locations.status',1)
         ->get();

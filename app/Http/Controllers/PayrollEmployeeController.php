@@ -23,8 +23,8 @@ class PayrollEmployeeController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->locations = Location::lists('location', 'id');
-		$this->departments = PayrollDepartment::lists('name', 'id');
+        $this->locations = Location::pluck('location', 'id');
+		$this->departments = PayrollDepartment::pluck('name', 'id');
 		
 		
         $this->roles     = array('Owner' => 'Owner', 'Supervisor' => 'Supervisor', 'Employee' => 'Employee');
@@ -44,8 +44,8 @@ class PayrollEmployeeController extends Controller
         $locationSelections = [];
         $locationId = Session::get('location_id');
         foreach ($payrollemployees as $employee) {
-            $departmentSelections[$employee->id] = PayrollEmployee_department::where('payrollemp_id', '=', $employee->id)->where('location', '=', $locationId)->lists('payrollcat_depid')->toArray();
-            $locationSelections[$employee->id] = PayrollEmployee_location::where('payrollemp_id', '=', $employee->id)->lists('payrollcat_depid')->toArray();
+            $departmentSelections[$employee->id] = PayrollEmployee_department::where('payrollemp_id', '=', $employee->id)->where('location', '=', $locationId)->pluck('payrollcat_depid')->toArray();
+            $locationSelections[$employee->id] = PayrollEmployee_location::where('payrollemp_id', '=', $employee->id)->pluck('payrollcat_depid')->toArray();
         }
         $queryData = \DB::table('locations')->select('rate')->where('status', '=', 1)->where('id', '=', $locationId)->first();
         $rate = $queryData ? $queryData->rate : '';
@@ -148,11 +148,76 @@ class PayrollEmployeeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(PayrollEmployee $payrollemployee)
-    {       
-        $data = $this->index(new Request)->getData();
-        $data['openEditId'] = $payrollemployee->id;
-        return view('payrollemployees.index', (array) $data);
+    // public function edit(PayrollEmployee $payrollemployee)
+    // {       
+    //     $data = $this->index(new Request)->getData();
+    //     $data['openEditId'] = $payrollemployee->id;
+    //     return view('payrollemployees.index', (array) $data);
+    // }
+
+    public function edit($id)
+    {
+        // Get all payroll employees for the listing and edit modals.
+        $payrollemployees = \DB::table('payroll_employees')
+            ->select('payroll_employees.*')
+            ->orderBy('sorting_order', 'asc')
+            ->get();
+
+        // Get departments and locations for the modal.
+        $departments = $this->departments;
+        $locations = $this->locations;
+
+        $departmentSelections = [];
+        $locationSelections = [];
+
+        $locationId = Session::get('location_id');
+
+        // Load department and location selections for each employee.
+        foreach ($payrollemployees as $employee) {
+            $departmentSelections[$employee->id] =
+                PayrollEmployee_department::where(
+                    'payrollemp_id',
+                    $employee->id
+                )
+                ->where('location', $locationId)
+                ->pluck('payrollcat_depid')
+                ->toArray();
+
+            $locationSelections[$employee->id] =
+                PayrollEmployee_location::where(
+                    'payrollemp_id',
+                    $employee->id
+                )
+                ->pluck('payrollcat_depid')
+                ->toArray();
+        }
+
+        // Get the current location's hourly rate.
+        $queryData = \DB::table('locations')
+            ->select('rate')
+            ->where('status', 1)
+            ->where('id', $locationId)
+            ->first();
+
+        $rate = $queryData ? $queryData->rate : '';
+
+        // Open the requested employee's edit modal, not the add modal.
+        $openAddModal = false;
+        $openEditId = (int) $id;
+
+        // Confirm that the employee exists.
+        PayrollEmployee::findOrFail($id);
+
+        return view('payrollemployees.index', compact(
+            'payrollemployees',
+            'departments',
+            'locations',
+            'departmentSelections',
+            'locationSelections',
+            'rate',
+            'openAddModal',
+            'openEditId'
+        ));
     }
 
     /**
@@ -162,46 +227,132 @@ class PayrollEmployeeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, PayrollEmployee $payrollemployee)
-    {
-        $locationId = Session::get('location_id'); 
+    // public function update(Request $request, PayrollEmployee $payrollemployee)
+    // {
+    //     $locationId = Session::get('location_id'); 
 
-        $old_record = $payrollemployee;
-        $payrollemployee -> update([
-            'name' => $request['name'], 
-			'rateperhour' => $request['rateperhour'],
-			'salary' => $request['salary'],
-			'working_hour' => $request['working_hour'],
-			'sorting_order' => $request['sorting_order'],	
-        ]);
-        $locVal = array_map('intval', (array) $request->input('department', []));
-		$locationVal = array_map('intval', (array) $request->input('location', []));
-        $new_record = $payrollemployee;
+    //     $old_record = $payrollemployee;
+    //     $payrollemployee -> update([
+    //         'name' => $request['name'], 
+	// 		'rateperhour' => $request['rateperhour'],
+	// 		'salary' => $request['salary'],
+	// 		'working_hour' => $request['working_hour'],
+	// 		'sorting_order' => $request['sorting_order'],	
+    //     ]);
+    //     $locVal = array_map('intval', (array) $request->input('department', []));
+	// 	$locationVal = array_map('intval', (array) $request->input('location', []));
+    //     $new_record = $payrollemployee;
 
-        track_record($new_record, 2, $old_record);
+    //     track_record($new_record, 2, $old_record);
 
-		if (count($locVal)) {
-		    PayrollEmployee_department::where('payrollemp_id', '=', $payrollemployee->id)->where('location', '=', $locationId)->whereNotIn('payrollcat_depid', $locVal)->delete();
-		} else {
-		    PayrollEmployee_department::where('payrollemp_id', '=', $payrollemployee->id)->where('location', '=', $locationId)->delete();
-		}
-		foreach ($locVal as $departmentId) {
-		    PayrollEmployee_department::firstOrCreate(['payrollemp_id' => $payrollemployee->id, 'payrollcat_depid' => $departmentId, 'location' => $locationId]);
-		}
+	// 	if (count($locVal)) {
+	// 	    PayrollEmployee_department::where('payrollemp_id', '=', $payrollemployee->id)->where('location', '=', $locationId)->whereNotIn('payrollcat_depid', $locVal)->delete();
+	// 	} else {
+	// 	    PayrollEmployee_department::where('payrollemp_id', '=', $payrollemployee->id)->where('location', '=', $locationId)->delete();
+	// 	}
+	// 	foreach ($locVal as $departmentId) {
+	// 	    PayrollEmployee_department::firstOrCreate(['payrollemp_id' => $payrollemployee->id, 'payrollcat_depid' => $departmentId, 'location' => $locationId]);
+	// 	}
 
-		if (count($locationVal)) {
-		    PayrollEmployee_location::where('payrollemp_id', '=', $payrollemployee->id)->whereNotIn('payrollcat_depid', $locationVal)->delete();
-		} else {
-		    PayrollEmployee_location::where('payrollemp_id', '=', $payrollemployee->id)->delete();
-		}
-		foreach ($locationVal as $assignedLocationId) {
-		    PayrollEmployee_location::firstOrCreate(['payrollemp_id' => $payrollemployee->id, 'payrollcat_depid' => $assignedLocationId]);
-		}
+	// 	if (count($locationVal)) {
+	// 	    PayrollEmployee_location::where('payrollemp_id', '=', $payrollemployee->id)->whereNotIn('payrollcat_depid', $locationVal)->delete();
+	// 	} else {
+	// 	    PayrollEmployee_location::where('payrollemp_id', '=', $payrollemployee->id)->delete();
+	// 	}
+	// 	foreach ($locationVal as $assignedLocationId) {
+	// 	    PayrollEmployee_location::firstOrCreate(['payrollemp_id' => $payrollemployee->id, 'payrollcat_depid' => $assignedLocationId]);
+	// 	}
 
-		$string = 'Employee ' . $payrollemployee->name . ': Payroll assignments updated';
-		track_record($string, 3);
+	// 	$string = 'Employee ' . $payrollemployee->name . ': Payroll assignments updated';
+	// 	track_record($string, 3);
 		
-		return redirect()->route('payrollemployee.index')->with('message','Employee has been updated successfully!');
+	// 	return redirect()->route('payrollemployee.index')->with('message','Employee has been updated successfully!');
+    // }
+
+    public function update(Request $request, $id)
+    {
+        $locationId = Session::get('location_id');
+
+        // Explicitly fetch the employee from the database.
+        $payrollemployee = PayrollEmployee::findOrFail($id);
+
+        $old_record = clone $payrollemployee;
+
+        // Update employee details.
+        $payrollemployee->update([
+            'name'         => $request->input('name'),
+            'rateperhour'  => $request->input('rateperhour'),
+            'salary'       => $request->input('salary'),
+            'working_hour' => $request->input('working_hour'),
+            'sorting_order'=> $request->input('sorting_order'),
+        ]);
+
+        // Read selected departments and locations.
+        $departmentIds = array_map(
+            'intval',
+            (array) $request->input('department', [])
+        );
+
+        $locationIds = array_map(
+            'intval',
+            (array) $request->input('location', [])
+        );
+
+        // Remove department assignments that are no longer selected.
+        $departmentQuery = PayrollEmployee_department::where(
+            'payrollemp_id',
+            $payrollemployee->id
+        )->where('location', $locationId);
+
+        if (!empty($departmentIds)) {
+            $departmentQuery->whereNotIn('payrollcat_depid', $departmentIds);
+        }
+
+        $departmentQuery->delete();
+
+        // Add missing department assignments.
+        foreach ($departmentIds as $departmentId) {
+            PayrollEmployee_department::firstOrCreate([
+                'payrollemp_id'   => $payrollemployee->id,
+                'payrollcat_depid'=> $departmentId,
+                'location'        => $locationId,
+            ]);
+        }
+
+        // Remove location assignments that are no longer selected.
+        $employeeLocationQuery = PayrollEmployee_location::where(
+            'payrollemp_id',
+            $payrollemployee->id
+        );
+
+        if (!empty($locationIds)) {
+            $employeeLocationQuery->whereNotIn(
+                'payrollcat_depid',
+                $locationIds
+            );
+        }
+
+        $employeeLocationQuery->delete();
+
+        // Add missing location assignments.
+        foreach ($locationIds as $assignedLocationId) {
+            PayrollEmployee_location::firstOrCreate([
+                'payrollemp_id'    => $payrollemployee->id,
+                'payrollcat_depid' => $assignedLocationId,
+            ]);
+        }
+
+        track_record($payrollemployee, 2, $old_record);
+
+        track_record(
+            'Employee ' . $payrollemployee->name .
+            ': Payroll assignments updated',
+            3
+        );
+
+        return redirect()
+            ->route('payrollemployee.index')
+            ->with('message', 'Employee has been updated successfully!');
     }
 
 	

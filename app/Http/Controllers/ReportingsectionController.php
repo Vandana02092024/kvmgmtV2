@@ -37,11 +37,11 @@ class ReportingsectionController extends Controller
 public function index()
     {
 		$locationId = Session::get('location_id');
-        $sales = Sale::where('status', '=', 1)->lists('name','id');
-        $discount = Discount::where('status', '=', 1)->lists('name','id');
-        $adjustment = Adjustment::where('status', '=', 1)->lists('name','id');
-        $receipt = Receipt::where('status', '=', 1)->lists('name','id');
-        $location = Location::where('status', '=', 1)->lists('location','id');
+        $sales = Sale::where('status', '=', 1)->pluck('name','id');
+        $discount = Discount::where('status', '=', 1)->pluck('name','id');
+        $adjustment = Adjustment::where('status', '=', 1)->pluck('name','id');
+        $receipt = Receipt::where('status', '=', 1)->pluck('name','id');
+        $location = Location::where('status', '=', 1)->pluck('location','id');
 		$sorting = array('0'=>'Day','1'=>'Week','2'=>'Month','3'=>'Year');
 		$sorting1 = array('0'=>'Amount & Unit','1'=>'Amount','2'=>'Unit');
         // $result = "SELECT amount,nameDep, dataDate FROM `salesections` WHERE dataDate BETWEEN 'strdate' AND location_id = '4' GROUP BY nameDep";
@@ -80,7 +80,7 @@ public function index()
 	}
     public function store(SalesectionRequest $request)
     {
-	return redirect()->route('reportingsections.create');
+	return redirect()->route('reportingsection.create');
 
     }
     public function show($id)
@@ -96,7 +96,7 @@ public function index()
     }
     public function destroy(Salesection $salesection)
     {
-      return redirect()->route('reportingsections.index');
+      return redirect()->route('reportingsection.index');
     }
 
 	public function chartData(Request $request){

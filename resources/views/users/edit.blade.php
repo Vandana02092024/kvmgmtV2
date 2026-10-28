@@ -25,13 +25,16 @@
             <div class="col-sm-10 col-sm-offset-1">
                 <div class="widget kv-user-create-card">
                     <div class="widget-content">
-                        {!! Form::model($user, array('route' => ['user.update', $user->id], 'method' => 'PUT')) !!}
+                        {!! Form::model($user, [
+                            'url' => url('/user/' . $user->id),
+                            'method' => 'PUT'
+                        ]) !!}
                         {{ csrf_field() }}
 
                         <div class="kv-user-fields">
                             <div class="kv-user-field{{ $errors->has('name') ? ' has-error' : '' }}">
                                 <label for="name">NAME</label>
-                                {!! Form::text('name', null, ['class' => 'form-control', 'id' => 'name']) !!}
+                                {!! Form::text('name', old('name', $user->name), [ 'class' => 'form-control', 'id' => 'name']) !!}
                                 @if ($errors->has('name'))<span class="help-block"><strong>{{ $errors->first('name') }}</strong></span>@endif
                             </div>
                             <div class="kv-user-field{{ $errors->has('email') ? ' has-error' : '' }}">

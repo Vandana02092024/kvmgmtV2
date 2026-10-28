@@ -61,7 +61,7 @@
 
 													|
 
-													{{ link_to_route('location.archive',$location->status == 1 ?'Archive' :'Unarchive',['location' => $location->id, 'st' => $location->status]) }}
+													{{ link_to_route('location.archive', $location->status == 1 ? 'Archive' : 'Unarchive', ['id' => $location->id, 'st' => $location->status]) }}
 													|
 													<a href="{{url('/asign_loaction/'.$location->id)}}"> Menu Asign</a>
 

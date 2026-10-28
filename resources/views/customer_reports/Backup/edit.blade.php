@@ -20,7 +20,7 @@
 					<div class="widget-content no-padding">
 
 						<!-- <form class="widget ng-pristine ng-valid" method="POST" action="{{ url('/report') }}"> -->
-						{!! Form::model($report, array('route' => ['report.update', $report->id], 'method' => 'PUT')) !!}
+						{!! Form::model($report, array('route' => ['report.update', 'report' => $report->id], 'method' => 'PUT')) !!}
 						{{ csrf_field() }}
 
 						{!! Form::hidden('report_id', $report->id, ['class' => 'form-control']) !!}

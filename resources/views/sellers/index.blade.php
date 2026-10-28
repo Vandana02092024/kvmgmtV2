@@ -50,13 +50,24 @@
 			                                <td>{{ $user->name }}</td>
 			                                <td>{{ $user->email }}</td>
 			                                <td>{{ $user->phone }}</td>
-			                                <td>{{ $days[$user->seller_delivery_days] or '' }}</td>
+											<td>
+												@php
+													$deliveryDays = $user->seller_delivery_days
+														? explode(',', $user->seller_delivery_days)
+														: [];
+												@endphp
+
+												{{ collect($deliveryDays)->map(function ($day) use ($days) {
+													return $days[(int) $day] ?? null;
+												})->filter()->implode(', ') }}
+											</td>
+			                                <!-- <td>{{ $days[$user->seller_delivery_days] or '' }}</td> -->
 			                                <td>
 			                                    {!! Form::open(array('route' => ['seller.destroy', $user->id], 'method'=>'DELETE', 'class' => 'delete')) !!}
 			                                        
 			                                        {{ link_to_route('seller.edit','',[$user->id],['class' => 'fa fa-pencil','data-toggle'=>"tooltip", 'data-placement'=>"left", 'title'=>"edit"]) }}
 			                                        |
-													{{ link_to_route('seller.vArchive',$user->status == 1 ?'Archive' :'Unarchive',['user' => $user->id, 'st' => $user->status]) }}
+													{{ link_to_route('seller.vArchive', $user->status == 1 ? 'Archive' : 'Unarchive', ['id' => $user->id, 'st' => $user->status]) }}
 													
 
 			                                    {!! Form::close() !!}

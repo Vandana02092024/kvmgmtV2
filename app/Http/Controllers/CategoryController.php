@@ -80,11 +80,32 @@ class CategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Category $category)
+    // public function update(Request $request, Category $category)
+    // {
+    //     $category->update($request->all());
+    //     return redirect()->route('category.index')->with('message','Category has been updated successfully!');
+    // }
+
+    
+    public function update(Request $request, $id)
     {
-        $category->update($request->all());
-        return redirect()->route('category.index')->with('message','Category has been updated successfully!');
+        $validated = $request->validate([
+            'category' => 'required|string|max:255',
+            'rank' => 'nullable|integer',
+        ]);
+
+        $category = Category::findOrFail($id);
+
+        $category->category = $validated['category'];
+        $category->rank = $validated['rank'] ?? null;
+
+        $category->save();
+
+        return redirect()
+            ->route('category.index')
+            ->with('message', 'Category has been updated successfully!');
     }
+
 	
 	public function catArchive($id , Request $request)
     {

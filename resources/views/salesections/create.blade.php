@@ -444,63 +444,90 @@
                                  <th class="text-center">Amount</th>
                               </tr>
                            </thead>
-                           <?php
-                              $saleArray = $disArray = $adjustArray = $receiptArray = array();
+                              <?php
+                              $saleArray = [];
+                              $disArray = [];
+                              $adjustArray = [];
+                              $receiptArray = [];
+
                               $weekCal = $editWkNo;
                               $storeCal = $storeWeekMatch;
-                              $i = 0;
-                                 foreach($saleData as $saleD => $sd){
-                                       if($sd->saleStatus == '0'){
-                                          $saleArray[$i]['id']= $sd->id;
-                                          $saleArray[$i]['name']= $sd->name;
-                                       }
-                                       if($sd->saleStatus == '1' && ($sd->storeWeekNo == $weekCal) && ($sd->calWeekNo == $storeCal) ){
-                                          $name = $sd->name;
-                                          $saleArray[$i]['id']= $sd->id;
-                                          $saleArray[$i]['name']=$name;
-                                       }
-                                       $i++;
-                                 }
-                                 foreach($discountData as $dD => $dd){
-                                       if($dd->disStatus == '0'){
-                                          $disArray[$i]['id']= $dd->id;
-                                          $disArray[$i]['name']= $dd->name;
-                                       }
-                                       if($dd->disStatus == '1' && ($dd->storeWeekNo == $weekCal) && ($dd->calWeekNo == $storeCal) ){
-                                          $name = $dd->name;
-                                          $disArray[$i]['id']= $dd->id;
-                                          $disArray[$i]['name']=$name;
-                                       }
-                                       $i++;
-                                 }
-                                 foreach($adjustmentData as $adjD => $adj){
-                                       if($adj->adjStatus == '0'){
-                                          $adjustArray[$i]['id']= $adj->id;
-                                          $adjustArray[$i]['name']= $adj->name;
-                                       }
-                                       if($adj->adjStatus == '1' && ($adj->storeWeekNo == $weekCal) && ($adj->calWeekNo == $storeCal) ){
-                                          $name = $adj->name;
-                                          $adjustArray[$i]['id']= $adj->id;
-                                          $adjustArray[$i]['name']=$name;
-                                       }
-                                       $i++;
-                                 }
 
-                                 foreach($receiptData as $recD => $rD){
-                                       if($rD->recStatus == '0'){
-                                          $receiptArray[$i]['id']= $rD->id;
-                                          $receiptArray[$i]['name']= $rD->name;
-                                       }
-
-                                       if($rD->recStatus == '1' && ($rD->storeWeekNo == $weekCal) && ($rD->calWeekNo == $storeCal) ){
-                                          $name = $rD->name;
-                                          $receiptArray[$i]['id']= $rD->id;
-                                          $receiptArray[$i]['name']=$name;
-                                       }
-                                       $i++;
+                              // Sales
+                              foreach ($saleData as $sd) {
+                                 if ((string) $sd->saleStatus === '0') {
+                                    $saleArray[] = [
+                                          'id' => $sd->id,
+                                          'name' => $sd->name,
+                                    ];
+                                 } elseif (
+                                    (string) $sd->saleStatus === '1' &&
+                                    $sd->storeWeekNo == $weekCal &&
+                                    $sd->calWeekNo == $storeCal
+                                 ) {
+                                    $saleArray[] = [
+                                          'id' => $sd->id,
+                                          'name' => $sd->name,
+                                    ];
                                  }
+                              }
 
+                              // Discounts
+                              foreach ($discountData as $dd) {
+                                 if ((string) $dd->disStatus === '0') {
+                                    $disArray[] = [
+                                          'id' => $dd->id,
+                                          'name' => $dd->name,
+                                    ];
+                                 } elseif (
+                                    (string) $dd->disStatus === '1' &&
+                                    $dd->storeWeekNo == $weekCal &&
+                                    $dd->calWeekNo == $storeCal
+                                 ) {
+                                    $disArray[] = [
+                                          'id' => $dd->id,
+                                          'name' => $dd->name,
+                                    ];
+                                 }
+                              }
 
+                              // Adjustments
+                              foreach ($adjustmentData as $adj) {
+                                 if ((string) $adj->adjStatus === '0') {
+                                    $adjustArray[] = [
+                                          'id' => $adj->id,
+                                          'name' => $adj->name,
+                                    ];
+                                 } elseif (
+                                    (string) $adj->adjStatus === '1' &&
+                                    $adj->storeWeekNo == $weekCal &&
+                                    $adj->calWeekNo == $storeCal
+                                 ) {
+                                    $adjustArray[] = [
+                                          'id' => $adj->id,
+                                          'name' => $adj->name,
+                                    ];
+                                 }
+                              }
+
+                              // Receipts
+                              foreach ($receiptData as $rd) {
+                                 if ((string) $rd->recStatus === '0') {
+                                    $receiptArray[] = [
+                                          'id' => $rd->id,
+                                          'name' => $rd->name,
+                                    ];
+                                 } elseif (
+                                    (string) $rd->recStatus === '1' &&
+                                    $rd->storeWeekNo == $weekCal &&
+                                    $rd->calWeekNo == $storeCal
+                                 ) {
+                                    $receiptArray[] = [
+                                          'id' => $rd->id,
+                                          'name' => $rd->name,
+                                    ];
+                                 }
+                              }
                               ?>
                            <tbody>
                               <tr class="thead-Dark ledger-section-sales">

@@ -74,7 +74,7 @@
 
 		                                        |
 
-												{{ link_to_route('product.proArchive',$product->status == 1 ?'Archive' :'Unarchive',['product'=>$product->id, 'st' => $product->status]) }}
+												{{ link_to_route('product.proArchive', $product->status == 1 ? 'Archive' : 'Unarchive', ['id' => $product->id, 'st' => $product->status]) }}
 
 		                                        <!-- |
 		                                        {{ Form::button('',['class'=>'fa fa-close','type'=>'submit','data-toggle'=>"tooltip", 'data-placement'=>"right", 'title'=>"delete"]) }} -->
@@ -120,7 +120,11 @@
 	<div class="modal fade kv-product-modal" id="editProductModal{{ $product->id }}" tabindex="-1" role="dialog" aria-labelledby="editProductModalTitle{{ $product->id }}">
 		<div class="modal-dialog" role="document"><div class="modal-content">
 			<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="editProductModalTitle{{ $product->id }}">Edit Product</h4></div>
-			{!! Form::model($product, ['route' => ['product.update', $product->id], 'method' => 'PUT']) !!}
+			
+			{!! Form::model($product, [
+				'url' => url('/product/' . $product->id),
+				'method' => 'PUT'
+			]) !!}
 			<div class="modal-body"><div class="kv-product-form-grid">
 				<div class="form-group"><label>Code</label>{!! Form::text('code', null, ['class' => 'form-control']) !!}@if($errors->has('code'))<span class="help-block">{{ $errors->first('code') }}</span>@endif</div>
 				<div class="form-group"><label>Product name</label>{!! Form::text('name', null, ['class' => 'form-control']) !!}@if($errors->has('name'))<span class="help-block">{{ $errors->first('name') }}</span>@endif</div>

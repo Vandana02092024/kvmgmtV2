@@ -54,7 +54,7 @@
 			                                        
 			                                        |   
 													
-													{{ link_to_route('employee.empArchive',$employee->status == 1 ?'Archive' :'Unarchive',['dep' => $employee->id, 'st' => $employee->status]) }}
+													{{ link_to_route('employee.empArchive', $employee->status == 1 ? 'Archive' : 'Unarchive', ['id' => $employee->id, 'st' => $employee->status]) }}
 													
 													
 													

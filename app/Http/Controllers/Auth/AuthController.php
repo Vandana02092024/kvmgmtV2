@@ -6,8 +6,8 @@ use App\User;
 use Validator;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\ThrottlesLogins;
-use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Foundation\Auth\RegistersUsers;
 
 class AuthController extends Controller
 {
@@ -22,7 +22,10 @@ class AuthController extends Controller
     |
     */
 
-    use AuthenticatesAndRegistersUsers, ThrottlesLogins;
+    use AuthenticatesUsers, RegistersUsers {
+        AuthenticatesUsers::guard insteadof RegistersUsers;
+        AuthenticatesUsers::redirectPath insteadof RegistersUsers;
+    }
 
     /**
      * Where to redirect users after login / registration.
@@ -39,7 +42,7 @@ class AuthController extends Controller
     public function __construct()
     {
   
-        $this->middleware($this->guestMiddleware(), ['except' => 'logout']);
+        $this->middleware('guest')->except('logout');
     }
 
     /**

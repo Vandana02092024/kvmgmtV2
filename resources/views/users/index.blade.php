@@ -62,7 +62,7 @@
 
 													|
 
-													{{ link_to_route('user.archive',$user->status == 1 ?'Archive' :'Unarchive',['user' => $user->id, 'st' => $user->status]) }}
+													{{ link_to_route('user.archive', $user->status == 1 ? 'Archive' : 'Unarchive', ['id' => $user->id, 'st' => $user->status]) }}
 			                                        <!-- |
 			                                        {{ Form::button('',['class'=>'fa fa-close','type'=>'submit','data-toggle'=>"tooltip", 'data-placement'=>"right", 'title'=>"delete"]) }} -->
 

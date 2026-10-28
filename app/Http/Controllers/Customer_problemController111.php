@@ -34,18 +34,18 @@ class Customer_problemController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->users = User::where('role', '!=', 'Owner')->lists('name', 'id');   
+        $this->users = User::where('role', '!=', 'Owner')->pluck('name', 'id');   
         $this->users->prepend('- Select User -', '');
 
-        $this->problem = Customer_problem::distinct()->lists('problem', 'problem');
+        $this->problem = Customer_problem::distinct()->pluck('problem', 'problem');
         $this->problem->prepend('- Select Problem -', '');
         $this->status  = array(-1 => '- Select Status -', 'Not Resolved', 'Resolved', 'N/A');
 
-        $this->brand = Brand::lists('brand','id');
-        $this->color = Color::lists('color','id');
-        $this->material = Material::lists('material','id');
-        $this->size = Size::lists('size','id');
-        $this->type = Type::lists('type','id');
+        $this->brand = Brand::pluck('brand','id');
+        $this->color = Color::pluck('color','id');
+        $this->material = Material::pluck('material','id');
+        $this->size = Size::pluck('size','id');
+        $this->type = Type::pluck('type','id');
     }
 
     /**

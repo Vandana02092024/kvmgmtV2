@@ -37,7 +37,7 @@
 			<div class="col-sm-8">
 				<div class="widget">
 					<div class="widget-content">
-						{!! Form::model($vendor, array('route' => ['vendors.update', $vendor->id], 'method' => 'PUT')) !!}
+						{!! Form::model($vendor, array('route' => ['vendor.update', 'vendor' => $vendor->id], 'method' => 'PUT')) !!}
         				{{ csrf_field() }}
 							<div class="widget-content">
 								<div class="row form-group{{ $errors->has('name') ? ' has-error' : '' }}">

@@ -24,9 +24,9 @@ class OrderController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->category = Category::lists('category', 'id');
-        $this->seller = Seller::lists('name', 'id');
-        $this->users = User::lists('name', 'id');
+        $this->category = Category::pluck('category', 'id');
+        $this->seller = Seller::pluck('name', 'id');
+        $this->users = User::pluck('name', 'id');
     }
 
     /**

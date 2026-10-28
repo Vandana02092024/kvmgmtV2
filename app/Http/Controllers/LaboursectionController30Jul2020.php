@@ -197,8 +197,8 @@ public function index()
 		//$nextFri = $requestDate[1];
 		$dateDataEnd = explode('-',$requestDate[0]);
 		$dateend = $dateDataEnd[2]."-".$dateDataEnd[0]."-".$dateDataEnd[1];			
-		Session::set('checkDateType', 1);
-		Session::set('checkDateTime', $dateend);
+		Session::put('checkDateType', 1);
+		Session::put('checkDateTime', $dateend);
 		
 		$queryData = DB::table('locations')->select('startdate')->where('status', '=', 1)->where('id', '=', $locationId)->get();
 		$sDateStore =  strtotime($queryData[0]->startdate);

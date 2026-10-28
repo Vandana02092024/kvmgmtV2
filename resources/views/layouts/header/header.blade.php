@@ -43,11 +43,4 @@ $.ajaxSetup({
     }
 });
 
-//// window close //////
-$(window).unload(function() { 
- window.location = 'https://kvmgmt.com/logout/';
-});
-
-
-
 </script>

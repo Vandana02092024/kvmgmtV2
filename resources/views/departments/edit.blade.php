@@ -27,7 +27,7 @@
 			<div class="col-sm-8">
 				<div class="widget">
 					<div class="widget-content">
-						{!! Form::model($department, array('route' => ['department.update', $department->id], 'method' => 'PUT')) !!}
+						{!! Form::model($department, array('route' => ['department.update', 'department' => $department->id], 'method' => 'PUT')) !!}
         				{{ csrf_field() }}
 							<div class="widget-content">
 

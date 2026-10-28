@@ -59,7 +59,7 @@
 													
 													|
 													
-													{{ link_to_route('adjustment.archive',$adjustment->status == 1 ?'Archive' :'Unarchive',['adjustment' => $adjustment->id, 'st' => $adjustment->status]) }}
+													{{ link_to_route('adjustment.archive', $adjustment->status == 1 ? 'Archive' : 'Unarchive', ['id' => $adjustment->id, 'st' => $adjustment->status]) }}
 			                                        <!-- |
 			                                        {{ Form::button('',['class'=>'fa fa-close','type'=>'submit','data-toggle'=>"tooltip", 'data-placement'=>"right", 'title'=>"delete"]) }} -->
 

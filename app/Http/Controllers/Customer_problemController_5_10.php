@@ -33,26 +33,26 @@ class Customer_problemController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->users = User::where('role', '!=', 'Owner')->where('status', '=', 1)->lists('name', 'id');   
+        $this->users = User::where('role', '!=', 'Owner')->where('status', '=', 1)->pluck('name', 'id');   
         $this->users->prepend('- Select User -', '');
 		
-        $this->problem = Customer_problem::distinct()->lists('problem', 'problem');
+        $this->problem = Customer_problem::distinct()->pluck('problem', 'problem');
         $this->problem->prepend('- Select Problem -', '');
         $this->status  = array(-1 => '- Select Status -', 'Not Resolved', 'Resolved', 'N/A');
 
-        $this->brand = Brand::orderBy('brand')->lists('brand','id');
+        $this->brand = Brand::orderBy('brand')->pluck('brand','id');
 		$this->brand->prepend('- Please Select -', '');
 		
-        $this->color = Color::lists('color','id');
+        $this->color = Color::pluck('color','id');
 		$this->color->prepend('- Please Select -', '');
 		
-        $this->material = Material::orderBy('material')->lists('material','id');
+        $this->material = Material::orderBy('material')->pluck('material','id');
 		$this->material->prepend('- Please Select -', '');
 		
-        $this->size = Size::orderBy('size')->lists('size','id');
+        $this->size = Size::orderBy('size')->pluck('size','id');
 		$this->size->prepend('- Please Select -', '');
 		
-        $this->type = Type::orderBy('type')->lists('type','id');
+        $this->type = Type::orderBy('type')->pluck('type','id');
 		$this->type->prepend('- Please Select -', '');
     }
 
@@ -65,7 +65,7 @@ class Customer_problemController extends Controller
     {
         // if (Auth::user()->role != 'Owner')
         // {
-			$locationCode = DB::table('locations')->select('location_code')->where('id', '=', Session::get('location_id'))->lists('location_code');
+			$locationCode = DB::table('locations')->select('location_code')->where('id', '=', Session::get('location_id'))->pluck('location_code');
 
             $reports = DB::table('customer_problems')->leftJoin('users', 'users.id','=','customer_problems.created_by')->where('customer_problems.location', '=', Session::get('location_id'))->orderBy('customer_problems.created_at', 'DESC')->get();
 			
@@ -134,8 +134,8 @@ class Customer_problemController extends Controller
      */
     public function create()
     {
-		$usersList   = User::lists('name','name');
-		$addUserList = Search_result::where('by_who', '!=', ' ')->lists('by_who','by_who');
+		$usersList   = User::pluck('name','name');
+		$addUserList = Search_result::where('by_who', '!=', ' ')->pluck('by_who','by_who');
 		$allUsers =  \DB::table('users')
                      ->select('name');
          
@@ -146,7 +146,7 @@ class Customer_problemController extends Controller
 						->select('by_who')
 						->where('by_who', '!=', '');
 						
-		$users = $allUsers->union($custmerUser)->union($searchUser)->orderBy('name')->lists('name','name');
+		$users = $allUsers->union($custmerUser)->union($searchUser)->orderBy('name')->pluck('name','name');
 	
         $brand = $this->brand;
         $color = $this->color;
@@ -347,7 +347,7 @@ class Customer_problemController extends Controller
 						->select('by_who')
 						->where('by_who', '!=', '');
 						
-		$users = $allUsers->union($custmerUser)->union($searchUser)->orderBy('name')->lists('name','name');
+		$users = $allUsers->union($custmerUser)->union($searchUser)->orderBy('name')->pluck('name','name');
 		
 		$problemLogs = \DB::table('problem_report_logs')
 						->leftJoin('users', 'problem_report_logs.user_name', '=', 'users.id')

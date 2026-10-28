@@ -13,7 +13,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->app['request']->server->set('HTTPS', true);
+        // Let the web server determine whether the current request uses HTTPS.
     }
 
     /**

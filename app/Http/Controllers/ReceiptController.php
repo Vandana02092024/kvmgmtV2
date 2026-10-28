@@ -17,7 +17,7 @@ class ReceiptController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->locations = Location::lists('location', 'id');
+        $this->locations = Location::pluck('location', 'id');
         $this->roles     = array('Owner' => 'Owner', 'Supervisor' => 'Supervisor', 'Employee' => 'Employee');
     }
 
@@ -114,30 +114,83 @@ class ReceiptController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Receipt $receipt)
-    {
+    // public function update(Request $request, Receipt $receipt)
+    // {
         
 
-        $receipt->update([
-            'name' => $request['name'],
-			'sorting_order' => $request['sorting_order'],
+    //     $receipt->update([
+    //         'name' => $request['name'],
+	// 		'sorting_order' => $request['sorting_order'],
+    //     ]);
+
+	// 	$locVal = $request->input('location', []);
+	// 	if (!is_array($locVal)) $locVal = [$locVal];
+	// 	$existingLocations = [];
+	// 	foreach (Receipt_location::where('receipt', $receipt->id)->get(['location']) as $link) {
+	// 		$existingLocations[] = (string) $link->location;
+	// 	}
+	// 	foreach (array_unique($locVal) as $locValue) {
+	// 		if ($locValue !== '' && !in_array((string) $locValue, $existingLocations, true)) {
+	// 			Receipt_location::create(['receipt' => $receipt->id, 'location' => $locValue]);
+	// 		}
+	// 	}
+		
+		
+		
+	// 	return redirect()->route('receipt.index')->with('message','Receipt has been updated successfully!');
+    // }
+
+    
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'sorting_order' => 'nullable|integer',
+            'location' => 'nullable|array',
+            'location.*' => 'integer|exists:locations,id',
         ]);
 
-		$locVal = $request->input('location', []);
-		if (!is_array($locVal)) $locVal = [$locVal];
-		$existingLocations = [];
-		foreach (Receipt_location::where('receipt', $receipt->id)->get(['location']) as $link) {
-			$existingLocations[] = (string) $link->location;
-		}
-		foreach (array_unique($locVal) as $locValue) {
-			if ($locValue !== '' && !in_array((string) $locValue, $existingLocations, true)) {
-				Receipt_location::create(['receipt' => $receipt->id, 'location' => $locValue]);
-			}
-		}
-		
-		
-		
-		return redirect()->route('receipt.index')->with('message','Receipt has been updated successfully!');
+        $receipt = Receipt::findOrFail($id);
+
+        // Update receipt details.
+        $receipt->name = $request->input('name');
+        $receipt->sorting_order = $request->input('sorting_order');
+        $receipt->save();
+
+        // Get selected locations.
+        $locVal = $request->input('location', []);
+
+        if (!is_array($locVal)) {
+            $locVal = [$locVal];
+        }
+
+        $locVal = array_values(array_unique(array_filter($locVal, function ($value) {
+            return $value !== null && $value !== '';
+        })));
+
+        // Synchronize receipt locations.
+        foreach ($locVal as $locValue) {
+            Receipt_location::updateOrCreate(
+                [
+                    'receipt' => $receipt->id,
+                    'location' => $locValue,
+                ],
+                []
+            );
+        }
+
+        // Remove locations that are no longer selected.
+        $query = Receipt_location::where('receipt', $receipt->id);
+
+        if (!empty($locVal)) {
+            $query->whereNotIn('location', $locVal);
+        }
+
+        $query->delete();
+
+        return redirect()
+            ->route('receipt.index')
+            ->with('message', 'Receipt has been updated successfully!');
     }
 
 	

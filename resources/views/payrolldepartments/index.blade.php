@@ -26,7 +26,7 @@
                 @foreach($payrolldepartments as $payrolldep)<tr><td>{{ $payrolldep->name }}</td><td>
                     {!! Form::open(array('route' => ['payrolldepartment.destroy', $payrolldep->id], 'method'=>'DELETE', 'class' => 'delete')) !!}
                     {{ link_to_route('payrolldepartment.edit','',[$payrolldep->id],['class' => 'fa fa-pencil','data-toggle'=>'tooltip','data-placement'=>'left','title'=>'Edit']) }} &nbsp;|&nbsp;
-                    {{ link_to_route('payrolldepartment.archive',$payrolldep->status == 1 ? 'Archive' : 'Unarchive',['payrolldep' => $payrolldep->id, 'st' => $payrolldep->status]) }}
+                    {{ link_to_route('payrolldepartment.archive', $payrolldep->status == 1 ? 'Archive' : 'Unarchive', ['id' => $payrolldep->id, 'st' => $payrolldep->status]) }}
                     {!! Form::close() !!}
                 </td></tr>@endforeach
             </tbody></table>
