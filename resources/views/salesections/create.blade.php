@@ -165,7 +165,7 @@
          </div> -->
       <div class="row">
          <div class="col-sm-12">
-            <div class="widget form-layout  summary-bx">
+            <div class="widget-nw form-layout  summary-bx">
                <div class="widget-content padding" style="padding:0;">
                   <div class="row kv-summary-grid">
                      <div class= "col-md-2">
