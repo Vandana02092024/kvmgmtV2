@@ -126,52 +126,7 @@
             <div class="col-sm-12">
                 <div class="widget">
 					<div class="row kv-sales-toolbar">
-
-												@php
-												$week=getWeekByDate($dat->dataDate);
-												$weekdate=getStartAndEndDatebyweek($week,date('Y-m-d', strtotime($dat->dataDate)));
-												@endphp
-
-												<?php
-												$tot_sale = getLaberRate($dat->location_id,$dat->storeNo);
-								$range = $dat->storeNo;  $gsale = number_format($dat->amount,2);
-								$sale_tax = getSaleTax($dat->location_id,$weekdate['start_date'],$weekdate['end_date']);
-								$netsale= getNetSale($dat->location_id,$weekdate['start_date'],$weekdate['end_date'])-$sale_tax
-
-												?>
-
-												<!-- Add by kajal -->
-												<?php
-													// $update_week = correctWeekUpdate($weekdate['end_date'],$week,$weekdate['start_date'],$dat->storeNo,$dat->location_id);
-												?>
-												<!-- End -->
-												<?php
-
-										//		deleteDuplicateData($dat->storeNo,$dat->location_id,$weekdate['start_date'],$weekdate['end_date'])?>
-												<tr>
-														<td>{{ $week }} </td>
-														<td>{{ $dat->storeNo }}</td>
-														<td><?php echo date("m-d-Y", strtotime($weekdate['start_date']));  ?></td>
-														<td><?php echo date("m-d-Y", strtotime($weekdate['end_date'])); ?></td>
-														<td>{{ $gsale }}</td>
-														<td>{{  number_format($netsale,2) }}</td>
-														<td> @if(($netsale >0) && ($tot_sale) > 0)  {{ number_format(($tot_sale/$netsale)*100,2)}} @else 0.00 @endif </td>
-														<td>
-													{{ link_to_route('salesection.edit','',['record-'.$dat->id],['class' => 'fa fa-pencil','data-toggle'=>"tooltip", 'data-placement'=>"left", 'title'=>"edit"]) }}
-														&nbsp;
-														{{ link_to_route('salesection.printData','',[$dat->storeNo],['class' => 'fa fa-print','data-toggle'=>"tooltip", 'data-placement'=>"left", 'title'=>"Print"]) }}
-														&nbsp;
-														{{ link_to_route('labor_report','',[$range],['class' => 'fa fa-file','data-toggle'=>"tooltip", 'data-placement'=>"left", 'title'=>"Labor Report"]) }}
-														</td>
-
-		                     				</tr>
-		                   @endforeach
-						        </tbody>
-							    </table>
-                            @include('salesections.sales-pagination', ['paginator' => $data])
-						</div>
-
-						<div class="kv-sales-filters">
+                        <div class="kv-sales-filters">
 							<input
 								type="date"
 								title="From Date"
@@ -330,6 +285,7 @@
                                 </tbody>
 
                             </table>
+                            @include('salesections.sales-pagination', ['paginator' => $data])
 
                         </div>
                     </div>
