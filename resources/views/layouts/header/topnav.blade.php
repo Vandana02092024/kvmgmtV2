@@ -233,6 +233,15 @@
             </div>
         </div>
     </div>
+    
+<!-- Page Loading Overlay -->
+<div id="pageLoader" aria-live="polite" aria-label="Loading page">
+    <div class="page-loader-content">
+        <div class="page-loader-spinner"></div>
+        <p>Loading, please wait...</p>
+    </div>
+</div>
+
 </nav>
 @endif
 <script>
@@ -254,3 +263,69 @@
     });
 }());
 </script>
+
+
+<script>
+(function () {
+    var loader = document.getElementById('pageLoader');
+
+    if (!loader) {
+        return;
+    }
+
+    function showLoader() {
+        loader.style.display = 'flex';
+    }
+
+    function hideLoader() {
+        loader.style.display = 'none';
+    }
+
+    // Show loader when a normal navigation link is clicked.
+    document.addEventListener('click', function (event) {
+        var link = event.target.closest('a');
+
+        if (!link) {
+            return;
+        }
+
+        // Ignore links that do not navigate to another page.
+        if (
+            !link.href ||
+            link.getAttribute('href').startsWith('#') ||
+            link.getAttribute('href').startsWith('javascript:') ||
+            link.hasAttribute('download') ||
+            link.target === '_blank' ||
+            event.ctrlKey ||
+            event.metaKey ||
+            event.shiftKey ||
+            event.altKey ||
+            event.button !== 0
+        ) {
+            return;
+        }
+
+        var targetUrl = new URL(link.href, window.location.href);
+
+        // Do not show loader for the same page URL.
+        if (targetUrl.href === window.location.href) {
+            return;
+        }
+
+        showLoader();
+    });
+
+    // Show loader when a normal form is submitted.
+    document.addEventListener('submit', function () {
+        showLoader();
+    });
+
+    // Hide the loader when the page is fully loaded.
+    window.addEventListener('load', hideLoader);
+
+    // Also hide it when returning through browser Back/Forward.
+    window.addEventListener('pageshow', hideLoader);
+
+})();
+</script>
+

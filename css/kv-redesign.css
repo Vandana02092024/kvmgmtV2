@@ -1777,3 +1777,46 @@ html, body { overflow-x: clip; }
     float: right !important;
     margin-left: 8px !important;
 }
+
+
+
+/* Full-page loading overlay */
+#pageLoader {
+    display: none;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.90);
+    z-index: 999999;
+    align-items: center;
+    justify-content: center;
+}
+
+#pageLoader .page-loader-content {
+    text-align: center;
+    color: #17263b;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+#pageLoader .page-loader-spinner {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #dce3ed;
+    border-top: 5px solid #17263b;
+    border-radius: 50%;
+    animation: pageLoaderSpin 0.8s linear infinite;
+    margin: 0 auto 15px;
+}
+
+#pageLoader p {
+    margin: 0;
+}
+
+@keyframes pageLoaderSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
