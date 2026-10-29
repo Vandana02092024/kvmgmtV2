@@ -209,7 +209,7 @@ table.dataTable thead .sorting_asc, .sorting_desc, .sorting {
 	.stats h4{font-size: 14px;
     color: #9a9a9a;
     margin-bottom: 15px;}
-	.stats p{    font-size: 20px;
+	.stats p{    font-size: 11px;
     color: #272727;}
 	.filter-list{display: inline-block;}
 	.filter-list .filter-item{display: inline-block; padding:0 9px; border-right: 1px solid #eee; margin-bottom: 5px;}

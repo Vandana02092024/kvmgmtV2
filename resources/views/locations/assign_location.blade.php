@@ -77,8 +77,12 @@
                                     <td>{{ $location->location }} </td>
                                     <td>{{ $location->name }}</td>
                                     <td>
-                                     <label class="switch" >
-                                     <input type="checkbox" @if($location->status==1)checked @endif onclick="changeStatus({{$location->id}})">
+                                      <label class="switch" >
+                                      <input type="checkbox"
+                                        {{ $location->status == 1 ? 'checked' : '' }}
+                                        onchange="changeStatus(this, {{ $location->id }})"
+                                      >
+                                     <!-- <input type="checkbox" @if($location->status==1)checked @endif onclick="changeStatus({{$location->id}})"> -->
                                      <span class="slider round"></span>
                                      </label>
                                     </td>
@@ -112,25 +116,87 @@
    			"aaSorting": []
    		});
    	} );
-    function changeStatus(id){
-      bootbox.confirm('Are you sure want to update it?',
-       function(result) {
-           if(result){
-                   $.ajax({
-                   url : "{{url('asign_loaction_status')}}/"+id,
-                   method : 'get',
-                   success : function(resp){
-                       bootbox.alert('Status updated successfully.');
-                      // location.reload()
-                   },
-                   error : function(){
-                       bootbox.alert('Server error. Please try again.');
-                   }
-               });
-           }
+    // function changeStatus(id){
+    //   bootbox.confirm('Are you sure want to update it?',
+    //    function(result) {
+    //        if(result){
+    //                $.ajax({
+    //                url : "{{url('asign_loaction_status')}}/"+id,
+    //                method : 'get',
+    //                success : function(resp){
+    //                    bootbox.alert('Status updated successfully.');
+    //                   // location.reload()
+    //                },
+    //                error : function(){
+    //                    bootbox.alert('Server error. Please try again.');
+    //                }
+    //            });
+    //        }
 
-       });
-    }
+    //    });
+    // }
+    
+
+  function changeStatus(checkbox, id) {
+      var newStatus = checkbox.checked;
+      var previousStatus = !newStatus;
+
+      // Restore the old checkbox state until confirmation.
+      checkbox.checked = previousStatus;
+
+      bootbox.confirm({
+          message: 'Are you sure you want to update it?',
+          backdrop: false,
+          callback: function (result) {
+              if (!result) {
+                  checkbox.checked = previousStatus;
+                  return;
+              }
+
+              $.ajax({
+                  url: "{{ url('asign_loaction_status') }}/" + id,
+                  method: 'GET',
+
+                  success: function (resp) {
+                      checkbox.checked = newStatus;
+
+                      // Show success message after the request succeeds.
+                      var successBox = bootbox.alert({
+                          message: 'Status updated successfully.',
+                          backdrop: false,
+                          callback: function () {
+                              // The alert closes when OK is clicked.
+                          }
+                      });
+
+                  },
+
+                  error: function () {
+                      checkbox.checked = previousStatus;
+
+                      bootbox.alert({
+                          message: 'Server error. Please try again.',
+                          backdrop: false
+                      });
+                  }
+              });
+          }
+      });
+  }
+
+  $(document).on('click', '.bootbox .modal-footer button', function () {
+      var modal = $(this).closest('.bootbox');
+
+      modal.modal('hide');
+
+      setTimeout(function () {
+          $('.modal-backdrop').remove();
+          $('body').removeClass('modal-open');
+          $('body').css('padding-right', '');
+      }, 300);
+  });
+
+
 </script>
 <style>
 .switch {
@@ -191,5 +257,22 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
+
+/* Keep the page clear while the confirmation dialog is open */
+.modal-backdrop {
+    opacity: 0 !important;
+    background-color: transparent !important;
+}
+
+/* Keep the confirmation dialog readable */
+.bootbox .modal-content {
+    opacity: 1 !important;
+    filter: none !important;
+}
+
+.bootbox .modal-dialog {
+    filter: none !important;
+}
+
 </style>
 @endsection

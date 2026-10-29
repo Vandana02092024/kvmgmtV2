@@ -404,13 +404,13 @@ label { margin-bottom: 5px; color: #475c75; font-size: 12px; }
 .kv-claims-hero h3.heading > .kv-claim-primary-action { border-color: #f2bd3b !important; color: #17263b !important; background: #f2bd3b !important; }
 .kv-claims-hero h3.heading > .kv-claim-primary-action:hover { border-color: #ffd15e !important; background: #ffd15e !important; }
 .kv-claims-hero h3.heading > .kv-claim-back { border-color: rgba(255,255,255,.3) !important; color: #fff !important; background: rgba(255,255,255,.1) !important; }
-#vendorSelForm { margin: 0 0 12px; }
+#vendorSelForm { margin: 0 0 0px; }
 #vendorSelForm .kv-claims-filter { margin: 0; }
 #vendorSelForm .kv-claims-filter > .col-sm-12 { padding: 0; }
-#vendorSelForm .kv-claims-filter .widget-content { padding: 8px 14px !important; }
+#vendorSelForm .kv-claims-filter .widget-content { padding: 0px 14px !important; }
 #vendorSelForm .kv-claims-filter .form-group { display: flex; align-items: center; justify-content: flex-end; flex-wrap: nowrap; gap: 8px; margin: 0 !important; }
-#vendorSelForm .kv-claims-filter .form-group > label { flex: 0 0 auto; width: auto; margin: 0; padding: 0; color: #526780; font-size: 10px; }
-#vendorSelForm .kv-claims-filter .form-group > .col-sm-3 { flex: 0 1 220px; width: 220px; padding: 0; }
+#vendorSelForm .kv-claims-filter .form-group > label { flex: 0 0 auto; width: auto; margin: 0; padding: 0; color: #fff; font-size: 12px; }
+#vendorSelForm .kv-claims-filter .form-group > .col-sm-3 { flex: 0 1 220px; width: 200px; padding: 0; }
 #vendorSelForm .kv-claims-filter .form-group > .col-sm-3 .form-control { height: 34px; min-height: 34px; }
 #vendorSelForm .kv-claims-filter .form-group > .col-sm-8 { display: flex; flex: 0 0 auto; align-items: center; justify-content: flex-end; gap: 6px; width: auto; padding: 0; }
 #vendorSelForm .kv-claims-filter .form-group > .col-sm-8 .v-btn { float: none; margin: 0; padding: 7px 12px; }
@@ -427,7 +427,7 @@ label { margin-bottom: 5px; color: #475c75; font-size: 12px; }
 .main-content .widget:not(.kv-claim-form) table.table > thead > tr > th,
 .main-content .widget:not(.kv-claim-form) table.display > thead > tr > th { padding: 8px 10px; border-right: 1px solid #e0e7f0; border-bottom: 1px solid #dce5ef; color: #29415e; background: #f0f4f9; font-size: 10px; font-weight: 700; line-height: 1.25; vertical-align: middle; }
 .main-content .widget:not(.kv-claim-form) table.table > tbody > tr > td,
-.main-content .widget:not(.kv-claim-form) table.display > tbody > tr > td { padding: 7px 10px; border-right: 1px solid #e8edf4; border-bottom: 1px solid #e8edf4; color: #324a66; font-size: 9px; line-height: 1.35; vertical-align: middle; }
+.main-content .widget:not(.kv-claim-form) table.display > tbody > tr > td { padding: 7px 10px; border-right: 1px solid #e8edf4; border-bottom: 1px solid #e8edf4; color: #324a66; font-size: 11px; line-height: 1.35; vertical-align: middle; }
 .main-content .widget:not(.kv-claim-form) table.table > tbody > tr:last-child > td,
 .main-content .widget:not(.kv-claim-form) table.display > tbody > tr:last-child > td { border-bottom: 0; }
 .main-content .widget:not(.kv-claim-form) table.table > thead > tr > th:last-child,
@@ -1122,10 +1122,10 @@ html, body { overflow-x: clip; }
 .kv-module-screen .page-heading h3.heading > .v-btn i { margin-right: 4px; }
 .kv-module-screen .page-heading + br { display: none; }
 .kv-module-screen .main-content .alert { margin: 0 0 14px; padding: 11px 14px; border: 1px solid #bcebd9; border-radius: 8px; color: #087e60; background: #edfaf4; }
-.kv-module-screen .widget {
-    border: 1px solid #dce5ef;
-    border-radius: 10px;
-    background: #fff;
+.kv-module-screen .widget-new {
+    border: 0px solid #dce5ef;
+    border-radius: 0px;
+    background: transparent;
     box-shadow: 0 3px 10px rgba(27,48,74,.045);
 }
 .kv-module-screen .widget > .widget-content { padding: 14px 16px; }
