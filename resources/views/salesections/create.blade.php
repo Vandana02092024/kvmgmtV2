@@ -365,7 +365,7 @@
       <div class="modal fade kv-location-modal" id="dailyEntryPdfModal" tabindex="-1" role="dialog" aria-labelledby="dailyEntryPdfModalTitle">
          <div class="modal-dialog" role="document">
             <div class="modal-content">
-               <form method="POST" action="{{ url('/uploads/daily-entry-pdf') }}" enctype="multipart/form-data">
+               <form id="sales-pdf-upload-form" method="POST" action="{{ url('/uploads/daily-entry-pdf') }}" enctype="multipart/form-data">
                   {{ csrf_field() }}
                   <div class="modal-header">
                      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -378,18 +378,25 @@
                         <div class="form-group">
                            <label for="dailyEntryPdfFile">PDF file</label>
                            <input class="form-control" type="file" name="file" id="dailyEntryPdfFile" accept=".pdf,application/pdf" required>
-                           <small class="help-block">PDF only, up to 20 MB.</small>
+                           <small class="help-block">One daily sales report, up to 20 MB. The PDF date must match the selected day. Review values before importing.</small>
                         </div>
                      </div>
                   </div>
                   <div class="modal-footer">
                      <button type="button" class="btn kv-location-cancel" data-dismiss="modal">Cancel</button>
-                     <button type="submit" class="btn kv-location-submit">Submit Upload</button>
+                     <button type="submit" class="btn kv-location-submit">Read &amp; Preview PDF</button>
                   </div>
                </form>
             </div>
          </div>
       </div>
+      <script>
+      document.getElementById('sales-pdf-upload-form').addEventListener('submit', function () {
+         var button = this.querySelector('button[type="submit"]');
+         button.disabled = true;
+         button.textContent = 'Reading PDF... Please wait';
+      });
+      </script>
       <!--  <div class="filter-container">
          <div class="row">
             <div class="col-md-2">

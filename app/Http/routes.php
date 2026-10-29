@@ -82,7 +82,11 @@ Route::get('/', function () {
 // });
 Route::group(['middleware' => ['auth']], function () {
 Route::get('/dashboard', 'MenuController@dashboard');
-Route::post('uploads/daily-entry-pdf', 'DocumentUploadController@dailyEntryPdf');
+Route::post('uploads/daily-entry-pdf', 'SalesReportPdfController@dailyEntryPdf');
+Route::get('uploads/daily-entry-pdf/preview', 'SalesReportPdfController@dailyEntryPdfPreview')->name('sales-pdf.preview');
+Route::get('uploads/daily-entry-pdf/file/{token}', 'SalesReportPdfController@dailyEntryPdfFile')->name('sales-pdf.file');
+Route::post('uploads/daily-entry-pdf/import', 'SalesReportPdfController@dailyEntryPdfImport')->name('sales-pdf.import');
+Route::post('uploads/daily-entry-pdf/cancel', 'SalesReportPdfController@dailyEntryPdfCancel')->name('sales-pdf.cancel');
 Route::post('uploads/labor-report-excel', 'DocumentUploadController@laborReportExcel');
 Route::get('setlocation', 'SetlocationController@index')->name('setlocation');
 Route::resource('setlocation', 'SetlocationController');

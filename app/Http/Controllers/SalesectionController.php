@@ -144,7 +144,7 @@ class SalesectionController extends Controller
 		$location = DB::table('locations')
 			->select('startdate')
 			->where('id', $locationId)
-			->where('status', 1)
+			->where('status', '1')
 			->first();
 
 		$sDateStore = (
@@ -175,7 +175,7 @@ class SalesectionController extends Controller
 			)
 			->orderBy('periodStart', 'DESC')
 			->orderBy('dataDate', 'DESC')
-			->get();
+			->paginate(10);
 
 		// Prepare the weekly report data.
 		foreach ($data as $weeklyReport) {
@@ -235,8 +235,8 @@ class SalesectionController extends Controller
 	    }
 
 
-      	$startDate = DB::table('locations')->select('startdate')->where('id', '=', $locationId)->where('status','=',1)->get();
-    		$sDateStore = strtotime($startDate[0]->startdate);
+		$startDate = DB::table('locations')->select('startdate')->where('id', '=', $locationId)->where('status', '=', '1')->first();
+		$sDateStore = $startDate && !empty($startDate->startdate) ? strtotime($startDate->startdate) : null;
 
     		return view('salesections.index', compact('data','sDateStore','count','from_date','to_date'));
 	}
@@ -1367,7 +1367,13 @@ class SalesectionController extends Controller
 
 	public function dataSaveSales(Request $request)
 		{
-			error_reporting(0);
+			// Share the import's store lock before looking up or creating daily
+			// rows, including when a day has no entries yet.
+			return DB::transaction(function () use ($request) {
+			$locationId = Session::get('location_id');
+			$location = DB::table('locations')->where('id', $locationId)->where('status', '1')->lockForUpdate()->first();
+			abort_unless($location && Auth::user() && Auth::user()->status &&
+				DB::table('user_locations')->where('user', Auth::id())->where('location', $locationId)->exists(), 403);
 			//$allsaledata = $request->allsaledata;
 			$allsaledata = json_decode(stripslashes($request->allsaledata));
 
@@ -1440,8 +1446,8 @@ class SalesectionController extends Controller
 					$salesection = Salesection::create($insertArray);
 				}
 			}
-			echo "1";
-			exit;
+			return response('1');
+			});
 		}
 
 
@@ -1669,7 +1675,7 @@ class SalesectionController extends Controller
 		$queryData = DB::table('locations')
 			->select('startdate')
 			->where('id', $locationId)
-			->where('status', 1)
+			->where('status', '1')
 			->first();
 
 		if (!$queryData || empty($queryData->startdate)) {

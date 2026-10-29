@@ -72,7 +72,10 @@ $dates = getDatesFromRange($sDate, $eDate);
 
 
 
-		@if(Session::has('message'))
+		@foreach(session('sales_pdf_warnings', []) as $warning)
+<div class="alert alert-warning">{{ $warning }}</div>
+@endforeach
+@if(Session::has('message'))
             <div class="alert alert-success">
                 {{ Session::get('message') }}
             </div>

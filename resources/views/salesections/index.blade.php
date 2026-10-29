@@ -121,7 +121,8 @@
 		                     				</tr>
 		                   @endforeach
 						        </tbody>
-						    </table>
+							    </table>
+                            @include('salesections.sales-pagination', ['paginator' => $data])
 						</div>
 					</div>
 				</div>
@@ -134,63 +135,20 @@
 
 
 <script type="text/javascript">
-	// $(document).ready(function() {
-	//     $('#example').DataTable({
-	// 		order: [],
-	// 		paging: false,
-	// 		columnDefs: [ { orderable: false, targets: [0]}]
-	// 	});
-	// } );
-	$(document).ready(function () {
-		$('#example').DataTable({
-			"aaSorting": []
-		});
-	});
-
-	$(document).ready(function() {
-    $('select[name="example_length"]').on('change', function() {
-    	var count = this.value;
-		        $.ajax({
-		        type: "get",
-		        url: '{!! route('salesection.filter.data') !!}',
-		        data: {
-                    count: count
-                },
-		        success: function(data)
-		        {
-		          window.location.href = "{!! route('salesection.filter.data') !!}"+"/"+count;
-		        }
-		    });
-	    });
-
-	     $('#searchButton').on('click', function() {
-	        var searchValue = $('#search').val();
-	        var from_date = $('#from_date').val();
-	        var to_date = $('#to_date').val();
-	        // alert("Search Value: " + searchValue);
-
-	        $.ajax({
-		        type: "get",
-		        url: '{!! route('salesection.filter.data') !!}',
-		        data: {
-                    search: searchValue,
-                    from_date: from_date,
-                    to_date: to_date
-                },
-		        success: function(data)
-		        {
-		          window.location.href = "{!! route('salesection.filter.data') !!}"+"?search="+searchValue+"&from="+from_date+"&to="+to_date;
-		        }
-		    });
-	    });
-
-	      $('#search').on('keypress', function(event) {
-		        if (event.key === "Enter") {
-		            event.preventDefault();
-		            $('#searchButton').click();
-		        }
-		    });
-	});
+$(function () {
+    // The database now selects one page. Do not paginate that page again.
+    $('#example').DataTable({aaSorting: [], paging: false, info: false, searching: false});
+    $('#searchButton').on('click', function () {
+        var query = $.param({search: $('#search').val(), from: $('#from_date').val(), to: $('#to_date').val()});
+        window.location.href = {!! json_encode(route('salesection.filter.data')) !!} + '?' + query;
+    });
+    $('#search').on('keypress', function (event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            $('#searchButton').click();
+        }
+    });
+});
 </script>
 
 @endsection
