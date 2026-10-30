@@ -134,11 +134,14 @@
          <div class="modal-content">
             <form method="POST" action="{{ url('/uploads/labor-report-excel') }}" enctype="multipart/form-data">
                {{ csrf_field() }}
+               <input type="hidden" name="start_week" value="{{ $weeksStoreOne }}">
                <div class="modal-header">
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                   <h4 class="modal-title" id="laborExcelUploadModalTitle">Upload Labor Report Excel</h4>
                </div>
                <div class="modal-body">
+                  <p><strong>Selected period:</strong> {{ $sdate }} to {{ $edate }} (store weeks {{ $weeksStoreOne }} and {{ $weeksStoreTwo }}).</p>
+                  <p>The Labor tab is selected automatically, including in a workbook with other tabs. A single labor sheet is also supported. Review employee mappings, rates and both weeks before saving.</p>
                   <div class="kv-location-fields">
                      <div class="form-group">
                         <label for="laborExcelFile">Excel file</label>
@@ -149,7 +152,7 @@
                </div>
                <div class="modal-footer">
                   <button type="button" class="btn kv-location-cancel" data-dismiss="modal">Cancel</button>
-                  <button type="submit" class="btn kv-location-submit">Submit Upload</button>
+                  <button type="submit" class="btn kv-location-submit">Preview Excel</button>
                </div>
             </form>
          </div>

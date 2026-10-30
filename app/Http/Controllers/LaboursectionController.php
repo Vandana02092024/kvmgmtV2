@@ -56,7 +56,7 @@ class LaboursectionController extends Controller
 	function create_date_range(Request $request){
 
 		$locationId = Session::get('location_id');
-		$location  = DB::table('locations')->select('startdate', 'rate')->where('status', '=', 1)->where('id', '=', $locationId)->first();
+		$location  = DB::table('locations')->select('startdate', 'rate')->where('status', '=', '1')->where('id', '=', $locationId)->first();
 		$location_year = date('Y',strtotime($location->startdate));
 
 		if($request->dateRanges){
@@ -114,7 +114,7 @@ class LaboursectionController extends Controller
 		{
 			// $locationId = Session::get('location_id');
 
-			// $queryData  = DB::table('locations')->select('startdate', 'rate')->where('status', '=', 1)->where('id', '=', $locationId)->first();
+			// $queryData  = DB::table('locations')->select('startdate', 'rate')->where('status', '=', '1')->where('id', '=', $locationId)->first();
 
 			// $sDateStore = $queryData->startdate;
 			// $default_rate = $queryData->rate;
@@ -159,7 +159,9 @@ class LaboursectionController extends Controller
 			$finalStartDate = trim($result1_array[0]); 
 			$finalEndDate = trim($result2_array[1]);   
 
-			$laborHeader = Laborheadersections::where('location_id', '=', $locationId)->where('start_week', '=', $weeksStoreOne)->orwhere('end_week', '=', $weeksStoreOne)->first();
+			$laborHeader = Laborheadersections::where('location_id', '=', $locationId)->where(function ($query) use ($weeksStoreOne) {
+				$query->where('start_week', $weeksStoreOne)->orWhere('end_week', $weeksStoreOne);
+			})->first();
 			$headerInfo  = false;
 			
 			if(!is_null($laborHeader)) 
@@ -181,6 +183,7 @@ class LaboursectionController extends Controller
 				$payrollDepartmentEmps[$value->id] = PayrollEmployee::leftJoin('payroll_employee_departments', 'payroll_employees.id', '=', 'payroll_employee_departments.payrollemp_id')
 					->leftJoin('payroll_employee_locations', 'payroll_employees.id', '=', 'payroll_employee_locations.payrollemp_id')
 					->where('payroll_employee_departments.payrollcat_depid', '=', $value->id)
+					->where('payroll_employee_departments.location', '=', $locationId)
 					->where('payroll_employee_locations.payrollcat_depid', '=', $locationId);
 
 				if(!empty($hideEmp)){
@@ -247,7 +250,7 @@ class LaboursectionController extends Controller
 		function getWeekRangeByDate(Request $request){
 			$locationId = Session::get('location_id');
 
-			$queryData  = DB::table('locations')->select('startdate', 'rate')->where('status', '=', 1)->where('id', '=', $locationId)->first();
+			$queryData  = DB::table('locations')->select('startdate', 'rate')->where('status', '=', '1')->where('id', '=', $locationId)->first();
 
 			$sDateStore = $queryData->startdate;
 			$stdate = $request->selected_date;
@@ -280,6 +283,7 @@ class LaboursectionController extends Controller
 
 		public function store(Request $request)
 		{
+			$locationId = Session::get('location_id');
 
 			$method = $request->method();
 
@@ -302,12 +306,14 @@ class LaboursectionController extends Controller
 					$eddate = $eddate[2]."-".$eddate[0]."-".$eddate[1];
 
 					$locationId = Session::get('location_id');
-					$queryData  = DB::table('locations')->select('startdate')->where('status', '=', 1)->where('id', '=', $locationId)->first();
+					$queryData  = DB::table('locations')->select('startdate')->where('status', '=', '1')->where('id', '=', $locationId)->first();
 					$sDateStore = $queryData->startdate;
 
 					$weeksStoreOne 	= $this->weeks_between($sDateStore, $stdate);
 
-					$laborHeader 	= Laborheadersections::where('location_id', '=', $locationId)->where('start_week', '=', $weeksStoreOne)->orwhere('end_week', '=', $weeksStoreOne)->first();
+					$laborHeader 	= Laborheadersections::where('location_id', '=', $locationId)->where(function ($query) use ($weeksStoreOne) {
+						$query->where('start_week', $weeksStoreOne)->orWhere('end_week', $weeksStoreOne);
+					})->first();
 
 					if(is_null($laborHeader))
 					{
@@ -360,7 +366,7 @@ class LaboursectionController extends Controller
 					else if(isset($request['inputname']))
 					{
 						$locationId  = Session::get('location_id');
-						$queryData   = DB::table('locations')->select('rate')->where('status', '=', 1)->where('id', '=', $locationId)->first();
+						$queryData   = DB::table('locations')->select('rate')->where('status', '=', '1')->where('id', '=', $locationId)->first();
 						$empName 	 = $request['inputname'];
 						$rate 		 = (($request['inputrate'] == '')?$queryData->rate:$request['inputrate']);
 						$salary 	 = $request['inputsalary'];
@@ -418,9 +424,13 @@ class LaboursectionController extends Controller
 						$req['rate'] 	= 0;
 
 
-						$this->create_labor($req, $request['header_id']);
-						$grdTotal = 	$this->calculate_totle($request['header_id']);
-							$headerup = Laborheadersections::where('id','=', $request['header_id'])->update(['total_amount' => $grdTotal]);
+						DB::transaction(function () use ($req, $request, $locationId) {
+							DB::table('locations')->where('id', $locationId)->lockForUpdate()->first();
+							Laborheadersections::where('id', $request['header_id'])->where('location_id', $locationId)->firstOrFail();
+							$this->create_labor($req, $request['header_id']);
+							$grdTotal = $this->calculate_totle($request['header_id']);
+							Laborheadersections::where('id', $request['header_id'])->update(['total_amount' => $grdTotal]);
+						});
 					}
 				}
 
@@ -462,8 +472,9 @@ class LaboursectionController extends Controller
 		}
 
 		function createLabourHeader($ad,$request){
-
-
+			return DB::transaction(function () use ($ad, $request) {
+			// Serialize manual saves with Excel import for this store/period.
+			DB::table('locations')->where('id', $ad['location_id'])->lockForUpdate()->first();
 			$header = Laborheadersections::where($ad)->first();
 
 			if(is_null($header))
@@ -473,6 +484,7 @@ class LaboursectionController extends Controller
 				$ad['end_date'] 	= $request['edate'];
 				$header = Laborheadersections::create($ad);
 				$cr_rec = $this->create_labor($request, $header->id);
+				Laborheadersections::where('id', $header->id)->update(['total_amount' => $this->calculate_totle($header->id)]);
 			}
 			// RECORD EXISTS //
 			else{
@@ -484,7 +496,7 @@ class LaboursectionController extends Controller
 
 			}
 			return 	$cr_rec;
-
+			});
 		}
 
 	// CREATE RECORDS //
@@ -500,10 +512,11 @@ class LaboursectionController extends Controller
 
 
 			$locationId = Session::get('location_id');
-			$queryData  = DB::table('locations')->select('rate','startdate')->where('status', '=', 1)->where('id', '=', $locationId)->first();
+			$queryData  = DB::table('locations')->select('rate','startdate')->where('status', '=', '1')->where('id', '=', $locationId)->first();
+			abort_unless($queryData, 404);
 
 			$default_rate = $queryData->rate;
-			$header 	= Laborheadersections::where('id', "=" , $id)->first();
+			$header 	= Laborheadersections::where('id', "=" , $id)->where('location_id', $locationId)->firstOrFail();
 			//dd($header );
 		 	$weeksStoreOne = $header->start_week;
 			$weeksStoreTwo = $header->end_week;
@@ -573,10 +586,14 @@ class LaboursectionController extends Controller
 			$dep = $request['dep'];
 			$hd  = $request['hd'];
 
-			Laboursection::where('empId', $emp)->where('depId', $dep)->where('header_id', $hd)->delete();
+			DB::transaction(function () use ($emp, $dep, $hd) {
+				DB::table('locations')->where('id', Session::get('location_id'))->lockForUpdate()->first();
+				Laborheadersections::where('id', $hd)->where('location_id', Session::get('location_id'))->firstOrFail();
+				Laboursection::where('empId', $emp)->where('depId', $dep)->where('header_id', $hd)->delete();
 
 			$grdTotal = 	$this->calculate_totle($hd);
 				$headerup = Laborheadersections::where('id','=', $hd)->update(['total_amount' => $grdTotal]);
+			});
 
 			return redirect()->action(
 				'LaboursectionController@edit', $hd
@@ -760,7 +777,7 @@ class LaboursectionController extends Controller
     // public function labor_report($weeknum)
     // {
     // 	$locationId = Session::get('location_id');
-    // 	$queryData  = DB::table('locations')->select('startdate')->where('status', '=', 1)->where('id', '=', $locationId)->first();
+    // 	$queryData  = DB::table('locations')->select('startdate')->where('status', '=', '1')->where('id', '=', $locationId)->first();
 	// 	$sDateStore = $queryData->startdate;
 
 	// 	$stdate = $this->add_weeks($sDateStore, $weeknum);

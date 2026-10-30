@@ -193,6 +193,7 @@ class SalesectionController extends Controller
 			);
 		}
 
+		app(\App\Services\SalesReport\SalesReportDailyMetrics::class)->attachWeekly($data, $locationId);
 		return view(
 			'salesections.index',
 			compact('data', 'sDateStore')
@@ -238,6 +239,7 @@ class SalesectionController extends Controller
 		$startDate = DB::table('locations')->select('startdate')->where('id', '=', $locationId)->where('status', '=', '1')->first();
 		$sDateStore = $startDate && !empty($startDate->startdate) ? strtotime($startDate->startdate) : null;
 
+		app(\App\Services\SalesReport\SalesReportDailyMetrics::class)->attachWeekly($data, $locationId);
     		return view('salesections.index', compact('data','sDateStore','count','from_date','to_date'));
 	}
 
@@ -820,7 +822,7 @@ class SalesectionController extends Controller
 				'entity',
 				'editWkNo'
 			)
-		);
+		)->with('dailyMetrics', app(\App\Services\SalesReport\SalesReportDailyMetrics::class)->week($locationId, $sDate, $eDate));
 	}
 
 
@@ -1197,7 +1199,7 @@ class SalesectionController extends Controller
 
 		$editWkNo = getWeekByDate($salesection[0]->dataDate) ;
 		//echo "<pre>"; print_r($editWkNo); exit();
-		 return view('salesections.create',compact('payrollCategory','saleData','discountData','adjustmentData','receiptData','startDatestore','weekData','disData','adjustData','recData','sDate','eDate','saleSum','disSum','adjSum','recSum','calendarWeekMatch','storeWeekMatch','entity','dateInTwoWeeks','editWkNo','id'));
+		 return view('salesections.create',compact('payrollCategory','saleData','discountData','adjustmentData','receiptData','startDatestore','weekData','disData','adjustData','recData','sDate','eDate','saleSum','disSum','adjSum','recSum','calendarWeekMatch','storeWeekMatch','entity','dateInTwoWeeks','editWkNo','id'))->with('dailyMetrics', app(\App\Services\SalesReport\SalesReportDailyMetrics::class)->week($locationId, $sDate, $eDate));
 
     }
 
@@ -1367,18 +1369,34 @@ class SalesectionController extends Controller
 
 	public function dataSaveSales(Request $request)
 		{
+			if (($request->has('allsaledata') && !is_string($request->input('allsaledata'))) ||
+				($request->has('daily_metrics') && !is_string($request->input('daily_metrics')))) {
+				return response()->json(['error' => 'Invalid daily sales or customer counts.'], 422);
+			}
+			$allsaledata = json_decode(stripslashes($request->input('allsaledata', '[]')));
+			$metricEntries = $request->has('daily_metrics') ? json_decode($request->input('daily_metrics'), true) : null;
+			if (!is_array($allsaledata) || ($request->has('daily_metrics') && !is_array($metricEntries))) {
+				return response()->json(['error' => 'Invalid daily sales or customer counts.'], 422);
+			}
 			// Share the import's store lock before looking up or creating daily
 			// rows, including when a day has no entries yet.
-			return DB::transaction(function () use ($request) {
+			try {
+			return DB::transaction(function () use ($allsaledata, $metricEntries) {
 			$locationId = Session::get('location_id');
 			$location = DB::table('locations')->where('id', $locationId)->where('status', '1')->lockForUpdate()->first();
 			abort_unless($location && Auth::user() && Auth::user()->status &&
 				DB::table('user_locations')->where('user', Auth::id())->where('location', $locationId)->exists(), 403);
-			//$allsaledata = $request->allsaledata;
-			$allsaledata = json_decode(stripslashes($request->allsaledata));
+			if ($metricEntries !== null) {
+				app(\App\Services\SalesReport\SalesReportDailyMetrics::class)->saveManual($locationId, Auth::id(), $metricEntries);
+			}
 
 			// echo "<pre>"; print_r($allsaledata);exit;
 			foreach($allsaledata as $sk => $sv) {
+				if (!is_object($sv) || !isset($sv->nameID, $sv->unit, $sv->dayname, $sv->val) ||
+					!is_string($sv->nameID) || !preg_match('/^(sale|dis|adj|rec)_[0-9]+$/', $sv->nameID) ||
+					!in_array($sv->unit, ['units', 'amt'], true)) {
+					throw new \RuntimeException('Invalid sales field. Customer counts must use their dedicated fields.');
+				}
 				$locationId = Session::get('location_id');
 				$unitval = $amtval = '';
 
@@ -1448,6 +1466,13 @@ class SalesectionController extends Controller
 			}
 			return response('1');
 			});
+			} catch (\Throwable $exception) {
+				if ($exception instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface) throw $exception;
+				\Log::warning('Sales daily save failed', ['reason' => $exception->getMessage()]);
+				$message = $exception instanceof \RuntimeException && !($exception instanceof \Illuminate\Database\QueryException)
+					? $exception->getMessage() : 'The report could not be saved. No changes were stored.';
+				return response()->json(['error' => $message], 422);
+			}
 		}
 
 
@@ -1825,7 +1850,7 @@ class SalesectionController extends Controller
 		$calendarWeekMatch = $queryMatchData[0];
 		$storeWeekMatch = $queryMatchData[1];
 
-		return view('salesections.printData',compact('report_week','store_week','saleData','discountData','adjustmentData','receiptData','startDatestore','weekData','disData','adjustData','recData','sDate','eDate','saleSum','disSum','adjSum','recSum','calendarWeekMatch','storeWeekMatch','id'));
+		return view('salesections.printData',compact('report_week','store_week','saleData','discountData','adjustmentData','receiptData','startDatestore','weekData','disData','adjustData','recData','sDate','eDate','saleSum','disSum','adjSum','recSum','calendarWeekMatch','storeWeekMatch','id'))->with('dailyMetrics', app(\App\Services\SalesReport\SalesReportDailyMetrics::class)->week($locationId, $sDate, $eDate));
 		//$contents = $view->render();
 	}
 

@@ -93,7 +93,8 @@ class SalesReportPdfController extends Controller
         $existingByField = array();
         foreach ($existing as $row) {
             $key = $row->nameDep . '_' . $row->nameId;
-            $existingByField[$key][] = array('unit' => $row->unit, 'amount' => $row->amount);
+            $existingByField[$key][] = array('unit' => $row->unit, 'amount' => $row->amount,
+                'ez_drop_signups' => $row->ez_drop_signups, 'new_customers' => $row->new_customers);
         }
         return view('salesections.sales-report-pdf-preview', compact('pending', 'catalog', 'existingByField'));
     }

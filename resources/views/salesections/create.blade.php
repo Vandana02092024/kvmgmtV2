@@ -358,6 +358,7 @@
                </section>
                <section class="kv-focus-section kv-focus-discounts" data-focus-group="dis"><h3><span>2</span> Discounts &amp; Credits</h3><div class="kv-focus-card-grid"></div></section>
                <section class="kv-focus-section kv-focus-receipts" data-focus-group="rec"><h3><span>4</span> Drawer &amp; Tender Receipts</h3><div class="kv-focus-card-grid"></div></section>
+               <section class="kv-focus-section" data-focus-group="metrics"><h3><span>5</span> Customer Activity</h3><div class="kv-focus-card-grid"></div></section>
             </aside>
          </div>
          <p class="kv-daily-focus-footnote"><i class="fa fa-info-circle"></i> Use Full Week Matrix to compare or edit multiple days together.</p>
@@ -1044,6 +1045,7 @@
                                     $<input type="text" readonly class="form-control" name="saleD" id="overfriday" value="" style="width: 65px;display:inline-block;font-weight:bold;font-size:10px;">
                                  </td>
                               </tr>
+                           @include('salesections.sales-daily-metrics-rows')
                            </tbody>
                         </table>
                      </div>
@@ -1061,6 +1063,7 @@
    </div>
    <div style="text-align: center;">
       <button type="button" id="ClickMe" class="v-btn v-btn-primary">Save Data</button>
+      <div id="sales-save-error" class="alert alert-danger" role="alert" hidden></div>
    </div>
 </section>
 <!--<div class="modal fade" id="modalData" role="dialog" >
@@ -1346,6 +1349,10 @@
 
 
       $("#ClickMe").click(function () {
+         var invalidMetric = $('.sales-daily-metric').filter(function () { return !this.checkValidity(); }).get(0);
+         if (invalidMetric) { invalidMetric.reportValidity(); return; }
+         $('#sales-save-error').prop('hidden', true).text('');
+         $('#ClickMe').prop('disabled', true);
          $.LoadingOverlay("show");
 
          //$('#ajaxLoadAni').fadeIn('slow');
@@ -1376,17 +1383,27 @@
 
             });
             var jsonString = JSON.stringify(arrnew);
+            var metricDays = {};
+            $('.sales-daily-metric').each(function () {
+               var date = this.getAttribute('data-report-date');
+               if (!metricDays[date]) metricDays[date] = {date: date};
+               metricDays[date][this.getAttribute('data-metric-field')] = this.value;
+            });
             $.ajax({
                type:       "POST",
                url:        "{{ url('/') }}/dataSaveSales",
-               data: {allsaledata: jsonString},
+               data: {allsaledata: jsonString, daily_metrics: JSON.stringify(Object.keys(metricDays).map(function (date) { return metricDays[date]; }))},
                success: function(data) {
                   $.LoadingOverlay("hide");
                   $("#ClickMe").css("background-color", "green");
                   /*if(data == 1){
                      $('#ajaxLoadAni').fadeOut('slow');
                   }*/
-               }
+               },
+               error: function (xhr) {
+                  $('#sales-save-error').text((xhr.responseJSON && xhr.responseJSON.error) || 'The report could not be saved. Please retry.').prop('hidden', false);
+               },
+               complete: function () { $.LoadingOverlay('hide'); $('#ClickMe').prop('disabled', false); }
             });
 
       });
@@ -2912,7 +2929,8 @@
          {key:'sale', rowClass:'saleColumn'},
          {key:'dis', rowClass:'disColumn'},
          {key:'adj', rowClass:'adjColumn'},
-         {key:'rec', rowClass:'recColumn'}
+         {key:'rec', rowClass:'recColumn'},
+         {key:'metrics', rowClass:'metricColumn'}
       ];
       groups.forEach(function (group) {
          var section = focusPanel.querySelector('[data-focus-group="' + group.key + '"] .kv-focus-card-grid');
@@ -2941,7 +2959,7 @@
                field.className = 'kv-daily-entry-field';
                var fieldTitle = document.createElement('small');
                var unit = control.input.getAttribute('unit');
-               fieldTitle.textContent = unit === 'units' ? 'Units' : 'Amount';
+               fieldTitle.textContent = unit === 'count' ? 'Count' : (unit === 'units' ? 'Units' : 'Amount');
                var inputWrap = document.createElement('span');
                inputWrap.className = 'kv-daily-entry-input';
                moveCellContent(control.cell, inputWrap);

@@ -211,6 +211,8 @@ class SalesReportPdfImporter
                 throw new RuntimeException('Daily data changed after this preview. Upload again to review the latest values.');
             }
             $rows = $this->plan($pending['sources'], $mapping, $this->catalog($context), $context);
+            $metrics = app(SalesReportDailyMetrics::class)->row($pending['daily_metrics'] ?? array(), $context);
+            if ($metrics) $rows[] = $metrics;
             $result = array('inserted' => 0, 'updated' => 0, 'unchanged' => 0);
             foreach ($rows as $row) {
                 // Match the natural daily identity without relying on legacy
@@ -228,7 +230,12 @@ class SalesReportPdfImporter
                 }
                 $record = $existing[0];
                 $values = array('amount' => $row['amount']);
-                if ($row['unit'] !== '') {
+                if ($row['nameDep'] === 'daily_metrics') {
+                    $values = array();
+                    foreach (SalesReportDailyMetrics::fields() as $field => $label) {
+                        if ($row[$field] !== null) $values[$field] = $row[$field];
+                    }
+                } elseif ($row['unit'] !== '') {
                     $values['unit'] = $row['unit'];
                 }
                 $changed = false;

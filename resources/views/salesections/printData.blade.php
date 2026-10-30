@@ -81,6 +81,7 @@ $dates = getDatesFromRange($sDate, $eDate);
             </div>
         @endif
 <div id="printablediv" style="page-break-before: always; page-break-after: always;">
+    @include('salesections.sales-daily-metrics-print')
 	<section id="dashboard-page" class="wrap">
 		<div class="container-fluid">
 			<div class="row" style="display:flex; align-items:center; justify-content:between; vertical-align: middle;">

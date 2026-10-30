@@ -43,10 +43,11 @@
         </table></div>
         @if(!empty($pending['daily_metrics']))
         <h4>Customer Activity (Counts)</h4>
-        <p>Shown for reference only. This project's manual sales ledger has no customer-count fields, so these counts are not imported.</p>
-        <table class="table table-bordered" style="background:#fff"><thead><tr><th>Activity</th><th>PDF count (reference only)</th></tr></thead><tbody>
+        <p>Counts are stored once for this store and day. They do not change sales or receipt amounts.</p>
+        <table class="table table-bordered" style="background:#fff"><thead><tr><th>Activity</th><th>PDF count</th><th>Existing count</th></tr></thead><tbody>
         @foreach(\App\Services\SalesReport\SalesReportPdfReader::activityFields() as $metricField => $metricLabel)
-            <tr><th>{{ $metricLabel }}</th><td>{{ isset($pending['daily_metrics'][$metricField]) ? $pending['daily_metrics'][$metricField] : 'Not readable' }}</td></tr>
+            <tr><th>{{ $metricLabel }}</th><td>{{ isset($pending['daily_metrics'][$metricField]) ? $pending['daily_metrics'][$metricField] : 'Not read - unchanged' }}</td>
+                <td>{{ $existingByField['daily_metrics_0'][0][$metricField] ?? 'Blank' }}</td></tr>
         @endforeach
         </tbody></table>
         @endif
