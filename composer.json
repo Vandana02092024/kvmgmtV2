@@ -9,7 +9,8 @@
         "laravel/framework": "^12.0",
         "laravel/ui": "^4.6",
         "fajarsulaksono/laravel-collective-html": "^8.0",
-        "elibyy/tcpdf-laravel": "^13.0"
+        "elibyy/tcpdf-laravel": "^13.0",
+        "phpoffice/phpspreadsheet": "^5.10"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

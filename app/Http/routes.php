@@ -87,7 +87,10 @@ Route::get('uploads/daily-entry-pdf/preview', 'SalesReportPdfController@dailyEnt
 Route::get('uploads/daily-entry-pdf/file/{token}', 'SalesReportPdfController@dailyEntryPdfFile')->name('sales-pdf.file');
 Route::post('uploads/daily-entry-pdf/import', 'SalesReportPdfController@dailyEntryPdfImport')->name('sales-pdf.import');
 Route::post('uploads/daily-entry-pdf/cancel', 'SalesReportPdfController@dailyEntryPdfCancel')->name('sales-pdf.cancel');
-Route::post('uploads/labor-report-excel', 'DocumentUploadController@laborReportExcel');
+Route::post('uploads/labor-report-excel', 'LaborReportExcelController@upload')->name('labor-excel.upload');
+Route::get('uploads/labor-report-excel/preview', 'LaborReportExcelController@preview')->name('labor-excel.preview');
+Route::post('uploads/labor-report-excel/import', 'LaborReportExcelController@import')->name('labor-excel.import');
+Route::post('uploads/labor-report-excel/cancel', 'LaborReportExcelController@cancel')->name('labor-excel.cancel');
 Route::get('setlocation', 'SetlocationController@index')->name('setlocation');
 Route::resource('setlocation', 'SetlocationController');
 // Route::resource('user', 'UserController');
