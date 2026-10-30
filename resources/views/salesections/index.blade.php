@@ -176,6 +176,8 @@
                                         <th>Gross Sales</th>
                                         <th>Net Sales</th>
                                         <th>Labor %</th>
+                                        <th>EZ Drop Signups</th>
+                                        <th>New Customers</th>
                                         <th>ACTION</th>
                                     </tr>
                                 </thead>
@@ -238,6 +240,8 @@
                                                 @endif
                                             </td>
 
+                                            <td>{{ $dat->ez_drop_signups ?? '—' }}</td>
+                                            <td>{{ $dat->new_customers ?? '—' }}</td>
                                             <td>
                                                 {{ link_to_route(
                                                     'salesection.edit',

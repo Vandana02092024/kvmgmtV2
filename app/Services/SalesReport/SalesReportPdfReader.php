@@ -63,6 +63,11 @@ class SalesReportPdfReader
         $report['page_count'] = $extraction['page_count'];
         $report['warnings'] = array();
         $report['daily_metrics'] = $this->dailyMetrics(array_merge($extraction['rows'], isset($extraction['metric_rows']) ? $extraction['metric_rows'] : array()));
+        foreach (SalesReportDailyMetrics::fields() as $field => $label) {
+            if ($report['daily_metrics'][$field] === null) {
+                $report['warnings'][] = $label . ' could not be read. Its existing count will remain unchanged.';
+            }
+        }
         // A missing tender is not a zero and is never inferred as a residual.
         foreach (array('Cash', 'Credit Card') as $tender) {
             $found = false;
