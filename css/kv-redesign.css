@@ -352,13 +352,20 @@ label { margin-bottom: 5px; color: #475c75; font-size: 12px; }
 }
 .kv-tab.is-active, .kv-settings-nav > .kv-tab.is-active { color: #f3c84a; background: #172944; box-shadow: 0 3px 8px rgba(18,35,59,.18); }
 .kv-tab.is-active i, .kv-settings-nav > .kv-tab.is-active i { color: #f3c84a; }
-.kv-page-hero { background: linear-gradient(112deg, #1a3155 0%, #263f70 100%); }
-.kv-sales-hero, .kv-labor-hero { background: linear-gradient(112deg, #1a3155 0%, #263f70 100%); }
+/* .kv-page-hero { background: linear-gradient(112deg, #1a3155 0%, #263f70 100%); } */
+.kv-page-hero { background: linear-gradient(112deg, #0d2747de 0%, #1E5A6B 100%); }
+/* .kv-sales-hero, .kv-labor-hero { background: linear-gradient(112deg, #1a3155 0%, #263f70 100%); } */
+.kv-sales-hero, .kv-labor-hero { background: linear-gradient(112deg, #0d2747de 0%, #1E5A6B 100%); }
 .kv-page-hero .kv-hero-title > i { color: #f3c84a; background: rgba(242,189,59,.14); }
 .kv-page-hero .v-btn { border-color: #f2bd3b; color: #17263b; background: #f2bd3b; }
 .kv-dashboard-context {
-    min-height: 50px; padding: 9px 22px; border: 1px solid #e0e7f0; color:#fff;
-    background: var(--kv-ink); box-shadow: 0 3px 10px rgba(22,43,73,.06);
+    min-height: 50px; 
+    padding: 9px 22px;
+    border: 1px solid #e0e7f0; 
+    color:#fff;
+    /* background: var(--kv-ink); */
+    background: linear-gradient(112deg, #0d2747de 0%, #1E5A6B 100%);
+    box-shadow: 0 3px 10px rgba(22,43,73,.06);
 }
 .kv-store-identity { gap: 12px; min-width: 0; }
 .kv-store-badge { flex: 0 0 42px; width: 35px; height: 35px; border-radius: 9px; }
@@ -674,7 +681,8 @@ body .main-content .kv-page-hero.kv-claims-hero h3.heading > a.v-btn.kv-claim-pr
 .kv-weekly-ledger .page-heading h3.heading { margin: 0; color: #fff; font-size: 19px; }
 .kv-weekly-ledger .page-heading h3.heading span { color: #d8e4f3; }
 .kv-weekly-ledger .page-heading .v-btn { margin: 0 0 0 8px; border: 0; border-radius: 9px; padding: 11px 15px; color: #fff; background: #1d5ff0; font-weight: 700; }
-.kv-weekly-ledger > .container-fluid > .row:first-child > .col-sm-12 { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 18px; padding: 15px 18px; border: 1px solid #29466f; border-radius: 12px; background: linear-gradient(112deg,#0b1f38,#203f84); box-shadow: 0 5px 14px rgba(15,37,68,.16); }
+/* .kv-weekly-ledger > .container-fluid > .row:first-child > .col-sm-12 { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 18px; padding: 15px 18px; border: 1px solid #29466f; border-radius: 12px; background: linear-gradient(112deg,#0b1f38,#203f84); box-shadow: 0 5px 14px rgba(15,37,68,.16); } */
+.kv-weekly-ledger > .container-fluid > .row:first-child > .col-sm-12 { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 18px; padding: 15px 18px; border: 1px solid #29466f; border-radius: 12px; background: linear-gradient(112deg, #0d2747de 0%, #1E5A6B 100%); box-shadow: 0 5px 14px rgba(15,37,68,.16); }
 .kv-weekly-ledger > .container-fluid > .row:first-child .page-heading { flex: 1 1 270px; min-height: 0; margin: 0 !important; padding: 0; border: 0; background: transparent; box-shadow: none; }
 .kv-weekly-ledger > .container-fluid > .row:first-child .page-heading h3.heading { font-size: 17px; line-height: 1.45; }
 .kv-weekly-ledger > .container-fluid > .row:first-child > .col-sm-12 > form { display: flex; align-items: center; float: none !important; margin: 0; }
@@ -1646,7 +1654,8 @@ html, body { overflow-x: clip; }
 .main-content .page-heading .v-btn,
 .main-content .page-heading .btn { padding: 7px 10px; font-size: 10px; line-height: 1.35; }
 .main-content .page-heading select.form-control { width: auto; min-width: 190px; height: 34px; min-height: 34px; padding: 6px 10px; font-size: 11px; }
-.kv-assign-menu-heading { display: flex; align-items: center; justify-content: space-between; gap: 18px; min-height: 50px; margin: 0 0 12px; padding: 10px 16px; border-radius: 11px; background: linear-gradient(112deg,#122b49,#1b3d68); box-shadow: 0 4px 12px rgba(17,42,73,.14); }
+/* .kv-assign-menu-heading { display: flex; align-items: center; justify-content: space-between; gap: 18px; min-height: 50px; margin: 0 0 12px; padding: 10px 16px; border-radius: 11px; background: linear-gradient(112deg,#122b49,#1b3d68); box-shadow: 0 4px 12px rgba(17,42,73,.14); } */
+.kv-assign-menu-heading { display: flex; align-items: center; justify-content: space-between; gap: 18px; min-height: 50px; margin: 0 0 12px; padding: 10px 16px; border-radius: 11px; background: linear-gradient(112deg, #0d2747de 0%, #1E5A6B 100%); box-shadow: 0 4px 12px rgba(17,42,73,.14); }
 .kv-module-screen .kv-assign-menu-heading h3.heading { display: block; flex: 1 1 auto; min-width: 0; overflow: visible; margin: 0; padding: 0px !important; border: 0; color: #fff; background: transparent; box-shadow: none; font-size: 17px; line-height: 1.3; text-align: left !important; }
 .kv-assign-menu-actions { display: flex; flex: 0 0 auto; align-items: center; justify-content: flex-end; gap: 8px; }
 .kv-assign-menu-actions form { margin: 0; padding: 0; border: 0; background: transparent; box-shadow: none; }
@@ -1746,7 +1755,8 @@ html, body { overflow-x: clip; }
 .modal.kv-location-modal { z-index: 1300 !important; }
 .kv-location-modal .modal-dialog { position: relative; z-index: 1301; width: 760px; max-width: calc(100vw - 28px); margin: 7vh auto 22px; }
 .kv-location-modal .modal-content { overflow: hidden; border: 1px solid #dce5ef; border-radius: 12px; box-shadow: 0 18px 48px rgba(15,35,61,.24); }
-.kv-location-modal .modal-header { position: relative; padding: 10px 22px; border-bottom: 1px solid #e6edf4; color: #fff; background: linear-gradient(112deg,#122b49,#1b3d68); }
+/* .kv-location-modal .modal-header { position: relative; padding: 10px 22px; border-bottom: 1px solid #e6edf4; color: #fff; background: linear-gradient(112deg,#122b49,#1b3d68); } */
+.kv-location-modal .modal-header { position: relative; padding: 10px 22px; border-bottom: 1px solid #e6edf4; color: #fff; background: linear-gradient(112deg, #0d2747de 0%, #1E5A6B 100%) !important; }
 .kv-location-modal .modal-header .close { position: absolute; top: 12px; right: 16px; float: none; color: #fff; font-size: 25px; opacity: .8; text-shadow: none; }
 .kv-location-modal .modal-header .close:hover { opacity: 1; }
 .kv-location-modal .modal-title { margin: 0 32px 4px 0; color: #fff; font-size: 17px; font-weight: 700; text-align: left; }
