@@ -1,4 +1,4 @@
-<div class="modal fade kv-location-settings-modal" id="addSettingsItemModal" tabindex="-1" role="dialog" aria-labelledby="addSettingsItemTitle">
+<div class="modal fade kv-location-modal" id="addSettingsItemModal" tabindex="-1" role="dialog" aria-labelledby="addSettingsItemTitle">
     <div class="modal-dialog" role="document"><div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -35,7 +35,7 @@
 
 @foreach($settingsItems as $settingsItem)
     @php $editSelectedLocations = isset($locationSelections[$settingsItem->id]) ? $locationSelections[$settingsItem->id] : []; @endphp
-    <div class="modal fade kv-location-settings-modal" id="editSettingsItemModal{{ $settingsItem->id }}" tabindex="-1" role="dialog" aria-labelledby="editSettingsItemTitle{{ $settingsItem->id }}">
+    <div class="modal fade kv-location-modal" id="editSettingsItemModal{{ $settingsItem->id }}" tabindex="-1" role="dialog" aria-labelledby="editSettingsItemTitle{{ $settingsItem->id }}">
         <div class="modal-dialog" role="document"><div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -71,14 +71,14 @@
 @endforeach
 
 <style>
-    .kv-location-settings-modal { z-index: 1300 !important; }
-    .kv-location-settings-modal .modal-dialog { width: min(620px, calc(100% - 24px)); margin: 7vh auto 20px; }
-    .kv-location-settings-modal .modal-content { overflow: visible; border: 1px solid #dce5ef; border-radius: 12px; box-shadow: 0 18px 48px rgba(15,35,61,.24); }
-    .kv-location-settings-modal .modal-header { position: relative; padding: 10px 20px; border: 0; color: #fff; background: linear-gradient(112deg,#122b49,#1b3d68); border-radius: 11px 11px 0 0; }
-    .kv-location-settings-modal .modal-title { margin: 0 32px 4px 0; color: #fff; font-size: 17px; font-weight: 700; }
-    .kv-location-settings-modal .modal-header p { margin: 0; color: #cfdaea; font-size: 11px; }
-    .kv-location-settings-modal .modal-header .close { position: absolute; top: 12px; right: 16px; color: #fff; font-size: 25px; opacity: .85; text-shadow: none; }
-    .kv-location-settings-modal .modal-body { padding: 18px 20px; }
+    .kv-location-modal { z-index: 1300 !important; }
+    .kv-location-modal .modal-dialog { width: min(620px, calc(100% - 24px)); margin: 7vh auto 20px; }
+    .kv-location-modal .modal-content { overflow: visible; border: 1px solid #dce5ef; border-radius: 12px; box-shadow: 0 18px 48px rgba(15,35,61,.24); }
+    .kv-location-modal .modal-header { position: relative; padding: 10px 20px; border: 0; color: #fff; background: linear-gradient(112deg,#122b49,#1b3d68); border-radius: 11px 11px 0 0; }
+    .kv-location-modal .modal-title { margin: 0 32px 4px 0; color: #fff; font-size: 17px; font-weight: 700; }
+    .kv-location-modal .modal-header p { margin: 0; color: #cfdaea; font-size: 11px; }
+    .kv-location-modal .modal-header .close { position: absolute; top: 12px; right: 16px; color: #fff; font-size: 25px; opacity: .85; text-shadow: none; }
+    .kv-location-modal .modal-body { padding: 18px 20px; }
     .kv-settings-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px 16px; }
     .kv-settings-fields .form-group { min-width: 0; margin: 0; }
     .kv-settings-fields .form-group > label { display: block; margin-bottom: 6px; color: #526780; font-size: 11px; font-weight: 700; text-transform: uppercase; }
@@ -95,11 +95,11 @@
     .kv-location-option:hover { background: #f1f5f9; }
     .kv-location-option input { margin: 0 7px 0 0; vertical-align: middle; }
     .kv-location-select-all { margin-bottom: 4px; border-bottom: 1px solid #e9eef4; font-weight: 600; }
-    .kv-location-settings-modal .modal-footer { display: flex; justify-content: flex-end; gap: 8px; padding: 13px 20px; border-top: 1px solid #e6edf4; border-radius: 0 0 11px 11px; background: #f8fafc; }
-    .kv-location-settings-modal .modal-footer .btn { min-height: 36px; margin: 0; padding: 8px 14px; border-radius: 7px; font-size: 11px; font-weight: 700; }
-    .kv-location-settings-modal .kv-settings-submit { border: 1px solid #f2bd3b; color: #17263b; background: #f2bd3b; }
-    .kv-location-settings-modal .kv-settings-submit:hover,
-    .kv-location-settings-modal .kv-settings-submit:focus { border-color: #ffd15e; color: #17263b; background: #ffd15e; }
+    .kv-location-modal .modal-footer { display: flex; justify-content: flex-end; gap: 8px; padding: 13px 20px; border-top: 1px solid #e6edf4; border-radius: 0 0 11px 11px; background: #f8fafc; }
+    .kv-location-modal .modal-footer .btn { min-height: 36px; margin: 0; padding: 8px 14px; border-radius: 7px; font-size: 11px; font-weight: 700; }
+    .kv-location-modal .kv-settings-submit { border: 1px solid #f2bd3b; color: #17263b; background: #f2bd3b; }
+    .kv-location-modal .kv-settings-submit:hover,
+    .kv-location-modal .kv-settings-submit:focus { border-color: #ffd15e; color: #17263b; background: #ffd15e; }
     @media (max-width: 560px) { .kv-settings-fields { grid-template-columns: 1fr; } .kv-settings-fields .kv-settings-location-field { grid-column: auto; } }
 </style>
 

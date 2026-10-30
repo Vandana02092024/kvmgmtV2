@@ -79,7 +79,7 @@
 			</div>
 		</div>
 
-		<div class="modal fade kv-category-modal" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addCategoryTitle">
+		<div class="modal fade kv-location-modal" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addCategoryTitle">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
 					<form method="POST" action="{{ url('/category') }}">
@@ -128,7 +128,7 @@
 		</div>
 
 		@foreach($categories as $category)
-			<div class="modal fade kv-category-modal" id="editCategoryModal{{ $category->id }}" tabindex="-1" role="dialog" aria-labelledby="editCategoryTitle{{ $category->id }}">
+			<div class="modal fade kv-location-modal" id="editCategoryModal{{ $category->id }}" tabindex="-1" role="dialog" aria-labelledby="editCategoryTitle{{ $category->id }}">
 				<div class="modal-dialog" role="document">
 					<div class="modal-content">
 						<!-- <form method="POST" action="{{ url('/category/' . $category->id) }}">
