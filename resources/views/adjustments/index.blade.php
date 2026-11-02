@@ -55,11 +55,22 @@
 			                                <td>
 			                                    {!! Form::open(array('route' => ['adjustment.destroy', $adjustment->id], 'method'=>'DELETE', 'class' => 'delete')) !!}
 			                                        
-	                                        <a href="#editSettingsItemModal{{ $adjustment->id }}" class="fa fa-pencil" data-toggle="modal" data-placement="left" title="edit"></a>
+													<a href="#editSettingsItemModal{{ $adjustment->id }}" class="fa fa-pencil" data-toggle="modal" data-placement="left" title="edit"></a>
 													
 													|
+													{{ link_to_route(
+														'adjustment.archive',
+														'',
+														['id' => $adjustment->id, 'st' => $adjustment->status],
+														[
+															'class' => $adjustment->status == '1' ? 'fa fa-archive' : 'fa fa-undo',
+															'data-toggle' => 'tooltip',
+															'data-placement' => 'top',
+															'title' => $adjustment->status == '1' ? 'Archive' : 'Unarchive',
+														]
+													) }}
 													
-													{{ link_to_route('adjustment.archive', $adjustment->status == 1 ? 'Archive' : 'Unarchive', ['id' => $adjustment->id, 'st' => $adjustment->status]) }}
+													<!-- {{ link_to_route('adjustment.archive', $adjustment->status == 1 ? 'Archive' : 'Unarchive', ['id' => $adjustment->id, 'st' => $adjustment->status]) }} -->
 			                                        <!-- |
 			                                        {{ Form::button('',['class'=>'fa fa-close','type'=>'submit','data-toggle'=>"tooltip", 'data-placement'=>"right", 'title'=>"delete"]) }} -->
 

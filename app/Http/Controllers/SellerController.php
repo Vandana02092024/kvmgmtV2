@@ -125,12 +125,12 @@ class SellerController extends Controller
 		$statusCode = $request->st;
 		
 		
-		if($statusCode == 1) {
-		Seller::where('id', '=', $id)->update(['status'   => 0]);   
+		if($statusCode == '1') {
+		Seller::where('id', '=', $id)->update(['status'   => '0']);   
 		return redirect()->route('seller.index')->with('message','Archived successfully!');
 			
 		} else {
-		Seller::where('id', '=', $id)->update(['status'   => 1]);   
+		Seller::where('id', '=', $id)->update(['status'   => '1']);   
 		return redirect()->route('seller.index')->with('message','Unarchived successfully!');
 		}
 		

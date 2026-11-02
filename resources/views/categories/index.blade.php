@@ -55,13 +55,23 @@
 			                                <td>
 			                                    {!! Form::open(array('route' => ['category.destroy', $category->id], 'method'=>'DELETE', 'class' => 'delete')) !!}
 			                                        
-		                                <a href="#editCategoryModal{{ $category->id }}" class="fa fa-pencil" data-toggle="modal" data-placement="left" title="Edit category" aria-label="Edit {{ $category->category }}"></a>
+													<a href="#editCategoryModal{{ $category->id }}" class="fa fa-pencil" data-toggle="modal" data-placement="left" title="Edit category" aria-label="Edit {{ $category->category }}"></a>
 			                                        
 			                                        |   
 													
-													{{ link_to_route('category.catArchive', $category->status == 1 ? 'Archive' : 'Unarchive', ['id' => $category->id, 'st' => $category->status]) }}
+													<!-- {{ link_to_route('category.catArchive', $category->status == 1 ? 'Archive' : 'Unarchive', ['id' => $category->id, 'st' => $category->status]) }} -->
 													
-													
+													{{ link_to_route(
+														'category.catArchive',
+														'',
+														['id' => $category->id, 'st' => $category->status],
+														[
+															'class' => $category->status == '1' ? 'fa fa-archive' : 'fa fa-undo',
+															'data-toggle' => 'tooltip',
+															'data-placement' => 'top',
+															'title' => $category->status == '1' ? 'Archive' : 'Unarchive',
+														]
+													) }}
 													
 			                                        <!-- |
 			                                        {{ Form::button('',['class'=>'fa fa-close','type'=>'submit','data-toggle'=>"tooltip", 'data-placement'=>"right", 'title'=>"delete"]) }} -->

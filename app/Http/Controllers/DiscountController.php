@@ -198,11 +198,11 @@ class DiscountController extends Controller
     {
 		
 		$statusCode = $request->st;
-		if($statusCode == 1) {
-		Discount::where('id', '=', $id)->update(['status'   => 0]);   
+		if($statusCode == '1') {
+		Discount::where('id', '=', $id)->update(['status'   => '0']);   
 		return redirect()->route('discount.index')->with('message','Archived successfully!');			
 		} else {
-		Discount::where('id', '=', $id)->update(['status'   => 1]);   
+		Discount::where('id', '=', $id)->update(['status'   => '1']);   
 		return redirect()->route('discount.index')->with('message','Unarchived successfully!');
 		}
     }

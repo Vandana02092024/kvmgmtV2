@@ -28,7 +28,18 @@
             @foreach($payrollemployees as $payrollemp)<tr><td>{{ $payrollemp->name }}</td><td>
                 {!! Form::open(array('route' => ['payrollemployee.destroy', $payrollemp->id], 'method'=>'DELETE', 'class' => 'delete')) !!}
                 {{ link_to_route('payrollemployee.edit','',[$payrollemp->id],['class' => 'fa fa-pencil','data-toggle'=>'tooltip','data-placement'=>'left','title'=>'Edit']) }} &nbsp;|&nbsp;
-                {{ link_to_route('payrollemployee.archive', $payrollemp->status == 1 ? 'Archive' : 'Unarchive', ['id' => $payrollemp->id, 'st' => $payrollemp->status]) }}
+                {{ link_to_route(
+                    'payrollemployee.archive',
+                    '',
+                    ['id' => $payrollemp->id, 'st' => $payrollemp->status],
+                    [
+                        'class' => $payrollemp->status == '1' ? 'fa fa-archive' : 'fa fa-undo',
+                        'data-toggle' => 'tooltip',
+                        'data-placement' => 'top',
+                        'title' => $payrollemp->status == '1' ? 'Archive' : 'Unarchive',
+                    ]
+                ) }}
+                <!-- {{ link_to_route('payrollemployee.archive', $payrollemp->status == 1 ? 'Archive' : 'Unarchive', ['id' => $payrollemp->id, 'st' => $payrollemp->status]) }} -->
                 {!! Form::close() !!}
             </td></tr>@endforeach
         </tbody></table>

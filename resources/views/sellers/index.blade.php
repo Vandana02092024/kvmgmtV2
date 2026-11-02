@@ -67,7 +67,18 @@
 			                                        
 			                                        {{ link_to_route('seller.edit','',[$user->id],['class' => 'fa fa-pencil','data-toggle'=>"tooltip", 'data-placement'=>"left", 'title'=>"edit"]) }}
 			                                        |
-													{{ link_to_route('seller.vArchive', $user->status == 1 ? 'Archive' : 'Unarchive', ['id' => $user->id, 'st' => $user->status]) }}
+													{{ link_to_route(
+														'seller.vArchive',
+														'',
+														['id' => $user->id, 'st' => $user->status],
+														[
+															'class' => $user->status == '1' ? 'fa fa-archive' : 'fa fa-undo',
+															'data-toggle' => 'tooltip',
+															'data-placement' => 'top',
+															'title' => $user->status == '1' ? 'Archive' : 'Unarchive',
+														]
+													) }}
+													<!-- {{ link_to_route('seller.vArchive', $user->status == 1 ? 'Archive' : 'Unarchive', ['id' => $user->id, 'st' => $user->status]) }} -->
 													
 
 			                                    {!! Form::close() !!}

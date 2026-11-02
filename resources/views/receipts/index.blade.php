@@ -54,11 +54,22 @@
 			                                <td>
 			                                    {!! Form::open(array('route' => ['receipt.destroy', $receipt->id], 'method'=>'DELETE', 'class' => 'delete')) !!}
 			                                        
-	                                        <a href="#editSettingsItemModal{{ $receipt->id }}" class="fa fa-pencil" data-toggle="modal" data-placement="left" title="edit"></a>
+													<a href="#editSettingsItemModal{{ $receipt->id }}" class="fa fa-pencil" data-toggle="modal" data-placement="left" title="edit"></a>
 													
 													|
+													{{ link_to_route(
+														'receipt.archive',
+														'',
+														['id' => $receipt->id, 'st' => $receipt->status],
+														[
+															'class' => $receipt->status == '1' ? 'fa fa-archive' : 'fa fa-undo',
+															'data-toggle' => 'tooltip',
+															'data-placement' => 'top',
+															'title' => $receipt->status == '1' ? 'Archive' : 'Unarchive',
+														]
+													) }}
 													
-													{{ link_to_route('receipt.archive', $receipt->status == 1 ? 'Archive' : 'Unarchive', ['id' => $receipt->id, 'st' => $receipt->status]) }}
+													<!-- {{ link_to_route('receipt.archive', $receipt->status == 1 ? 'Archive' : 'Unarchive', ['id' => $receipt->id, 'st' => $receipt->status]) }} -->
 			                                        <!-- |
 			                                        {{ Form::button('',['class'=>'fa fa-close','type'=>'submit','data-toggle'=>"tooltip", 'data-placement'=>"right", 'title'=>"delete"]) }} -->
 

@@ -227,11 +227,11 @@ class PayrollCategoryController extends Controller
     {
 		
 		$statusCode = $request->st;
-		if($statusCode == 1) {
-		PayrollCategory::where('id', '=', $id)->update(['status'   => 0]);   
+		if($statusCode == '1') {
+		PayrollCategory::where('id', '=', $id)->update(['status'   => '0']);   
 		return redirect()->route('payrollcategory.index')->with('message','Archived successfully!');			
 		} else {
-		PayrollCategory::where('id', '=', $id)->update(['status'   => 1]);   
+		PayrollCategory::where('id', '=', $id)->update(['status'   => '1']);   
 		return redirect()->route('payrollcategory.index')->with('message','Unarchived successfully!');
 		}
     }

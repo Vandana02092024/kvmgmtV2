@@ -144,11 +144,11 @@ class LocationController extends Controller
 
 
 		if($statusCode == 1) {
-		Location::where('id', '=', $id)->update(['status'   => 0]);
+		Location::where('id', '=', $id)->update(['status'   => '0']);
 		return redirect()->route('location.index')->with('message','Archived successfully!');
 
 		} else {
-		Location::where('id', '=', $id)->update(['status'   => 1]);
+		Location::where('id', '=', $id)->update(['status'   => '1']);
 		return redirect()->route('location.index')->with('message','Unarchived successfully!');
 		}
     }
