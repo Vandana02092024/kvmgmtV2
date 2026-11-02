@@ -1751,6 +1751,11 @@ html, body { overflow-x: clip; }
     .kv-user-form-page .kv-user-form-actions { margin: 14px -14px -14px; padding: 11px 14px; }
 }
 
+/* Keep the claim invitation above the shared backdrop (1290) and navigation. */
+.modal.kv-claim-link-modal { z-index: 1300 !important; }
+.kv-claim-link-modal .modal-dialog { width: 600px; max-width: calc(100vw - 28px); margin: 7vh auto 22px; }
+.kv-claim-link-modal .modal-body { max-height: calc(85vh - 160px); overflow-y: auto; }
+
 /* Location create/edit modal uses a compact two-column form. */
 .modal.kv-location-modal { z-index: 1300 !important; }
 .kv-location-modal .modal-dialog { position: relative; z-index: 1301; width: 760px; max-width: calc(100vw - 28px); margin: 7vh auto 22px; }
