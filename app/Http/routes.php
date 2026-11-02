@@ -21,6 +21,11 @@
 
 use App\Http\Controllers\UserController;
 
+// Public invitation routes intentionally use web/CSRF middleware without auth.
+Route::get('claim-form/submitted', 'ClaimFormLinkController@complete')->name('claim-public.complete');
+Route::get('claim-form/{token}', 'ClaimFormLinkController@show')->where('token', '[a-f0-9]{64}')->middleware('throttle:60,1')->name('claim-public.show');
+Route::post('claim-form/{token}', 'ClaimFormLinkController@submit')->where('token', '[a-f0-9]{64}')->middleware('throttle:10,1')->name('claim-public.submit');
+
 Route::get('login', 'Auth\\AuthController@showLoginForm')->name('login');
 Route::post('login', 'Auth\\AuthController@login');
 Route::post('logout', 'Auth\\AuthController@logout')->name('logout');
@@ -110,6 +115,7 @@ Route::resource('report', 'Customer_problemController');
 Route::resource('service', 'Customer_serviceController');
 Route::resource('menu', 'MenuController');
 Route::resource('reimbursement', 'ReimbursementController');
+Route::post('claim-form-links/send', 'ClaimFormLinkController@send')->middleware('throttle:5,1')->name('claim-links.send');
 Route::resource('sale', 'SaleController');
 Route::resource('discount', 'DiscountController');
 Route::resource('adjustment', 'AdjustmentController');

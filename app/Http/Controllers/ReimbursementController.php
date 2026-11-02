@@ -697,6 +697,15 @@ public function index(Request $request)
 	    $userRole = Auth::user()->role;
  		$description = Reimbursement_describe_item::where('reimburse_id','=', $id)->get();
 
+		// Customer-entered claims also reach this legacy HTML-to-PDF renderer.
+		// Render text as text instead of allowing submitted HTML/resources.
+		foreach ($reimbursements as $row) foreach (get_object_vars($row) as $field => $value) {
+			if (is_string($value)) $row->$field = htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+		}
+		foreach ($description as $row) foreach ($row->getAttributes() as $field => $value) {
+			if (is_string($value)) $row->$field = htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+		}
+
 		if($reimbursements[0]->zip_type == 1) {
 			$reportIds  = Customer_problem::leftJoin('locations', 'locations.id', '=', 'customer_problems.location')
 			->select('customer_problems.id','customer_problems.customer_name','customer_problems.customer_last_name','customer_problems.created_at','customer_problems.location','locations.location_code', DB::raw('CONCAT(if(customer_problems.customer_last_name!="",if(customer_problems.customer_name!="",CONCAT(customer_problems.customer_last_name," , "),CONCAT(customer_problems.customer_last_name," - ")),""),if(customer_problems.customer_name!="",CONCAT(customer_problems.customer_name," - "),""),CONCAT(DATE(customer_problems.created_at)),CONCAT("-PR-"),CONCAT(locations.location_code),CONCAT("-"),CONCAT(LPAD(customer_problems.id,4,"0"))) AS reportid'))

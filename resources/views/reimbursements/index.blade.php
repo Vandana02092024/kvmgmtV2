@@ -9,6 +9,7 @@
 					<h3 class="heading">
 						<span class="kv-hero-title"><i class="fa fa-file-text-o"></i><span>Claim Forms</span></span>
 						<a class="v-btn v-btn-primary kv-claim-primary-action" href="{{ url('/reimbursement/create') }}"><i class="fa fa-plus"></i> New Claim</a>
+						<button type="button" class="v-btn v-btn-primary" data-toggle="modal" data-target="#claimSendLinkModal"><i class="fa fa-envelope-o"></i> Send Link</button>
 					
 						<form class="widget-new ng-pristine ng-valid" id="vendorSelForm" method="POST" action="{{ url('/reimbursement/filter') }}">
 						{{ csrf_field() }}
@@ -47,6 +48,22 @@
                 {{ Session::get('message') }}
             </div>
         @endif
+        @if($errors->any())
+            <div class="alert alert-danger" role="alert"><ul>@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>
+        @endif
+        <div class="modal fade kv-claim-link-modal" id="claimSendLinkModal" tabindex="-1" role="dialog" aria-labelledby="claimSendLinkTitle">
+            <div class="modal-dialog" role="document"><div class="modal-content">
+                <form method="POST" action="{{ route('claim-links.send') }}" onsubmit="this.querySelector('button[type=submit]').disabled = true; this.querySelector('button[type=submit]').textContent = 'Sending…';">
+                    {{ csrf_field() }}
+                    <div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="claimSendLinkTitle">Send Claim Form Link</h4></div>
+                    <div class="modal-body">
+                        <div class="form-group"><label for="claimLinkEmail">Customer email</label><input type="email" name="email" id="claimLinkEmail" class="form-control" maxlength="50" value="{{ old('email') }}" autocomplete="email" required></div>
+                        <p class="help-block">The customer can complete the claim without logging in. Their email is fixed, and the claim belongs to your currently selected store. The link expires after {{ max(1, min(30, (int) config('claim_form_links.expires_days', 7))) }} days and can be submitted once.</p>
+                    </div>
+                    <div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button><button type="submit" class="btn btn-primary">Send Link</button></div>
+                </form>
+            </div></div>
+        </div>
 		<div class="row">
 			<div class="col-sm-12">
 				<div class="widget">
