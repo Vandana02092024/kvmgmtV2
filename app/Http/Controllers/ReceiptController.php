@@ -198,11 +198,11 @@ class ReceiptController extends Controller
     {
 		
 		$statusCode = $request->st;
-		if($statusCode == 1) {
-		Receipt::where('id', '=', $id)->update(['status'   => 0]);   
+		if($statusCode == '1') {
+		Receipt::where('id', '=', $id)->update(['status'   => '0']);   
 		return redirect()->route('receipt.index')->with('message','Archived successfully!');			
 		} else {
-		Receipt::where('id', '=', $id)->update(['status'   => 1]);   
+		Receipt::where('id', '=', $id)->update(['status'   => '1']);   
 		return redirect()->route('receipt.index')->with('message','Unarchived successfully!');
 		}
     }

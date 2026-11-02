@@ -360,13 +360,13 @@ class PayrollEmployeeController extends Controller
     {
 		$locationId = Session::get('location_id');
 		$statusCode = $request->st;
-		if($statusCode == 1) {
-		PayrollEmployee::where('id', '=', $id)->update(['status'   => 0]);   
+		if($statusCode == '1') {
+		PayrollEmployee::where('id', '=', $id)->update(['status'   => '0']);   
 		return redirect()->route('payrollemployee.index')->with('message','Archived successfully!');			
 		} else {
-		PayrollEmployee::where('id', '=', $id)->update(['status'   => 1]);   
-		PayrollEmployee_department::where('payrollemp_id', '=', $id)->where('location', '=', $locationId)->update(['status'   => 0]); 
-		PayrollEmployee_location::where('payrollemp_id', '=', $id)->where('payrollcat_depid', '=', $locationId)->update(['status'   => 0]); 	
+		PayrollEmployee::where('id', '=', $id)->update(['status'   => '1']);   
+		PayrollEmployee_department::where('payrollemp_id', '=', $id)->where('location', '=', $locationId)->update(['status'   => '0']); 
+		PayrollEmployee_location::where('payrollemp_id', '=', $id)->where('payrollcat_depid', '=', $locationId)->update(['status'   => '0']); 	
 		return redirect()->route('payrollemployee.index')->with('message','Unarchived successfully!');
 		}
     }

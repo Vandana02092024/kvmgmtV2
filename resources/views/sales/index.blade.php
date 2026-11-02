@@ -54,11 +54,23 @@
 			                                <td>
 			                                    {!! Form::open(array('route' => ['sale.destroy', $sale->id], 'method'=>'DELETE', 'class' => 'delete')) !!}
 			                                        
-	                                        <a href="#editSettingsItemModal{{ $sale->id }}" class="fa fa-pencil" data-toggle="modal" data-placement="left" title="edit"></a>
+													<a href="#editSettingsItemModal{{ $sale->id }}" class="fa fa-pencil" data-toggle="modal" data-placement="left" title="edit"></a>
 													
 													|
+
+													{{ link_to_route(
+														'sale.archive',
+														'',
+														['id' => $sale->id, 'st' => $sale->status],
+														[
+															'class' => $sale->status == '1' ? 'fa fa-archive' : 'fa fa-undo',
+															'data-toggle' => 'tooltip',
+															'data-placement' => 'top',
+															'title' => $sale->status == '1' ? 'Archive' : 'Unarchive',
+														]
+													) }}
 													
-													{{ link_to_route('sale.archive', $sale->status == 1 ? 'Archive' : 'Unarchive', ['id' => $sale->id, 'st' => $sale->status]) }}
+													<!-- {{ link_to_route('sale.archive', $sale->status == 1 ? 'Archive' : 'Unarchive', ['id' => $sale->id, 'st' => $sale->status]) }} -->
 			                                        <!-- |
 			                                        {{ Form::button('',['class'=>'fa fa-close','type'=>'submit','data-toggle'=>"tooltip", 'data-placement'=>"right", 'title'=>"delete"]) }} -->
 

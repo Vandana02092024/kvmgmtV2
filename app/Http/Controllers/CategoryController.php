@@ -112,12 +112,12 @@ class CategoryController extends Controller
 		$statusCode = $request->st;
 		
 		
-		if($statusCode == 1) {
-		Category::where('id', '=', $id)->update(['status'   => 0]);   
+		if($statusCode == '1') {
+		Category::where('id', '=', $id)->update(['status'   => '0']);   
 		return redirect()->route('category.index')->with('message','Archived successfully!');
 			
 		} else {
-		Category::where('id', '=', $id)->update(['status'   => 1]);   
+		Category::where('id', '=', $id)->update(['status'   => '1']);   
 		return redirect()->route('category.index')->with('message','Unarchived successfully!');
 		}
 		

@@ -57,8 +57,19 @@
 	                                        <a href="#editSettingsItemModal{{ $discount->id }}" class="fa fa-pencil" data-toggle="modal" data-placement="left" title="edit"></a>
 													
 													|
+													{{ link_to_route(
+														'discount.archive',
+														'',
+														['id' => $discount->id, 'st' => $discount->status],
+														[
+															'class' => $discount->status == '1' ? 'fa fa-archive' : 'fa fa-undo',
+															'data-toggle' => 'tooltip',
+															'data-placement' => 'top',
+															'title' => $discount->status == '1' ? 'Archive' : 'Unarchive',
+														]
+													) }}
 													
-													{{ link_to_route('discount.archive', $discount->status == 1 ? 'Archive' : 'Unarchive', ['id' => $discount->id, 'st' => $discount->status]) }}
+													<!-- {{ link_to_route('discount.archive', $discount->status == 1 ? 'Archive' : 'Unarchive', ['id' => $discount->id, 'st' => $discount->status]) }} -->
 			                                        <!-- |
 			                                        {{ Form::button('',['class'=>'fa fa-close','type'=>'submit','data-toggle'=>"tooltip", 'data-placement'=>"right", 'title'=>"delete"]) }} -->
 

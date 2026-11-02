@@ -44,9 +44,19 @@
                                         {!! Form::open(array('route' => ['payrollcategory.destroy', $payrollcat->id], 'method'=>'DELETE', 'class' => 'delete')) !!}
                                         
                                         {{ link_to_route('payrollcategory.edit', '', [$payrollcat->id], ['class' => 'fa fa-pencil', 'data-toggle' => 'tooltip', 'data-placement' => 'left', 'title' => 'Edit']) }}
-
+                                        {{ link_to_route(
+                                            'payrollcategory.archive',
+                                            '',
+                                            ['id' => $payrollcat->id, 'st' => $payrollcat->status],
+                                            [
+                                                'class' => $payrollcat->status == '1' ? 'fa fa-archive' : 'fa fa-undo',
+                                                'data-toggle' => 'tooltip',
+                                                'data-placement' => 'top',
+                                                'title' => $payrollcat->status == '1' ? 'Archive' : 'Unarchive',
+                                            ]
+                                        ) }}
                                         <!-- {{ link_to_route('payrollcategory.edit','',[$payrollcat->id],['class' => 'fa fa-pencil','data-toggle'=>'tooltip','data-placement'=>'left','title'=>'Edit']) }} &nbsp;|&nbsp; -->
-                                        {{ link_to_route('payrollcategory.archive', $payrollcat->status == 1 ? 'Archive' : 'Unarchive', ['id' => $payrollcat->id, 'st' => $payrollcat->status]) }}
+                                        <!-- {{ link_to_route('payrollcategory.archive', $payrollcat->status == 1 ? 'Archive' : 'Unarchive', ['id' => $payrollcat->id, 'st' => $payrollcat->status]) }} -->
                                         {!! Form::close() !!}</td>
                                     </tr>
                                     @endforeach

@@ -61,8 +61,18 @@
 			                                        {{ link_to_route('user.edit','',[$user->id],['class' => 'fa fa-pencil','data-toggle'=>"tooltip", 'data-placement'=>"left", 'title'=>"edit"]) }}
 
 													|
-
-													{{ link_to_route('user.archive', $user->status == 1 ? 'Archive' : 'Unarchive', ['id' => $user->id, 'st' => $user->status]) }}
+													{{ link_to_route(
+														'user.archive',
+														'',
+														['id' => $user->id, 'st' => $user->status],
+														[
+															'class' => $user->status == 1 ? 'fa fa-archive' : 'fa fa-undo',
+															'data-toggle' => 'tooltip',
+															'data-placement' => 'top',
+															'title' => $user->status == 1 ? 'Archive' : 'Unarchive',
+														]
+													) }}
+													<!-- {{ link_to_route('user.archive', $user->status == 1 ? 'Archive' : 'Unarchive', ['id' => $user->id, 'st' => $user->status]) }} -->
 			                                        <!-- |
 			                                        {{ Form::button('',['class'=>'fa fa-close','type'=>'submit','data-toggle'=>"tooltip", 'data-placement'=>"right", 'title'=>"delete"]) }} -->
 

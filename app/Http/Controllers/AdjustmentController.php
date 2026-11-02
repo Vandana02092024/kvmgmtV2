@@ -213,11 +213,11 @@ class AdjustmentController extends Controller
     {
 		
 		$statusCode = $request->st;
-		if($statusCode == 1) {
-		Adjustment::where('id', '=', $id)->update(['status'   => 0]);   
+		if($statusCode == '1') {
+		Adjustment::where('id', '=', $id)->update(['status'   => '0']);   
 		return redirect()->route('adjustment.index')->with('message','Archived successfully!');			
 		} else {
-		Adjustment::where('id', '=', $id)->update(['status'   => 1]);   
+		Adjustment::where('id', '=', $id)->update(['status'   => '1']);   
 		return redirect()->route('adjustment.index')->with('message','Unarchived successfully!');
 		}
     }

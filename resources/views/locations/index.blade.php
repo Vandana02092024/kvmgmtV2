@@ -58,12 +58,27 @@
 			                                    {!! Form::open(array('route' => ['location.destroy', $location->id], 'method'=>'DELETE', 'class' => 'delete')) !!}
 
 	                                        <a href="#editLocationModal{{ $location->id }}" class="fa fa-pencil" data-toggle="modal" data-placement="left" title="Edit location" aria-label="Edit {{ $location->location }}"></a>
-
 													|
-
-													{{ link_to_route('location.archive', $location->status == 1 ? 'Archive' : 'Unarchive', ['id' => $location->id, 'st' => $location->status]) }}
+													{{ link_to_route(
+														'location.archive',
+														'',
+														['id' => $location->id, 'st' => $location->status],
+														[
+															'class' => $location->status == '1' ? 'fa fa-archive' : 'fa fa-undo',
+															'data-toggle' => 'tooltip',
+															'data-placement' => 'top',
+															'title' => $location->status == '1' ? 'Archive' : 'Unarchive',
+														]
+													) }}
+													<!-- {{ link_to_route('location.archive', $location->status == '1' ? 'Archive' : 'Unarchive', ['id' => $location->id, 'st' => $location->status]) }} -->
 													|
-													<a href="{{url('/asign_loaction/'.$location->id)}}"> Menu Asign</a>
+													<a href="{{ url('/asign_loaction/'.$location->id) }}"
+														class="fa fa-list-alt"
+														data-toggle="tooltip"
+														data-placement="top"
+														title="Menu Assign">
+													</a>
+													<!-- <a href="{{url('/asign_loaction/'.$location->id)}}"> Menu Asign</a> -->
 
 			                                        <!-- |
 			                                        {{ Form::button('',['class'=>'fa fa-close','type'=>'submit','data-toggle'=>"tooltip", 'data-placement'=>"right", 'title'=>"delete"]) }} -->

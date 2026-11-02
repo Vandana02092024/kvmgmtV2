@@ -71,10 +71,19 @@
 		                                    {!! Form::open(array('route' => ['product.destroy', $product->id], 'method'=>'DELETE', 'class' => 'delete')) !!}
 
 		                                        <a href="#editProductModal{{ $product->id }}" class="fa fa-pencil" data-toggle="modal" data-placement="left" title="edit"></a>
-
 		                                        |
-
-												{{ link_to_route('product.proArchive', $product->status == 1 ? 'Archive' : 'Unarchive', ['id' => $product->id, 'st' => $product->status]) }}
+												{{ link_to_route(
+													'product.proArchive',
+													'',
+													['id' => $product->id, 'st' => $product->status],
+													[
+														'class' => $product->status == '1' ? 'fa fa-archive' : 'fa fa-undo',
+														'data-toggle' => 'tooltip',
+														'data-placement' => 'top',
+														'title' => $product->status == '1' ? 'Archive' : 'Unarchive',
+													]
+												) }}
+												<!-- {{ link_to_route('product.proArchive', $product->status == 1 ? 'Archive' : 'Unarchive', ['id' => $product->id, 'st' => $product->status]) }} -->
 
 		                                        <!-- |
 		                                        {{ Form::button('',['class'=>'fa fa-close','type'=>'submit','data-toggle'=>"tooltip", 'data-placement'=>"right", 'title'=>"delete"]) }} -->
