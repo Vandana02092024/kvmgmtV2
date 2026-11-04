@@ -1,5 +1,6 @@
 @extends('layouts.layout')
 @section('content')
+<link rel="stylesheet" href="{{ asset('css/sales-comments.css') }}?v={{ filemtime(base_path('css/sales-comments.css')) }}">
 <style>
    #ajaxLoadAni {
       color: #fff;
@@ -557,7 +558,7 @@
                                 </td>
                                  <td style="position: relative; text-align:left; width: 90px; border-right: 2px solid #585454;" >
                                     $<input type="text" style="width:65px; display:inline;font-size: 10px;font-weight: 800;" class="enterTab sale saturdaydate sumamt sumamtmon form-control currency <?php echo str_replace(' ','_',$sd['name']) ; ?>" nameId= "sale_{{ $sd['id'] }}" unit="amt" dayno ="day1" dateat = "" name="{{ $sd['name'] }}" value="<?php  echo $amount; ?>" onkeypress="return validateFloatKeyPress(this,event);" onChange="amountSum('<?php echo str_replace(' ','_',$sd['name']) ; ?>')">
-                                    <i class="fa fa-comment getlist" style="display:inline; font-size:8px; color:<?= (!empty($comment))?'red':'green';?>" onClick="dataGet('sale_{{ $sd['id'] }}','amt','day1','{{ $sd['name'] }}','{{ $comment }}')" id="sale_{{$sd['id']}}_amt_day1_<?= str_replace(' ','_',$sd['name']);?>">
+                                    <button type="button" class="sales-comment-trigger" data-sales-comment="{{ $dataList[$match]['comment'] ?? '' }}" aria-label="Add or view comment" title="Add or view comment"><i class="fa fa-comment-o" aria-hidden="true"></i></button>
                                  </td>
                                  <?php $match = $sd['name'].'-'.$dates[1].'-'.'sale';$unitsun = (empty($dataList[$match]['unit'])?'':$dataList[$match]['unit']);$amountsun = (empty($dataList[$match]['amount'])?'':$dataList[$match]['amount']);$comment = (empty($dataList[$match]['comment'])?'':trim(preg_replace('/\s\s+/', ' ', str_replace("\n", " ", $dataList[$match]['comment']))));?>
                                  <!-- <td>
@@ -565,21 +566,21 @@
                                  </td>
                                     <td style="position: relative; text-align:left; width: 90px; border-right: 2px solid #585454;" >
                                     $<input type="text" style="width:65px; display:inline;font-size: 10px;font-weight: 800;" class="enterTab sale sundaydate sumamt sumamttue form-control currency <?php echo str_replace(' ','_',$sd['name']) ; ?>" nameId= "sale_{{ $sd['id'] }}" unit="amt" dayno ="day2" dateat = "" name="{{ $sd['name'] }}" value="<?php  echo $amountsun ?>" onkeypress="return validateFloatKeyPress(this,event);" onChange="amountSum('<?php echo str_replace(' ','_',$sd['name']) ; ?>')">
-                                    <i class="fa fa-comment getlist" style="display:inline; font-size:8px; color:<?= (!empty($comment))?'red':'green';?>;" onClick="dataGet('sale_{{ $sd['id'] }}','amt','day2','{{ $sd['name'] }}','{{ $comment }}')">
+                                    <button type="button" class="sales-comment-trigger" data-sales-comment="{{ $dataList[$match]['comment'] ?? '' }}" aria-label="Add or view comment" title="Add or view comment"><i class="fa fa-comment-o" aria-hidden="true"></i></button>
                                     </td>-->
                                  <?php $match = $sd['name'].'-'.$dates[2].'-'.'sale';$unitmon = (empty($dataList[$match]['unit'])?'':$dataList[$match]['unit']);$amountmon = (empty($dataList[$match]['amount'])?'':$dataList[$match]['amount']);$comment = (empty($dataList[$match]['comment'])?'':trim(preg_replace('/\s\s+/', ' ', str_replace("\n", " ", $dataList[$match]['comment']))));?>
                                  <td ><input type="text" class="enterTab sale mondaydate sumunit sumunitwed form-control <?php echo str_replace(' ','_',$sd['name']).'2' ; ?>" style="font-size:10px;" nameId= "sale_{{ $sd['id'] }}" unit="units" dayno ="day3" dateat = "" name="{{ $sd['name'] }}"  value="<?php  echo $unitmon ?>" onkeypress="return validateFloatKeyPress(this,event);" onChange="unitSum('<?php echo str_replace(' ','_',$sd['name']).'2' ; ?>')">
                                  </td>
                                  <td  style="position: relative; text-align:left; width: 90px; border-right: 2px solid #585454;">
                                     $<input type="text" style="width:65px; display:inline;font-size: 10px;font-weight: 800;" class="enterTab sale mondaydate sumamt sumamtwed form-control currency <?php echo str_replace(' ','_',$sd['name']) ; ?>" nameId= "sale_{{ $sd['id'] }}" unit="amt" dayno ="day3" dateat = "" name="{{ $sd['name'] }}" value="<?php  echo $amountmon ?>" onkeypress="return validateFloatKeyPress(this,event);" onChange="amountSum('<?php echo str_replace(' ','_',$sd['name']) ; ?>')">
-                                    <i class="fa fa-comment getlist" style="display:inline; font-size:8px; color:<?= (!empty($comment))?'red':'green';?>;" onClick="dataGet('sale_{{ $sd['id'] }}','amt','day3','{{ $sd['name'] }}','{{ $comment }}')"  id="sale_{{$sd['id']}}_amt_day3_<?= str_replace(' ','_',$sd['name']);?>">
+                                    <button type="button" class="sales-comment-trigger" data-sales-comment="{{ $dataList[$match]['comment'] ?? '' }}" aria-label="Add or view comment" title="Add or view comment"><i class="fa fa-comment-o" aria-hidden="true"></i></button>
                                  </td>
                                  <?php $match = $sd['name'].'-'.$dates[3].'-'.'sale';$unittue = (empty($dataList[$match]['unit'])?'':$dataList[$match]['unit']);$amounttue = (empty($dataList[$match]['amount'])?'':$dataList[$match]['amount']);$comment = (empty($dataList[$match]['comment'])?'':trim(preg_replace('/\s\s+/', ' ', str_replace("\n", " ", $dataList[$match]['comment']))));?>
                                  <td ><input type="text" class="enterTab sale tuesdaydate sumunit sumunitthr form-control <?php echo str_replace(' ','_',$sd['name']).'2' ; ?>" style="font-size:10px;" nameId= "sale_{{ $sd['id'] }}" unit="units" dayno ="day4" dateat = "" name="{{ $sd['name'] }}"  value="<?php  echo $unittue ?>" onkeypress="return validateFloatKeyPress(this,event);" onChange="unitSum('<?php echo str_replace(' ','_',$sd['name']).'2' ; ?>')">
                                  </td>
                                  <td  style="position: relative; text-align:left; width: 90px; border-right: 2px solid #585454;">
                                     $<input type="text" style="width:65px; display:inline;font-size: 10px;font-weight: 800;" class="enterTab sale tuesdaydate sumamt sumamtthr form-control currency <?php echo str_replace(' ','_',$sd['name']) ; ?>" nameId= "sale_{{ $sd['id'] }}" unit="amt" dayno ="day4" dateat = "" name="{{ $sd['name'] }}" value="<?php  echo $amounttue ?>" onkeypress="return validateFloatKeyPress(this,event);" onChange="amountSum('<?php echo str_replace(' ','_',$sd['name']) ; ?>')">
-                                    <i class="fa fa-comment getlist" style="display:inline; font-size:8px; color:<?= (!empty($comment))?'red':'green';?>;" onClick="dataGet('sale_{{ $sd['id'] }}','amt','day4','{{ $sd['name'] }}','{{ $comment }}')" id="sale_{{$sd['id']}}_amt_day4_<?= str_replace(' ','_',$sd['name']);?>">
+                                    <button type="button" class="sales-comment-trigger" data-sales-comment="{{ $dataList[$match]['comment'] ?? '' }}" aria-label="Add or view comment" title="Add or view comment"><i class="fa fa-comment-o" aria-hidden="true"></i></button>
                                  </td>
                                  <?php $match = $sd['name'].'-'.$dates[4].'-'.'sale';
                                     $unitwed = (empty($dataList[$match]['unit'])?'':$dataList[$match]['unit']);  $amountwed = (empty($dataList[$match]['amount'])?'':$dataList[$match]['amount']);$comment = (empty($dataList[$match]['comment'])?'':trim(preg_replace('/\s\s+/', ' ', str_replace("\n", " ", $dataList[$match]['comment']))));?>
@@ -587,21 +588,21 @@
                                  </td>
                                  <td  style="position: relative; text-align:left; width: 90px; border-right: 2px solid #585454;">
                                     $<input type="text" style="width:65px; display:inline;font-size: 10px;font-weight: 800;" class="enterTab sale wednesdaydate sumamt sumamtfri form-control currency <?php echo str_replace(' ','_',$sd['name']) ; ?>" nameId= "sale_{{ $sd['id'] }}" unit="amt" dayno ="day5" dateat = "" name="{{ $sd['name'] }}" value="<?php echo $amountwed; ?>" onkeypress="return validateFloatKeyPress(this,event);" onChange="amountSum('<?php echo str_replace(' ','_',$sd['name']) ; ?>')">
-                                    <i class="fa fa-comment getlist" style="display:inline; font-size:8px; color:<?= (!empty($comment))?'red':'green';?>;" onClick="dataGet('sale_{{ $sd['id'] }}','amt','day5','{{ $sd['name'] }}','{{ $comment }}')" id="sale_{{$sd['id']}}_amt_day5_<?= str_replace(' ','_',$sd['name']);?>">
+                                    <button type="button" class="sales-comment-trigger" data-sales-comment="{{ $dataList[$match]['comment'] ?? '' }}" aria-label="Add or view comment" title="Add or view comment"><i class="fa fa-comment-o" aria-hidden="true"></i></button>
                                  </td>
                                  <?php $match = $sd['name'].'-'.$dates[5].'-'.'sale';$unitthr = (empty($dataList[$match]['unit'])?'':$dataList[$match]['unit']);$amountthr = (empty($dataList[$match]['amount'])?'':$dataList[$match]['amount']);$comment = (empty($dataList[$match]['comment'])?'':trim(preg_replace('/\s\s+/', ' ', str_replace("\n", " ", $dataList[$match]['comment']))));?>
                                  <td ><input type="text" class="enterTab sale thrusdaydate sumunit sumunitsat form-control <?php echo str_replace(' ','_',$sd['name']).'2' ; ?>" style="font-size:10px;" nameId= "sale_{{ $sd['id'] }}" unit="units" dayno ="day6" dateat = "" name="{{ $sd['name'] }}"  value="<?php echo $unitthr ;?>" onkeypress="return validateFloatKeyPress(this,event);" onChange="unitSum('<?php echo str_replace(' ','_',$sd['name']).'2' ; ?>')">
                                  </td>
                                  <td style="position: relative; text-align:left; width: 90px; border-right: 2px solid #585454;" >
                                     $<input type="text" style="width:65px; display:inline;font-size: 10px;font-weight: 800;" class="enterTab sale thrusdaydate sumamt sumamtsat form-control currency <?php echo str_replace(' ','_',$sd['name']) ; ?>" nameId= "sale_{{ $sd['id'] }}" unit="amt" dayno ="day6" dateat = "" name="{{ $sd['name'] }}" value="<?php echo $amountthr; ?>" onkeypress="return validateFloatKeyPress(this,event);" onChange="amountSum('<?php echo str_replace(' ','_',$sd['name']) ; ?>')">
-                                    <i class="fa fa-comment getlist" style="display:inline; font-size:8px; color:<?= (!empty($comment))?'red':'green';?>;" onClick="dataGet('sale_{{ $sd['id'] }}','amt','day6','{{ $sd['name'] }}','{{ $comment }}')" id="sale_{{$sd['id']}}_amt_day6_<?= str_replace(' ','_',$sd['name']);?>">
+                                    <button type="button" class="sales-comment-trigger" data-sales-comment="{{ $dataList[$match]['comment'] ?? '' }}" aria-label="Add or view comment" title="Add or view comment"><i class="fa fa-comment-o" aria-hidden="true"></i></button>
                                  </td>
                                  <?php $match = $sd['name'].'-'.$dates[6].'-'.'sale';$unitsun = (empty($dataList[$match]['unit'])?'':$dataList[$match]['unit']);$amountsun = (empty($dataList[$match]['amount'])?'':$dataList[$match]['amount']);$comment = (empty($dataList[$match]['comment'])?'':trim(preg_replace('/\s\s+/', ' ', str_replace("\n", " ", $dataList[$match]['comment']))));?>
                                  <td>
                                     <input type="text" class="enterTab sale fridaydate sumunit sumunitsun form-control <?php echo str_replace(' ','_',$sd['name']).'2' ; ?>" style="font-size:10px;" nameId= "sale_{{ $sd['id'] }}" unit="units" dayno ="day7" dateat = "" name="{{ $sd['name'] }}"  value="<?php echo $unitsun; ?>" onkeypress="return validateFloatKeyPress(this,event);" onChange="unitSum('<?php echo str_replace(' ','_',$sd['name']).'2' ; ?>')" ></td>
                                  <td  style="position: relative; text-align:left; width: 90px; border-right: 2px solid #585454;">
                                     $<input type="text" style="width:65px; display:inline;font-size: 10px;font-weight: 800;" class="enterTab sale fridaydate sumamt sumamtsun form-control currency <?php echo str_replace(' ','_',$sd['name']) ; ?>" nameId= "sale_{{ $sd['id'] }}" unit="amt" dayno ="day7" dateat = "" name="{{ $sd['name'] }}" value="<?php echo $amountsun; ?>" onkeypress="return validateFloatKeyPress(this,event);" onChange="amountSum('<?php echo str_replace(' ','_',$sd['name']) ; ?>')">
-                                    <i class="fa fa-comment getlist" style="display:inline; font-size:8px; color:<?= (!empty($comment))?'red':'green';?>;" onClick='dataGet("sale_{{ $sd["id"] }}","amt","day7","{{ $sd["name"] }}","{{ $comment }}")' id="sale_{{$sd['id']}}_amt_day7_<?= str_replace(' ','_',$sd['name']);?>">
+                                    <button type="button" class="sales-comment-trigger" data-sales-comment="{{ $dataList[$match]['comment'] ?? '' }}" aria-label="Add or view comment" title="Add or view comment"><i class="fa fa-comment-o" aria-hidden="true"></i></button>
                                  </td>
                               </tr>
                               <?php } ?>
@@ -666,7 +667,7 @@
                                 </td>
                                  <td style="position: relative; text-align:left; width: 90px; border-right: 2px solid #585454;" >
                                     $<input type="text" style="width:65px; display:inline;color:red;font-size:10px;" class="enterTab sale saturdaydate disamt disamtmon form-control currency <?php echo str_replace(' ','_',$dd['name'])."_7" ; ?>" unit="amt" nameId= "dis_{{ $dd['id'] }}"  dayno ="day1" dateat = "" name="{{ $dd['name'] }}" value="<?php echo $amount; ?>" onkeypress="return validateFloatKeyPress(this,event);" onChange="disAmountSum('<?php echo str_replace(' ','_',$dd['name'])."_7" ; ?>')">
-                                    <i class="fa fa-comment getlist" style="display:inline; font-size:8px; color:<?= (!empty($comment))?'red':'green';?>;" onClick="dataGet('dis_{{ $dd['id'] }}','amt','day1','{{ $dd['name'] }}','{{ $comment }}')" id="dis_{{$dd['id']}}_amt_day1_<?= str_replace(' ','_',$dd['name']);?>">
+                                    <button type="button" class="sales-comment-trigger" data-sales-comment="{{ $dataListDiscount[$match]['comment'] ?? '' }}" aria-label="Add or view comment" title="Add or view comment"><i class="fa fa-comment-o" aria-hidden="true"></i></button>
                                  </td>
                                  <?php $match = $dd['name'].'-'.$dates[1].'-'.'dis';$amountsun = (empty($dataListDiscount[$match]['amount'])?'':$dataListDiscount[$match]['amount']);$comment = (empty($dataListDiscount[$match]['comment'])?'':trim(preg_replace('/\s\s+/', ' ', str_replace("\n", " ", $dataListDiscount[$match]['comment']))));?>
                                  <!--<td>
@@ -674,7 +675,7 @@
                                  </td>
                                     <td style="position: relative; text-align:left; width: 90px; border-right: 2px solid #585454;" >
                                     $<input type="text" style="width:65px; display:inline;color:red;font-size:10px;" class="enterTab sale sundaydate disamt disamttue form-control currency <?php echo str_replace(' ','_',$dd['name'])."_7" ; ?>" unit="amt" nameId= "dis_{{ $dd['id'] }}"  dayno ="day2" dateat = "" name="{{ $dd['name'] }}" value="<?php echo $amountsun; ?>" onkeypress="return validateFloatKeyPress(this,event);" onChange="disAmountSum('<?php echo str_replace(' ','_',$dd['name'])."_7" ; ?>')">
-                                    <i class="fa fa-comment getlist" style="display:inline; font-size:8px; color:<?= (!empty($comment))?'red':'green';?>;" onClick="dataGet('dis_{{ $dd['id'] }}','amt','day2','{{ $dd['name'] }}','{{ $comment }}')">
+                                    <button type="button" class="sales-comment-trigger" data-sales-comment="{{ $dataListDiscount[$match]['comment'] ?? '' }}" aria-label="Add or view comment" title="Add or view comment"><i class="fa fa-comment-o" aria-hidden="true"></i></button>
                                     </td>-->
                                  <?php $match = $dd['name'].'-'.$dates[2].'-'.'dis';$amountmon = (empty($dataListDiscount[$match]['amount'])?'':$dataListDiscount[$match]['amount']);$comment = (empty($dataListDiscount[$match]['comment'])?'':trim(preg_replace('/\s\s+/', ' ', str_replace("\n", " ", $dataListDiscount[$match]['comment']))));?>
                                  <td>
@@ -682,7 +683,7 @@
                                 </td>
                                  <td style="position: relative; text-align:left; width: 90px; border-right: 2px solid #585454;" >
                                     $<input type="text" style="width:65px; display:inline;color:red;font-size:10px;" class="enterTab sale mondaydate disamt disamtwed form-control currency <?php echo str_replace(' ','_',$dd['name'])."_7" ; ?>" unit="amt" nameId= "dis_{{ $dd['id'] }}"  dayno ="day3" dateat = "" name="{{ $dd['name'] }}" value="<?php echo $amountmon; ?>" onkeypress="return validateFloatKeyPress(this,event);" onChange="disAmountSum('<?php echo str_replace(' ','_',$dd['name'])."_7" ; ?>')">
-                                    <i class="fa fa-comment getlist" style="display:inline; font-size:8px; color:<?= (!empty($comment))?'red':'green';?>;" onClick="dataGet('dis_{{ $dd['id'] }}','amt','day3','{{ $dd['name'] }}','{{ $comment }}')" id="dis_{{$dd['id']}}_amt_day3_<?= str_replace(' ','_',$dd['name']);?>">
+                                    <button type="button" class="sales-comment-trigger" data-sales-comment="{{ $dataListDiscount[$match]['comment'] ?? '' }}" aria-label="Add or view comment" title="Add or view comment"><i class="fa fa-comment-o" aria-hidden="true"></i></button>
                                  </td>
                                  <?php $match = $dd['name'].'-'.$dates[3].'-'.'dis';$amounttue = (empty($dataListDiscount[$match]['amount'])?'':$dataListDiscount[$match]['amount']);$comment = (empty($dataListDiscount[$match]['comment'])?'':trim(preg_replace('/\s\s+/', ' ', str_replace("\n", " ", $dataListDiscount[$match]['comment']))));?>
                                  <td>
@@ -690,7 +691,7 @@
                                 </td>
                                  <td style="position: relative; text-align:left; width: 90px; border-right: 2px solid #585454;" >
                                     $<input type="text" style="width:65px; display:inline;color:red;font-size:10px;" class="enterTab sale tuesdaydate disamt disamtthr form-control currency <?php echo str_replace(' ','_',$dd['name'])."_7" ; ?>" unit="amt" nameId= "dis_{{ $dd['id'] }}"  dayno ="day4" dateat = "" name="{{ $dd['name'] }}" value="<?php echo $amounttue; ?>" onkeypress="return validateFloatKeyPress(this,event);" onChange="disAmountSum('<?php echo str_replace(' ','_',$dd['name'])."_7" ; ?>')">
-                                    <i class="fa fa-comment getlist" style="display:inline; font-size:8px; color:<?= (!empty($comment))?'red':'green';?>;" onClick="dataGet('dis_{{ $dd['id'] }}','amt','day4','{{ $dd['name'] }}','{{ $comment }}')" id="dis_{{$dd['id']}}_amt_day4_<?= str_replace(' ','_',$dd['name']);?>">
+                                    <button type="button" class="sales-comment-trigger" data-sales-comment="{{ $dataListDiscount[$match]['comment'] ?? '' }}" aria-label="Add or view comment" title="Add or view comment"><i class="fa fa-comment-o" aria-hidden="true"></i></button>
                                  </td>
                                  <?php $match = $dd['name'].'-'.$dates[4].'-'.'dis';$amountwed = (empty($dataListDiscount[$match]['amount'])?'':$dataListDiscount[$match]['amount']);$comment = (empty($dataListDiscount[$match]['comment'])?'':trim(preg_replace('/\s\s+/', ' ', str_replace("\n", " ", $dataListDiscount[$match]['comment']))));?>
                                  <td>
@@ -698,7 +699,7 @@
                                 </td>
                                  <td style="position: relative; text-align:left; width: 90px; border-right: 2px solid #585454;" >
                                     $<input type="text" style="width:65px; display:inline;color:red;font-size:10px;" class="enterTab sale wednesdaydate disamt disamtfri form-control currency <?php echo str_replace(' ','_',$dd['name'])."_7" ; ?>" unit="amt" nameId= "dis_{{ $dd['id'] }}"  dayno ="day5" dateat = "" name="{{ $dd['name'] }}" value="<?php echo $amountwed; ?>" onkeypress="return validateFloatKeyPress(this,event);" onChange="disAmountSum('<?php echo str_replace(' ','_',$dd['name'])."_7" ; ?>')">
-                                    <i class="fa fa-comment getlist" style="display:inline; font-size:8px; color:<?= (!empty($comment))?'red':'green';?>;" onClick="dataGet('dis_{{ $dd['id'] }}','amt','day5','{{ $dd['name'] }}','{{ $comment }}')" id="dis_{{$dd['id']}}_amt_day5_<?= str_replace(' ','_',$dd['name']);?>">
+                                    <button type="button" class="sales-comment-trigger" data-sales-comment="{{ $dataListDiscount[$match]['comment'] ?? '' }}" aria-label="Add or view comment" title="Add or view comment"><i class="fa fa-comment-o" aria-hidden="true"></i></button>
                                  </td>
                                  <?php $match = $dd['name'].'-'.$dates[5].'-'.'dis';$amountthr = (empty($dataListDiscount[$match]['amount'])?'':$dataListDiscount[$match]['amount']);$comment = (empty($dataListDiscount[$match]['comment'])?'':trim(preg_replace('/\s\s+/', ' ', str_replace("\n", " ", $dataListDiscount[$match]['comment']))));?>
                                  <td>
@@ -706,7 +707,7 @@
                                 </td>
                                  <td style="position: relative; text-align:left; width: 90px; border-right: 2px solid #585454;" >
                                     $<input type="text" style="width:65px; display:inline;color:red;font-size:10px;" class="enterTab sale thrusdaydate disamt disamtsat form-control currency <?php echo str_replace(' ','_',$dd['name'])."_7" ; ?>" unit="amt" nameId= "dis_{{ $dd['id'] }}"  dayno ="day6" dateat = "" name="{{ $dd['name'] }}" value="<?php echo $amountthr; ?>" onkeypress="return validateFloatKeyPress(this,event);" onChange="disAmountSum('<?php echo str_replace(' ','_',$dd['name'])."_7" ; ?>')">
-                                    <i class="fa fa-comment getlist" style="display:inline; font-size:8px; color:<?= (!empty($comment))?'red':'green';?>;" onClick="dataGet('dis_{{ $dd['id'] }}','amt','day6','{{ $dd['name'] }}','{{ $comment }}')" id="dis_{{$dd['id']}}_amt_day6_<?= str_replace(' ','_',$dd['name']);?>">
+                                    <button type="button" class="sales-comment-trigger" data-sales-comment="{{ $dataListDiscount[$match]['comment'] ?? '' }}" aria-label="Add or view comment" title="Add or view comment"><i class="fa fa-comment-o" aria-hidden="true"></i></button>
                                  </td>
                                  <?php $match = $dd['name'].'-'.$dates[6].'-'.'dis';$amountfri = (empty($dataListDiscount[$match]['amount'])?'':$dataListDiscount[$match]['amount']);$comment = (empty($dataListDiscount[$match]['comment'])?'':trim(preg_replace('/\s\s+/', ' ', str_replace("\n", " ", $dataListDiscount[$match]['comment']))));?>
                                  <td>
@@ -714,7 +715,7 @@
                                 </td>
                                  <td style="position: relative; text-align:left; width: 90px; border-right: 2px solid #585454;" >
                                     $<input type="text" style="width:65px; display:inline;color:red;font-size:10px;" class="enterTab sale fridaydate disamt disamtsun form-control currency <?php echo str_replace(' ','_',$dd['name'])."_7" ; ?>" unit="amt" nameId= "dis_{{ $dd['id'] }}"  dayno ="day7" dateat = "" name="{{ $dd['name'] }}" value="<?php echo $amountfri; ?>" onkeypress="return validateFloatKeyPress(this,event);" onChange="disAmountSum('<?php echo str_replace(' ','_',$dd['name'])."_7" ; ?>')">
-                                    <i class="fa fa-comment getlist" style="display:inline; font-size:8px; color:<?= (!empty($comment))?'red':'green';?>;" onClick="dataGet('dis_{{ $dd['id'] }}','amt','day7','{{ $dd['name'] }}','{{ $comment }}')" id="dis_{{$dd['id']}}_amt_day7_<?= str_replace(' ','_',$dd['name']);?>">
+                                    <button type="button" class="sales-comment-trigger" data-sales-comment="{{ $dataListDiscount[$match]['comment'] ?? '' }}" aria-label="Add or view comment" title="Add or view comment"><i class="fa fa-comment-o" aria-hidden="true"></i></button>
                                  </td>
                               </tr>
                               <?php } ?>
@@ -785,7 +786,7 @@
                                 </td>
                                  <td style="position: relative; text-align:left; width: 90px; border-right: 2px solid #585454;" >
                                     $<input type="text" style="width:65px; display:inline; color:<?php echo $color;?>;font-size:10px;" class="enterTab sale saturdaydate adjamt adjamtmon form-control currency <?php echo str_replace(' ','_',$adj['name'])."_8" ; ?>" unit="amt" nameId= "adj_{{ $adj['id'] }}" dayno ="day1" dateat = "" name="{{ $adj['name'] }}" value="<?php echo $amountsat1; ?>" onkeypress="return validateFloatKeyPress(this,event);" onChange="adjAmountSum('<?php echo str_replace(' ','_',$adj['name'])."_8" ; ?>')">
-                                    <i class="fa fa-comment getlist" style="display:inline; font-size:8px; color:<?= (!empty($comment))?'red':'green';?>;" onClick="dataGet('adj_{{ $adj['id'] }}','amt','day1','{{ $adj['name'] }}','{{ $comment }}')" id="adj_{{$adj['id']}}_amt_day1_<?= str_replace(' ','_',$adj['name']);?>">
+                                    <button type="button" class="sales-comment-trigger" data-sales-comment="{{ $dataListAdjust[$match]['comment'] ?? '' }}" aria-label="Add or view comment" title="Add or view comment"><i class="fa fa-comment-o" aria-hidden="true"></i></button>
                                  </td>
                                  <?php $match = $adj['name'].'-'.$dates[1].'-'.'adj';$amountsun1 = (empty($dataListAdjust[$match]['amount'])?'':$dataListAdjust[$match]['amount']);$comment = (empty($dataListAdjust[$match]['comment'])?'':trim(preg_replace('/\s\s+/', ' ', str_replace("\n", " ", $dataListAdjust[$match]['comment']))));?>
                                  <!--<td>
@@ -793,7 +794,7 @@
                                  </td>
                                     <td style="position: relative; text-align:left; width: 90px; border-right: 2px solid #585454;" >
                                     $<input type="text" style="width:65px; display:inline; color:<?php echo $color;?>;font-size:10px;" class="enterTab sale sundaydate adjamt adjamttue form-control currency <?php echo str_replace(' ','_',$adj['name'])."_8" ; ?>" unit="amt" nameId= "adj_{{ $adj['id'] }}" dayno ="day2" dateat = "" name="{{ $adj['name'] }}" value="<?php echo $amountsun1; ?>" onkeypress="return validateFloatKeyPress(this,event);" onChange="adjAmountSum('<?php echo str_replace(' ','_',$adj['name'])."_8" ; ?>')">
-                                    <i class="fa fa-comment getlist" style="display:inline; font-size:8px; color:<?= (!empty($comment))?'red':'green';?>;" onClick="dataGet('adj_{{ $adj['id'] }}','amt','day2','{{ $adj['name'] }}','{{ $comment }}')">
+                                    <button type="button" class="sales-comment-trigger" data-sales-comment="{{ $dataListAdjust[$match]['comment'] ?? '' }}" aria-label="Add or view comment" title="Add or view comment"><i class="fa fa-comment-o" aria-hidden="true"></i></button>
                                     </td>-->
                                  <?php $match = $adj['name'].'-'.$dates[2].'-'.'adj';$amountmon1 = (empty($dataListAdjust[$match]['amount'])?'':$dataListAdjust[$match]['amount']);$comment = (empty($dataListAdjust[$match]['comment'])?'':trim(preg_replace('/\s\s+/', ' ', str_replace("\n", " ", $dataListAdjust[$match]['comment']))));?>
                                  <td>
@@ -801,7 +802,7 @@
                                 </td>
                                  <td style="position: relative; text-align:left; width: 90px; border-right: 2px solid #585454;" >
                                     $<input type="text" style="width:65px; display:inline; color:<?php echo $color;?>;font-size:10px;" class="enterTab sale mondaydate adjamt adjamtwed form-control currency <?php echo str_replace(' ','_',$adj['name'])."_8" ; ?>" unit="amt" nameId= "adj_{{ $adj['id'] }}" dayno ="day3" dateat = "" name="{{ $adj['name'] }}" value="<?php echo $amountmon1; ?>" onkeypress="return validateFloatKeyPress(this,event);" onChange="adjAmountSum('<?php echo str_replace(' ','_',$adj['name'])."_8" ; ?>')">
-                                    <i class="fa fa-comment getlist" style="display:inline; font-size:8px; color:<?= (!empty($comment))?'red':'green';?>;" onClick="dataGet('adj_{{ $adj['id'] }}','amt','day3','{{ $adj['name'] }}','{{ $comment }}')" id="adj_{{$adj['id']}}_amt_day3_<?= str_replace(' ','_',$adj['name']);?>">
+                                    <button type="button" class="sales-comment-trigger" data-sales-comment="{{ $dataListAdjust[$match]['comment'] ?? '' }}" aria-label="Add or view comment" title="Add or view comment"><i class="fa fa-comment-o" aria-hidden="true"></i></button>
                                  </td>
                                  <?php $match = $adj['name'].'-'.$dates[3].'-'.'adj';$amounttue1 = (empty($dataListAdjust[$match]['amount'])?'':$dataListAdjust[$match]['amount']);$comment = (empty($dataListAdjust[$match]['comment'])?'':trim(preg_replace('/\s\s+/', ' ', str_replace("\n", " ", $dataListAdjust[$match]['comment']))));?>
                                  <td>
@@ -809,7 +810,7 @@
                                 </td>
                                  <td style="position: relative; text-align:left; width: 90px; border-right: 2px solid #585454;" >
                                     $<input type="text" style="width:65px; display:inline; color:<?php echo $color;?>;font-size:10px;" class="enterTab sale tuesdaydate adjamt adjamtthr form-control currency <?php echo str_replace(' ','_',$adj['name'])."_8" ; ?>" unit="amt" nameId= "adj_{{ $adj['id'] }}" dayno ="day4" dateat = "" name="{{ $adj['name'] }}" value="<?php echo $amounttue1; ?>" onkeypress="return validateFloatKeyPress(this,event);" onChange="adjAmountSum('<?php echo str_replace(' ','_',$adj['name'])."_8" ; ?>')">
-                                    <i class="fa fa-comment getlist" style="display:inline; font-size:8px; color:<?= (!empty($comment))?'red':'green';?>;" onClick="dataGet('adj_{{ $adj['id'] }}','amt','day4','{{ $adj['name'] }}','{{ $comment }}')" id="adj_{{$adj['id']}}_amt_day4_<?= str_replace(' ','_',$adj['name']);?>">
+                                    <button type="button" class="sales-comment-trigger" data-sales-comment="{{ $dataListAdjust[$match]['comment'] ?? '' }}" aria-label="Add or view comment" title="Add or view comment"><i class="fa fa-comment-o" aria-hidden="true"></i></button>
                                  </td>
                                  <?php $match = $adj['name'].'-'.$dates[4].'-'.'adj';$amountwed1 = (empty($dataListAdjust[$match]['amount'])?'':$dataListAdjust[$match]['amount']);$comment = (empty($dataListAdjust[$match]['comment'])?'':trim(preg_replace('/\s\s+/', ' ', str_replace("\n", " ", $dataListAdjust[$match]['comment']))));?>
                                  <td>
@@ -817,7 +818,7 @@
                                 </td>
                                  <td style="position: relative; text-align:left; width: 90px; border-right: 2px solid #585454;" >
                                     $<input type="text" style="width:65px; display:inline; color:<?php echo $color;?>;font-size:10px;" class="enterTab sale wednesdaydate adjamt adjamtfri form-control currency <?php echo str_replace(' ','_',$adj['name'])."_8" ; ?>" unit="amt" nameId= "adj_{{ $adj['id'] }}" dayno ="day5" dateat = "" name="{{ $adj['name'] }}" value="<?php echo $amountwed1; ?>" onkeypress="return validateFloatKeyPress(this,event);" onChange="adjAmountSum('<?php echo str_replace(' ','_',$adj['name'])."_8" ; ?>')">
-                                    <i class="fa fa-comment getlist" style="display:inline; font-size:8px; color:<?= (!empty($comment))?'red':'green';?>;" onClick="dataGet('adj_{{ $adj['id'] }}','amt','day5','{{ $adj['name'] }}','{{ $comment }}')" id="adj_{{$adj['id']}}_amt_day5_<?= str_replace(' ','_',$adj['name']);?>">
+                                    <button type="button" class="sales-comment-trigger" data-sales-comment="{{ $dataListAdjust[$match]['comment'] ?? '' }}" aria-label="Add or view comment" title="Add or view comment"><i class="fa fa-comment-o" aria-hidden="true"></i></button>
                                  </td>
                                  <?php $match = $adj['name'].'-'.$dates[5].'-'.'adj';$amountthr1 = (empty($dataListAdjust[$match]['amount'])?'':$dataListAdjust[$match]['amount']);$comment = (empty($dataListAdjust[$match]['comment'])?'':trim(preg_replace('/\s\s+/', ' ', str_replace("\n", " ", $dataListAdjust[$match]['comment']))));?>
                                  <td>
@@ -825,7 +826,7 @@
                                 </td>
                                  <td style="position: relative; text-align:left; width: 90px; border-right: 2px solid #585454;" >
                                     $<input type="text" style="width:65px; display:inline; color:<?php echo $color;?>;font-size:10px;" class="enterTab sale thrusdaydate adjamt adjamtsat form-control currency <?php echo str_replace(' ','_',$adj['name'])."_8" ; ?>" unit="amt" nameId= "adj_{{ $adj['id'] }}" dayno ="day6" dateat = "" name="{{ $adj['name'] }}" value="<?php echo $amountthr1; ?>" onkeypress="return validateFloatKeyPress(this,event);" onChange="adjAmountSum('<?php echo str_replace(' ','_',$adj['name'])."_8" ; ?>')">
-                                    <i class="fa fa-comment getlist" style="display:inline; font-size:8px; color:<?= (!empty($comment))?'red':'green';?>;" onClick="dataGet('adj_{{ $adj['id'] }}','amt','day6','{{ $adj['name'] }}','{{ $comment }}')" id="adj_{{$adj['id']}}_amt_day6_<?= str_replace(' ','_',$adj['name']);?>">
+                                    <button type="button" class="sales-comment-trigger" data-sales-comment="{{ $dataListAdjust[$match]['comment'] ?? '' }}" aria-label="Add or view comment" title="Add or view comment"><i class="fa fa-comment-o" aria-hidden="true"></i></button>
                                  </td>
                                  <?php $match = $adj['name'].'-'.$dates[6].'-'.'adj';$amountfri1 = (empty($dataListAdjust[$match]['amount'])?'':$dataListAdjust[$match]['amount']);$comment = (empty($dataListAdjust[$match]['comment'])?'':trim(preg_replace('/\s\s+/', ' ', str_replace("\n", " ", $dataListAdjust[$match]['comment']))));?>
                                  <td>
@@ -833,7 +834,7 @@
                                 </td>
                                  <td style="position: relative; text-align:left; width: 90px; border-right: 2px solid #585454;" >
                                     $<input type="text" style="width:65px; display:inline; color:<?php echo $color;?>;font-size:10px;" class="enterTab sale fridaydate adjamt adjamtsun form-control currency <?php echo str_replace(' ','_',$adj['name'])."_8" ; ?>" unit="amt" nameId= "adj_{{ $adj['id'] }}" dayno ="day7" dateat = "" name="{{ $adj['name'] }}" value="<?php echo $amountfri1; ?>" onkeypress="return validateFloatKeyPress(this,event);" onChange="adjAmountSum('<?php echo str_replace(' ','_',$adj['name'])."_8" ; ?>')">
-                                    <i class="fa fa-comment getlist" style="display:inline; font-size:8px; color:<?= (!empty($comment))?'red':'green';?>;" onClick="dataGet('adj_{{ $adj['id'] }}','amt','day7','{{ $adj['name'] }}','{{ $comment }}')" id="adj_{{$adj['id']}}_amt_day7_<?= str_replace(' ','_',$adj['name']);?>">
+                                    <button type="button" class="sales-comment-trigger" data-sales-comment="{{ $dataListAdjust[$match]['comment'] ?? '' }}" aria-label="Add or view comment" title="Add or view comment"><i class="fa fa-comment-o" aria-hidden="true"></i></button>
                                  </td>
                               </tr>
                               <?php } ?>
@@ -899,7 +900,7 @@
                                 </td>
                                  <td style="position: relative; text-align:left; width: 90px; border-right: 2px solid #585454;" >
                                     $<input type="text" style="width:65px; display:inline;font-size: 10px;font-weight: 800;" class="enterTab sale saturdaydate recamt recamtmon form-control currency <?php echo str_replace(' ','_',$rD['name'])."_9" ; ?>" unit="amt" nameId= "rec_{{ $rD['id'] }}" dayno ="day1" dateat = "" name="{{ $rD['name'] }}" value="<?php echo $amount1; ?>" onkeypress="return validateFloatKeyPress(this,event);" onChange="recAmountSum('<?php echo str_replace(' ','_',$rD['name'])."_9" ; ?>')">
-                                    <i class="fa fa-comment getlist" style="display:inline; font-size:8px; color:<?= (!empty($comment))?'red':'green';?>;" onClick="dataGet('rec_{{ $rD['id'] }}','amt','day1','{{ $rD['name'] }}','{{ $comment }}')" id="rec_{{$rD['id']}}_amt_day1_<?= str_replace(' ','_',$rD['name']);?>">
+                                    <button type="button" class="sales-comment-trigger" data-sales-comment="{{ $dataListRec[$match]['comment'] ?? '' }}" aria-label="Add or view comment" title="Add or view comment"><i class="fa fa-comment-o" aria-hidden="true"></i></button>
                                  </td>
                                  <?php $match = $rD['name'].'-'.$dates[1].'-'.'rec';$amount2 = (empty($dataListRec[$match]['amount'])?'':$dataListRec[$match]['amount']);$comment = (empty($dataListRec[$match]['comment'])?'':trim(preg_replace('/\s\s+/', ' ', str_replace("\n", " ", $dataListRec[$match]['comment']))));?>
                                  <!--<td>
@@ -907,7 +908,7 @@
                                  </td>
                                     <td style="position: relative; text-align:left; width: 90px; border-right: 2px solid #585454;">
                                     $<input type="text" style="width:65px; display:inline;font-size: 10px;font-weight: 800;" class="enterTab sale sundaydate recamt recamttue form-control currency <?php echo str_replace(' ','_',$rD['name'])."_9" ; ?>" unit="amt" nameId= "rec_{{ $rD['id'] }}" dayno ="day2" dateat = "" name="{{ $rD['name'] }}" value="<?php echo $amount2; ?>" onkeypress="return validateFloatKeyPress(this,event);" onChange="recAmountSum('<?php echo str_replace(' ','_',$rD['name'])."_9" ; ?>')">
-                                    <i class="fa fa-comment getlist" style="display:inline; font-size:8px; color:<?= (!empty($comment))?'red':'green';?>;" onClick="dataGet('rec_{{ $rD['id'] }}','amt','day2','{{ $rD['name'] }}','{{ $comment }}')">
+                                    <button type="button" class="sales-comment-trigger" data-sales-comment="{{ $dataListRec[$match]['comment'] ?? '' }}" aria-label="Add or view comment" title="Add or view comment"><i class="fa fa-comment-o" aria-hidden="true"></i></button>
                                     </td>-->
                                  <?php $match = $rD['name'].'-'.$dates[2].'-'.'rec';$amount3 = (empty($dataListRec[$match]['amount'])?'':$dataListRec[$match]['amount']);$comment = (empty($dataListRec[$match]['comment'])?'':trim(preg_replace('/\s\s+/', ' ', str_replace("\n", " ", $dataListRec[$match]['comment']))));?>
                                  <td>
@@ -915,7 +916,7 @@
                                 </td>
                                  <td style="position: relative; text-align:left; width: 90px; border-right: 2px solid #585454;">
                                     $<input type="text" style="width:65px; display:inline;font-size: 10px;font-weight: 800;" class="enterTab sale mondaydate recamt recamtwed form-control currency <?php echo str_replace(' ','_',$rD['name'])."_9" ; ?>" unit="amt" nameId= "rec_{{ $rD['id'] }}" dayno ="day3" dateat = "" name="{{ $rD['name'] }}" value="<?php echo $amount3; ?>" onkeypress="return validateFloatKeyPress(this,event);" onChange="recAmountSum('<?php echo str_replace(' ','_',$rD['name'])."_9" ; ?>')">
-                                    <i class="fa fa-comment getlist" style="display:inline; font-size:8px; color:<?= (!empty($comment))?'red':'green';?>;" onClick="dataGet('rec_{{ $rD['id'] }}','amt','day3','{{ $rD['name'] }}','{{ $comment }}')" id="rec_{{$rD['id']}}_amt_day3_<?= str_replace(' ','_',$rD['name']);?>">
+                                    <button type="button" class="sales-comment-trigger" data-sales-comment="{{ $dataListRec[$match]['comment'] ?? '' }}" aria-label="Add or view comment" title="Add or view comment"><i class="fa fa-comment-o" aria-hidden="true"></i></button>
                                  </td>
                                  <?php $match = $rD['name'].'-'.$dates[3].'-'.'rec';$amount4 = (empty($dataListRec[$match]['amount'])?'':$dataListRec[$match]['amount']);$comment = (empty($dataListRec[$match]['comment'])?'':trim(preg_replace('/\s\s+/', ' ', str_replace("\n", " ", $dataListRec[$match]['comment']))));?>
                                  <td>
@@ -923,7 +924,7 @@
                                 </td>
                                  <td style="position: relative; text-align:left; width: 90px; border-right: 2px solid #585454;">
                                     $<input type="text" style="width:65px; display:inline;font-size: 10px;font-weight: 800;" class="enterTab sale tuesdaydate recamt recamtthr form-control currency <?php echo str_replace(' ','_',$rD['name'])."_9" ; ?>" unit="amt" nameId= "rec_{{ $rD['id'] }}" dayno ="day4" dateat = "" name="{{ $rD['name'] }}" value="<?php echo $amount4; ?>" onkeypress="return validateFloatKeyPress(this,event);" onChange="recAmountSum('<?php echo str_replace(' ','_',$rD['name'])."_9" ; ?>')">
-                                    <i class="fa fa-comment getlist" style="display:inline; font-size:8px; color:<?= (!empty($comment))?'red':'green';?>;" onClick="dataGet('rec_{{ $rD['id'] }}','amt','day4','{{ $rD['name'] }}','{{ $comment }}')" id="rec_{{$rD['id']}}_amt_day4_<?= str_replace(' ','_',$rD['name']);?>">
+                                    <button type="button" class="sales-comment-trigger" data-sales-comment="{{ $dataListRec[$match]['comment'] ?? '' }}" aria-label="Add or view comment" title="Add or view comment"><i class="fa fa-comment-o" aria-hidden="true"></i></button>
                                  </td>
                                  <?php $match = $rD['name'].'-'.$dates[4].'-'.'rec';$amount5 = (empty($dataListRec[$match]['amount'])?'':$dataListRec[$match]['amount']);$comment = (empty($dataListRec[$match]['comment'])?'':trim(preg_replace('/\s\s+/', ' ', str_replace("\n", " ", $dataListRec[$match]['comment']))));?>
                                  <td>
@@ -931,7 +932,7 @@
                                 </td>
                                  <td style="position: relative; text-align:left; width: 90px; border-right: 2px solid #585454;">
                                     $<input type="text" style="width:65px; display:inline;font-size: 10px;font-weight: 800;" class="enterTab sale wednesdaydate recamt recamtfri form-control currency <?php echo str_replace(' ','_',$rD['name'])."_9" ; ?>" unit="amt" nameId= "rec_{{ $rD['id'] }}" dayno ="day5" dateat = "" name="{{ $rD['name'] }}" value="<?php echo $amount5; ?>" onkeypress="return validateFloatKeyPress(this,event);" onChange="recAmountSum('<?php echo str_replace(' ','_',$rD['name'])."_9" ; ?>')">
-                                    <i class="fa fa-comment getlist" style="display:inline; font-size:8px; color:<?= (!empty($comment))?'red':'green';?>;" onClick="dataGet('rec_{{ $rD['id'] }}','amt','day5','{{ $rD['name'] }}','{{ $comment }}')" id="rec_{{$rD['id']}}_amt_day5_<?= str_replace(' ','_',$rD['name']);?>">
+                                    <button type="button" class="sales-comment-trigger" data-sales-comment="{{ $dataListRec[$match]['comment'] ?? '' }}" aria-label="Add or view comment" title="Add or view comment"><i class="fa fa-comment-o" aria-hidden="true"></i></button>
                                  </td>
                                  <?php $match = $rD['name'].'-'.$dates[5].'-'.'rec';$amount6 = (empty($dataListRec[$match]['amount'])?'':$dataListRec[$match]['amount']);$comment = (empty($dataListRec[$match]['comment'])?'':trim(preg_replace('/\s\s+/', ' ', str_replace("\n", " ", $dataListRec[$match]['comment']))));?>
                                  <td>
@@ -939,7 +940,7 @@
                                 </td>
                                  <td style="position: relative; text-align:left; width: 90px; border-right: 2px solid #585454;">
                                     $<input type="text" style="width:65px; display:inline;font-size: 10px;font-weight: 800;" class="enterTab sale thrusdaydate recamt recamtsat form-control currency <?php echo str_replace(' ','_',$rD['name'])."_9" ; ?>" unit="amt" nameId= "rec_{{ $rD['id'] }}" dayno ="day6" dateat = "" name="{{ $rD['name'] }}" value="<?php echo $amount6; ?>" onkeypress="return validateFloatKeyPress(this,event);" onChange="recAmountSum('<?php echo str_replace(' ','_',$rD['name'])."_9" ; ?>')">
-                                    <i class="fa fa-comment getlist" style="display:inline; font-size:8px; color:<?= (!empty($comment))?'red':'green';?>;" onClick="dataGet('rec_{{ $rD['id'] }}','amt','day6','{{ $rD['name'] }}','{{ $comment }}')" id="rec_{{$rD['id']}}_amt_day6_<?= str_replace(' ','_',$rD['name']);?>">
+                                    <button type="button" class="sales-comment-trigger" data-sales-comment="{{ $dataListRec[$match]['comment'] ?? '' }}" aria-label="Add or view comment" title="Add or view comment"><i class="fa fa-comment-o" aria-hidden="true"></i></button>
                                  </td>
                                  <?php $match = $rD['name'].'-'.$dates[6].'-'.'rec';$amount7 = (empty($dataListRec[$match]['amount'])?'':$dataListRec[$match]['amount']);$comment = (empty($dataListRec[$match]['comment'])?'':trim(preg_replace('/\s\s+/', ' ', str_replace("\n", " ", $dataListRec[$match]['comment']))));?>
                                  <td>
@@ -947,7 +948,7 @@
                                 </td>
                                  <td style="position: relative; text-align:left; width: 90px; border-right: 2px solid #585454;">
                                     $<input type="text" style="width:65px; display:inline;font-size: 10px;font-weight: 800;" class="enterTab sale fridaydate recamt recamtsun form-control currency <?php echo str_replace(' ','_',$rD['name'])."_9" ; ?>" unit="amt" nameId= "rec_{{ $rD['id'] }}" dayno ="day7" dateat = "" name="{{ $rD['name'] }}" value="<?php echo $amount7; ?>" onkeypress="return validateFloatKeyPress(this,event);" onChange="recAmountSum('<?php echo str_replace(' ','_',$rD['name'])."_9" ; ?>')">
-                                    <i class="fa fa-comment getlist" style="display:inline; font-size:8px; color:<?= (!empty($comment))?'red':'green';?>;" onClick="dataGet('rec_{{ $rD['id'] }}','amt','day7','{{ $rD['name'] }}','{{ $comment }}')" id="rec_{{$rD['id']}}_amt_day7_<?= str_replace(' ','_',$rD['name']);?>">
+                                    <button type="button" class="sales-comment-trigger" data-sales-comment="{{ $dataListRec[$match]['comment'] ?? '' }}" aria-label="Add or view comment" title="Add or view comment"><i class="fa fa-comment-o" aria-hidden="true"></i></button>
                                  </td>
                               </tr>
                               <?php
@@ -1062,46 +1063,11 @@
          </div>-->
    </div>
    <div style="text-align: center;">
-      <button type="button" id="ClickMe" class="v-btn v-btn-primary">Save Data</button>
+      <button type="button" id="ClickMe" class="v-btn v-btn-primary">Save Now</button><span id="sales-autosave-status" class="sales-autosave-status" role="status" aria-live="polite">Auto-save is on</span>
       <div id="sales-save-error" class="alert alert-danger" role="alert" hidden></div>
    </div>
 </section>
-<!--<div class="modal fade" id="modalData" role="dialog" >
-   <div class="modal-dialog " >
-    <div class="modal-content">
-       <div class="modal-header" >
-         <button type="button" class="close" data-dismiss="modal">&times;</button>
-         <h4 class="modal-title" >Submit Your Comment</h4>
-       </div>
-       <div class="modal-body">
-   <input type="hidden" name="popupName" id="popupName">
-   <input type="hidden" name="popupUnit" id="popupUnit">
-   <input type="hidden" name="popupDay" id="popupDay">
-   <input type="hidden" name="popupNameId" id="popupNameId">
-   <input type="hidden" name="popupdayname" id="popupdayname">
-   <input type="hidden" name="popupweekNo" id="popupweekNo">
-   <input type="hidden" name="popupStorNo" id="popupStorNo">
-         <textarea name="comment" form="usrform" id="inputMessage" style="width:100%;height:188px;" placeholder="Enter text here..." ></textarea>
-       </div>
-       <div class="modal-footer" >
-         <button type="button" class="btn btn-primary submitBtn"  onclick="submitContactForm()">SUBMIT</button>
-   </div>
-     </div>
-
-   </div>
-   </div>-->
-<div  id="modalData" class="popupNameId" style="display:none;">
-   <input type="hidden" name="popupName" id="popupName">
-   <input type="hidden" name="popupUnit" id="popupUnit">
-   <input type="hidden" name="popupDay" id="popupDay">
-   <input type="hidden" name="popupNameId" id="popupNameId">
-   <input type="hidden" name="popupdayname" id="popupdayname">
-   <input type="hidden" name="popupweekNo" id="popupweekNo">
-   <input type="hidden" name="popupStorNo" id="popupStorNo">
-   <textarea name="comment" form="usrform" id="inputMessage" style="width:100%;height:188px;" placeholder="Enter text here..." ></textarea>
-   <button type="button" class="btn btn-primary "  onclick="submitContactForm()">SUBMIT</button>
-   <div class="alert alert-success message" style="display:none">Comment Saved Successfully!</div>
-</div>
+@include('salesections.sales-comments')
 <!--
    <div class="modal fade" id="modalDepData" role="dialog">
        <div class="modal-dialog">
@@ -1200,7 +1166,7 @@
 <script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@1.5.4/extras/loadingoverlay_progress/loadingoverlay_progress.min.js"></script>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
-<input type="hidden" id="hidecomment" />
+
 <script type="text/javascript">
    $.ajaxSetup({
           headers: {
@@ -1347,66 +1313,6 @@
             });
       });       */
 
-
-      $("#ClickMe").click(function () {
-         var invalidMetric = $('.sales-daily-metric').filter(function () { return !this.checkValidity(); }).get(0);
-         if (invalidMetric) { invalidMetric.reportValidity(); return; }
-         $('#sales-save-error').prop('hidden', true).text('');
-         $('#ClickMe').prop('disabled', true);
-         $.LoadingOverlay("show");
-
-         //$('#ajaxLoadAni').fadeIn('slow');
-           var arrnew = [];
-            $(".sale").each(function() {
-                  var SaleDataArray = {};
-                  var name = ($(this).attr('name'));
-                  var unit = ($(this).attr('unit'));
-                  var dayno = ($(this).attr('dayno'));
-                  var val = ($(this).val());
-                  var dayname = $('#'+dayno).text();
-                  var nameID = ($(this).attr('nameId'));
-                  var weekNo = $('#weekNoData').text();
-                  var storeNo = $('#storeNoData').text();
-
-
-                     SaleDataArray['name'] = name;
-                     SaleDataArray['unit'] = unit;
-                     SaleDataArray['dayno'] = dayno;
-                     SaleDataArray['val'] = val;
-                     SaleDataArray['dayname'] = dayname;
-                     SaleDataArray['nameID'] = nameID;
-                     SaleDataArray['weekNo'] = weekNo;
-                     SaleDataArray['storeNo'] = storeNo;
-
-                     arrnew.push(SaleDataArray);
-
-
-            });
-            var jsonString = JSON.stringify(arrnew);
-            var metricDays = {};
-            $('.sales-daily-metric').each(function () {
-               var date = this.getAttribute('data-report-date');
-               if (!metricDays[date]) metricDays[date] = {date: date};
-               metricDays[date][this.getAttribute('data-metric-field')] = this.value;
-            });
-            $.ajax({
-               type:       "POST",
-               url:        "{{ url('/') }}/dataSaveSales",
-               data: {allsaledata: jsonString, daily_metrics: JSON.stringify(Object.keys(metricDays).map(function (date) { return metricDays[date]; }))},
-               success: function(data) {
-                  $.LoadingOverlay("hide");
-                  $("#ClickMe").css("background-color", "green");
-                  /*if(data == 1){
-                     $('#ajaxLoadAni').fadeOut('slow');
-                  }*/
-               },
-               error: function (xhr) {
-                  $('#sales-save-error').text((xhr.responseJSON && xhr.responseJSON.error) || 'The report could not be saved. Please retry.').prop('hidden', false);
-               },
-               complete: function () { $.LoadingOverlay('hide'); $('#ClickMe').prop('disabled', false); }
-            });
-
-      });
 
       $('.sumunit').keyup(function() {
          var sum = 0;
@@ -1744,139 +1650,7 @@
 
 </script>
 <script>
-   /* comment section */
-   function dataGet(nameId,unit,day,name,message){
-               //$('#modalData').modal('show');
-                   $("#hidecomment").val('');
-               var dayname = $('#'+day).text();
-               var popWeekNum = $('#weekNoData').text();
-               var popStoreNum = $('#storeNoData').text()
-               $('#popupName').val(name);
-               $('#popupUnit').val(unit);
-               $('#popupDay').val(day);
-               $('#popupNameId').val(nameId);
-               $('#popupdayname').val(dayname);
-               $('textarea#inputMessage').val(message);
-               $('#popupweekNo').val($('#weekNoData').text());
-               $('#popupStorNo').val($('#storeNoData').text());
 
-              var popOverSettings = {
-                  container: 'body',
-                  title: 'Submit Your Comment <a href="#" class="close" data-dismiss="alert" >×</a>',
-                  content: function() {
-                     return $('#modalData').html();
-                  },
-                  trigger:'click',
-                  placement:'auto',
-                  viewport:{selector: 'body'},
-                  html:true
-               }
-               $(".getlist").popover(popOverSettings).on("show.bs.popover", function(e) {
-                     $("[rel=popover]").not(e.target).popover("destroy");
-                     $(".popover").remove();
-               }).on('shown.bs.popover', function() {
-                  if(message == '') {
-                       $.ajax({
-                              type:       "POST",
-                              dataType:   "text",
-                              url:        "{{ url('/') }}/getComment",
-                              data: {name:name,unit:unit,day:day,nameId:nameId,popdayname:dayname,popupweekNo:popWeekNum,popupStorNo:popStoreNum},
-                              success: function(response)
-                              {
-                                 $("#hidecomment").val(response);
-                              }
-                          });
-                  }
-               }).on('shown.bs.popover', function() {
-                  if(message == '') {
-                     message = $("#hidecomment").val();
-                     //alert($("#hidecomment").val());
-                  }
-
-                  $('#popupName').val(name);
-                  $('#popupUnit').val(unit);
-                  $('#popupDay').val(day);
-                  $('#popupNameId').val(nameId);
-                  $('#popupdayname').val(dayname);
-                  $('textarea#inputMessage').val(message);
-                  $('#popupweekNo').val($('#weekNoData').text());
-                  $('#popupStorNo').val($('#storeNoData').text());
-               });
-
-
-
-   }
-
-   function getComment(name,unit,day,nameId,popdayname,popupweekNo,popupStorNo) {
-
-                    var comment = function () {
-                         $.ajax({
-                              type:       "POST",
-                              dataType:   "text",
-                              url:        "{{ url('/') }}/getComment",
-                              data: {name:name,unit:unit,day:day,nameId:nameId,popdayname:popdayname,popupweekNo:popupweekNo,popupStorNo:popupStorNo},
-                              success: function(response)
-                              {
-                                  comment = response;
-
-                               }
-                          });
-                         return comment;
-                  }();
-                  // return comment;
-   }
-
-   $(document).on("click", ".popover .close" , function(){
-         $(this).parents(".popover").popover('hide');
-   });
-
-   function submitContactForm(){
-               //$('#modalData').modal('hide');
-                var message = $('#inputMessage').val();
-               var name = $('#popupName').val();
-               var unit = $('#popupUnit').val();
-               var day = $('#popupDay').val();
-               var nameId = $('#popupNameId').val();
-               var popdayname = $('#popupdayname').val();
-               var popupweekNo = $('#popupweekNo').val();
-               var popupStorNo = $('#popupStorNo').val();
-               //alert(nameId); return false;
-                     $.ajax({
-                        type:       "POST",
-                        dataType:   "text",
-                        url:        "{{ url('/') }}/commentSave",
-                        data: {message: message,name:name,unit:unit,day:day,nameId:nameId,popdayname:popdayname,popupweekNo:popupweekNo,popupStorNo:popupStorNo},
-                        success: function(data)
-                        {
-                              //var value = $.trim(data);
-                              var value = data;
-
-                              value = $.trim(value);
-                              if(value == 'complete'){
-                                 name = name.replace(/ /g,'_');
-                                 if(message == ''){
-                                    $("#"+nameId+"_"+unit+"_"+day+"_"+name).css('color','green');
-                                 }else{
-                                    $("#"+nameId+"_"+unit+"_"+day+"_"+name).css('color','red');
-                                 }
-                                 $("#"+nameId+"_"+unit+"_"+day+"_"+name).attr("onclick","dataGet('"+nameId+"','"+unit+"','"+day+"','"+name+"','"+message+"')");
-
-                                 //setTimeout(function(){location.reload(); });
-                                 $('.message').show();
-                                 $('.popover').popover('hide');
-
-                                    // $(this).parents(".popover").popover('hide');
-                                    /*setTimeout(function () {
-                                       $('.popover').popover('hide');
-                                       $('.message').hide();
-                                    }, 1500); */
-                                 }
-                        }
-                     });
-
-
-   }
-   /* ends */
          /* currency format */
          (function($) {
            $.fn.currencyFormat = function() {
@@ -3010,4 +2784,5 @@
    });
 }());
 </script>
+<script src="{{ asset('js/sales-autosave.js') }}?v={{ filemtime(base_path('js/sales-autosave.js')) }}"></script>
 @endsection

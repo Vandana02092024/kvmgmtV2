@@ -13,6 +13,18 @@ class SalesReportDailyMetrics
         return array('ez_drop_signups' => 'EZ Drop Signups', 'new_customers' => 'New Customers');
     }
 
+    /** Each activity input has its own note within the existing daily metrics row. */
+    public static function comments($stored)
+    {
+        if (trim((string) $stored) === '') return [];
+        $comments = json_decode($stored, true);
+        if (!is_array($comments)) return null;
+        foreach ($comments as $field => $comment) {
+            if (!array_key_exists($field, self::fields()) || !is_string($comment)) return null;
+        }
+        return $comments;
+    }
+
     public function values(array $values)
     {
         $result = array();
@@ -38,7 +50,8 @@ class SalesReportDailyMetrics
             if (isset($days[$record->dataDate])) {
                 throw new RuntimeException('Duplicate daily customer metrics exist for ' . $record->dataDate . '.');
             }
-            $days[$record->dataDate] = array('ez_drop_signups' => $record->ez_drop_signups, 'new_customers' => $record->new_customers);
+            $days[$record->dataDate] = array('ez_drop_signups' => $record->ez_drop_signups, 'new_customers' => $record->new_customers,
+                'comments' => self::comments($record->comment) ?? []);
         }
         return $days;
     }

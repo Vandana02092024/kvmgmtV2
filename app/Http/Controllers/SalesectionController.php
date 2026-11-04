@@ -1369,11 +1369,12 @@ class SalesectionController extends Controller
 
 	public function dataSaveSales(Request $request)
 		{
+			$request->validate(['expected_location_id' => ['sometimes', 'required', 'integer']]);
 			if (($request->has('allsaledata') && !is_string($request->input('allsaledata'))) ||
 				($request->has('daily_metrics') && !is_string($request->input('daily_metrics')))) {
 				return response()->json(['error' => 'Invalid daily sales or customer counts.'], 422);
 			}
-			$allsaledata = json_decode(stripslashes($request->input('allsaledata', '[]')));
+			$allsaledata = json_decode($request->input('allsaledata', '[]'));
 			$metricEntries = $request->has('daily_metrics') ? json_decode($request->input('daily_metrics'), true) : null;
 			if (!is_array($allsaledata) || ($request->has('daily_metrics') && !is_array($metricEntries))) {
 				return response()->json(['error' => 'Invalid daily sales or customer counts.'], 422);
@@ -1381,8 +1382,10 @@ class SalesectionController extends Controller
 			// Share the import's store lock before looking up or creating daily
 			// rows, including when a day has no entries yet.
 			try {
-			return DB::transaction(function () use ($allsaledata, $metricEntries) {
+			return DB::transaction(function () use ($allsaledata, $metricEntries, $request) {
 			$locationId = Session::get('location_id');
+			abort_if($request->has('expected_location_id') && (int) $request->input('expected_location_id') !== (int) $locationId,
+				409, 'The selected store changed. Reload this report before saving.');
 			$location = DB::table('locations')->where('id', $locationId)->where('status', '1')->lockForUpdate()->first();
 			abort_unless($location && Auth::user() && Auth::user()->status &&
 				DB::table('user_locations')->where('user', Auth::id())->where('location', $locationId)->exists(), 403);
@@ -1396,6 +1399,20 @@ class SalesectionController extends Controller
 					!is_string($sv->nameID) || !preg_match('/^(sale|dis|adj|rec)_[0-9]+$/', $sv->nameID) ||
 					!in_array($sv->unit, ['units', 'amt'], true)) {
 					throw new \RuntimeException('Invalid sales field. Customer counts must use their dedicated fields.');
+				}
+				if ($request->boolean('auto_save')) {
+					if (!is_string($sv->val) || ($sv->val !== '' && !preg_match('/^[+-]?(?:\d+(?:\.\d{0,2})?|\.\d{1,2})$/', $sv->val)) ||
+						!is_string($sv->dayname) || !preg_match('/^(Saturday|Sunday|Monday|Tuesday|Wednesday|Thursday|Friday) (\d{2}-\d{2}-\d{4})$/', $sv->dayname, $dateParts)) {
+						throw new \RuntimeException('Enter a valid number and report date before saving.');
+					}
+					$date = \DateTime::createFromFormat('!m-d-Y', $dateParts[2]);
+					if (!$date || $date->format('m-d-Y') !== $dateParts[2] || $date->format('l') !== $dateParts[1]) throw new \RuntimeException('Invalid report date.');
+					$importer = app(\App\Services\SalesReport\SalesReportPdfImporter::class);
+					$context = $importer->context($locationId, $date->format('Y-m-d'));
+					$catalog = $importer->catalog($context);
+					if (!isset($catalog[$sv->nameID]) || (int) ($sv->weekNo ?? 0) !== $context['weekNo'] || (int) ($sv->storeNo ?? 0) !== $context['storeNo']) {
+						throw new \RuntimeException('This field or reporting week is no longer available for this store. Reload the report.');
+					}
 				}
 				$locationId = Session::get('location_id');
 				$unitval = $amtval = '';
@@ -1423,6 +1440,7 @@ class SalesectionController extends Controller
 				$rowCOllection = DB::table('salesections')->select('id')->where('nameId', $nameID[1])->where('nameDep', $nameID[0])->where('dataDate', $dateD)->where('storeNo', $storeNo)->where('location_id', $locationId)->get();
 
 				$rowCount = count($rowCOllection);
+				if ($rowCount > 1) throw new \RuntimeException('Duplicate sales rows must be resolved before saving.');
 				if($rowCount > 0){
 					 $wordCount = $rowCOllection[0]->id;
 					if($unit == 'units'){
@@ -1476,80 +1494,17 @@ class SalesectionController extends Controller
 		}
 
 
-		public function commentSave(Request $request)
-		{
-			$locationId = Session::get('location_id');
-			$message = $request['message'];
-			$name = $request['name'];
-			$unit = $request['unit'];
-			$day = $request['day'];
+        public function commentSave(Request $request)
+        {
+            $result = app(\App\Services\SalesReport\SalesReportComments::class)->handle($request, true);
+            return $request->expectsJson() ? response()->json($result) : response('complete');
+        }
 
-			$nameId = explode('_',$request['nameId']);
-			$weekNo = $request['popupweekNo'];
-			$storeNo = $request['popupStorNo'];
-			$dayname = explode(' ',$request['popdayname']);
-			$dayNamefull = $dayname[0];
-			$dateData = explode('-',$dayname[1]);
-			$dateD = $dateData[2]."-".$dateData[0]."-".$dateData[1];
-			$unitval = $amtval = '';
-			$rowCOllection = DB::table('salesections')->select('id')->where('nameId', $nameId[1])->where('nameDep', $nameId[0])->where('dataDate', $dateD)->where('dataDay', $dayNamefull)->where('weekNo', $weekNo)->where('storeNo', $storeNo)->where('location_id', $locationId)->get();
-			$rowCount = count($rowCOllection);
-			if($rowCount > 0){
-					$Id = $rowCOllection[0]->id;
-					$updateArray = array(
-					'comment' => $message
-					);
-
-
-				$salesection = Salesection::where('id','=', $Id)->update($updateArray);
-			}else {
-			$insertArray = array(
-				'nameDep' => $nameId[0],
-				'nameId' => $nameId[1],
-				'dataDate' => $dateD,
-				'dataDay' => $dayNamefull,
-				'unit' => $unitval,
-				'amount' => $amtval,
-				'weekNo' => $weekNo,
-				'storeNo' => $storeNo,
-				'location_id' => $locationId,
-				'comment' => $message
-			);
-
-			$salesection = Salesection::create($insertArray);
-			}
-			return "complete";
-
-		}
-
-		public function getComment(Request $request)
-		{
-			error_reporting(0);
-			$locationId = Session::get('location_id');
-			$name = $request['name'];
-			$unit = $request['unit'];
-			$day = $request['day'];
-
-			$nameId = explode('_',$request['nameId']);
-			$weekNo = $request['popupweekNo'];
-			$storeNo = $request['popupStorNo'];
-			$dayname = explode(' ',$request['popdayname']);
-			$dayNamefull = $dayname[0];
-			$dateData = explode('-',$dayname[1]);
-			$dateD = $dateData[2]."-".$dateData[0]."-".$dateData[1];
-			$unitval = $amtval = '';
-			$rowCOllection = DB::table('salesections')->select('comment')->where('nameId', $nameId[1])->where('nameDep', $nameId[0])->where('dataDate', $dateD)->where('dataDay', $dayNamefull)->where('weekNo', $weekNo)->where('storeNo', $storeNo)->where('location_id', $locationId)->get();
-
-			$rowCount = count($rowCOllection);
-			if($rowCount > 0){
-				$comment = $rowCOllection[0]->comment;
-			} else {
-				$comment = '';
-			}
-			return $comment;
-
-		}
-
+        public function getComment(Request $request)
+        {
+            $result = app(\App\Services\SalesReport\SalesReportComments::class)->handle($request, false);
+            return $request->expectsJson() ? response()->json($result) : response($result['comment']);
+        }
 		public function newFieldSaveSales(Request $request)
 		{
 
